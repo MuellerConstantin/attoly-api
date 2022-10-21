@@ -1,0 +1,7 @@
+spring:
+  jpa:
+    properties:
+      hibernate.show_sql: true
+logging:
+  level:
+    org.hibernate.type.descriptor.sql: trace
