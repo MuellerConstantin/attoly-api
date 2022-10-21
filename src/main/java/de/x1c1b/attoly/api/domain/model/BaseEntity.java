@@ -38,6 +38,7 @@ public abstract class BaseEntity implements Serializable {
     @Column(name = "version", nullable = false)
     @Setter(AccessLevel.PROTECTED)
     @Builder.Default
+    @EqualsAndHashCode.Exclude
     private long version = 0L;
 
     @Column(name = "deleted", nullable = false)
