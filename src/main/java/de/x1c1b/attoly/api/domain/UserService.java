@@ -76,4 +76,28 @@ public interface UserService {
     void deleteById(UUID id) throws EntityNotFoundException;
 
     void deleteByEmail(String email) throws EntityNotFoundException;
+
+    /**
+     * Generates a verification token to verify a user or their email and sends the token.
+     * This option can be used to enable accounts.
+     *
+     * @param id The identifier of the user for which a token should be sent.
+     */
+    void sendVerificationMessageById(UUID id);
+
+    /**
+     * Generates a verification token to verify a user or their email and sends the token.
+     * This option can be used to enable accounts.
+     *
+     * @param email The email of the user for which a token should be sent.
+     */
+    void sendVerificationMessageByEmail(String email);
+
+    /**
+     * Verifies and activates a user account using a verification token that was previously generated and sent.
+     *
+     * @param verificationToken The verification token to use.
+     * @throws InvalidVerificationTokenException Thrown if the verification token doesn't longer exist.
+     */
+    void verifyByToken(String verificationToken) throws InvalidVerificationTokenException;
 }

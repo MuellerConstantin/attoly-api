@@ -2,6 +2,7 @@ package de.x1c1b.attoly.api.web.v1.error;
 
 import de.x1c1b.attoly.api.domain.EmailAlreadyInUseException;
 import de.x1c1b.attoly.api.domain.EntityNotFoundException;
+import de.x1c1b.attoly.api.domain.InvalidVerificationTokenException;
 import de.x1c1b.attoly.api.web.v1.dto.ErrorDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -292,6 +293,20 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                 .message("The specified resource does not exist.")
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.NOT_FOUND.value())
+                .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .build();
+
+        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
+    }
+
+    @ExceptionHandler(InvalidVerificationTokenException.class)
+    public ResponseEntity<Object> handleInvalidVerificationToken(InvalidVerificationTokenException exc,
+                                                                 WebRequest request) {
+
+        ErrorDto dto = ErrorDto.builder()
+                .message("The verification token does not exist or is no longer valid.")
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.GONE.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
                 .build();
 

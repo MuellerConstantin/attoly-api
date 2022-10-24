@@ -22,6 +22,7 @@ public class Principal implements UserDetails {
 
     private String email;
     private String password;
+    private boolean enabled;
 
     @Builder.Default
     private Set<GrantedAuthority> authorities = new HashSet<>();
@@ -29,6 +30,7 @@ public class Principal implements UserDetails {
     public Principal(User user) {
         this.email = user.getEmail();
         this.password = user.getPassword();
+        this.enabled = user.isEmailVerified();
         this.authorities = user.getRoles().stream()
                 .map((role) -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toSet());
@@ -61,6 +63,6 @@ public class Principal implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }

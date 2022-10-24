@@ -18,11 +18,15 @@ import java.util.Set;
 @SuperBuilder
 public class User extends BaseEntity {
 
-    @Column(name = "email", unique = true)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "email_verified", nullable = false)
+    @Builder.Default
+    private boolean emailVerified = false;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
