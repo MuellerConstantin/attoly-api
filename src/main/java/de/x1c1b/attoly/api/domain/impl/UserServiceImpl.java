@@ -1,8 +1,8 @@
 package de.x1c1b.attoly.api.domain.impl;
 
+import de.x1c1b.attoly.api.domain.EmailAlreadyInUseException;
+import de.x1c1b.attoly.api.domain.EntityNotFoundException;
 import de.x1c1b.attoly.api.domain.UserService;
-import de.x1c1b.attoly.api.domain.exception.EmailAlreadyInUseException;
-import de.x1c1b.attoly.api.domain.exception.EntityNotFoundException;
 import de.x1c1b.attoly.api.domain.model.Role;
 import de.x1c1b.attoly.api.domain.model.User;
 import de.x1c1b.attoly.api.domain.payload.UserCreationPayload;

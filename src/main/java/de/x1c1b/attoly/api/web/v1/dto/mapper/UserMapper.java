@@ -11,6 +11,7 @@ import org.mapstruct.Mapper;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.Optional;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
@@ -19,9 +20,14 @@ public interface UserMapper {
 
     UserUpdatePayload mapToPayload(UserUpdateDto dto);
 
-    UserDto mapToDetailsDto(User entity);
+    UserDto mapToDto(User entity);
 
     default OffsetDateTime mapInstantToOffsetDateTime(Instant instant) {
         return instant.atZone(ZoneId.systemDefault()).toOffsetDateTime();
+    }
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    default <T> T unwrapOptional(Optional<T> optional) {
+        return optional.orElse(null);
     }
 }

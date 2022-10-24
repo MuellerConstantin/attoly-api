@@ -1,7 +1,7 @@
 package de.x1c1b.attoly.api.web.v1.error;
 
-import de.x1c1b.attoly.api.domain.exception.EmailAlreadyInUseException;
-import de.x1c1b.attoly.api.domain.exception.EntityNotFoundException;
+import de.x1c1b.attoly.api.domain.EmailAlreadyInUseException;
+import de.x1c1b.attoly.api.domain.EntityNotFoundException;
 import de.x1c1b.attoly.api.web.v1.dto.ErrorDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

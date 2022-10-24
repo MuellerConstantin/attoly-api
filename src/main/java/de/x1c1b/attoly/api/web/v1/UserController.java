@@ -4,6 +4,8 @@ import de.x1c1b.attoly.api.domain.UserService;
 import de.x1c1b.attoly.api.domain.model.User;
 import de.x1c1b.attoly.api.domain.payload.UserCreationPayload;
 import de.x1c1b.attoly.api.domain.payload.UserUpdatePayload;
+import de.x1c1b.attoly.api.security.CurrentPrincipal;
+import de.x1c1b.attoly.api.security.Principal;
 import de.x1c1b.attoly.api.web.v1.dto.RegistrationDto;
 import de.x1c1b.attoly.api.web.v1.dto.UserDto;
 import de.x1c1b.attoly.api.web.v1.dto.UserUpdateDto;
@@ -16,7 +18,7 @@ import javax.validation.Valid;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/v1/users")
+@RequestMapping("/v1")
 public class UserController {
 
     private final UserService userService;
@@ -28,26 +30,33 @@ public class UserController {
         this.userMapper = userMapper;
     }
 
-    @PostMapping
+    @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
     UserDto create(@RequestBody @Valid RegistrationDto dto) {
         UserCreationPayload payload = userMapper.mapToPayload(dto);
         User user = userService.create(payload);
 
-        return userMapper.mapToDetailsDto(user);
+        return userMapper.mapToDto(user);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/users/{id}")
     UserDto updateById(@PathVariable("id") UUID id, @RequestBody @Valid UserUpdateDto dto) {
         UserUpdatePayload payload = userMapper.mapToPayload(dto);
         User user = userService.updateById(id, payload);
 
-        return userMapper.mapToDetailsDto(user);
+        return userMapper.mapToDto(user);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/users/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteById(@PathVariable("id") UUID id) {
         userService.deleteById(id);
+    }
+
+    @GetMapping("/user/me")
+    UserDto findCurrentUser(@CurrentPrincipal Principal principal) {
+        User user = userService.findByEmail(principal.getEmail());
+
+        return userMapper.mapToDto(user);
     }
 }

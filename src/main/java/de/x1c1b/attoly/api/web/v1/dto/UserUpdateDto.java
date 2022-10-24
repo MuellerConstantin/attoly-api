@@ -17,7 +17,7 @@ public class UserUpdateDto {
 
     private String password;
 
-    Optional<@NullOrNotEmpty @Password String> getPassword() {
+    public Optional<@NullOrNotEmpty @Password String> getPassword() {
         return Optional.ofNullable(this.password);
     }
 }
