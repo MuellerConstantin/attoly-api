@@ -3,9 +3,12 @@ package de.x1c1b.attoly.api.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.x1c1b.attoly.api.security.ajax.AjaxAuthenticationProcessingFilterConfigurer;
 import de.x1c1b.attoly.api.security.token.AccessToken;
+import de.x1c1b.attoly.api.security.token.RefreshToken;
 import de.x1c1b.attoly.api.security.token.TokenProvider;
 import de.x1c1b.attoly.api.security.token.auth.AccessTokenAuthenticationProvider;
+import de.x1c1b.attoly.api.security.token.auth.RefreshTokenAuthenticationProvider;
 import de.x1c1b.attoly.api.security.token.filter.AccessTokenAuthenticationFilterConfigurer;
+import de.x1c1b.attoly.api.security.token.filter.RefreshTokenAuthenticationProcessingFilterConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +58,9 @@ public class SecurityConfig {
     @Autowired
     private TokenProvider<AccessToken> accessTokenProvider;
 
+    @Autowired
+    private TokenProvider<RefreshToken> refreshTokenProvider;
+
 
     @Bean
     PasswordEncoder bCryptPasswordEncoder() {
@@ -82,6 +88,12 @@ public class SecurityConfig {
                 .authenticationSuccessHandler(authenticationSuccessHandler)
                 .usernameField("email")
                 .passwordField("password")
+                .objectMapper(objectMapper)
+                .and()
+                .apply(new RefreshTokenAuthenticationProcessingFilterConfigurer())
+                .requestMatcher(new AntPathRequestMatcher("/v1/auth/refresh", HttpMethod.POST.name()))
+                .authenticationFailureHandler(authenticationFailureHandler)
+                .authenticationSuccessHandler(authenticationSuccessHandler)
                 .objectMapper(objectMapper)
                 .and()
                 .apply(new AccessTokenAuthenticationFilterConfigurer());
@@ -123,9 +135,14 @@ public class SecurityConfig {
         accessTokenAuthenticationProvider.setUserDetailsService(userDetailsService);
         accessTokenAuthenticationProvider.setAccessTokenProvider(accessTokenProvider);
 
+        RefreshTokenAuthenticationProvider refreshTokenAuthenticationProvider = new RefreshTokenAuthenticationProvider();
+        refreshTokenAuthenticationProvider.setUserDetailsService(userDetailsService);
+        refreshTokenAuthenticationProvider.setRefreshTokenProvider(refreshTokenProvider);
+
         AuthenticationManagerBuilder authenticationManagerBuilder = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.authenticationProvider(daoAuthenticationProvider);
         authenticationManagerBuilder.authenticationProvider(accessTokenAuthenticationProvider);
+        authenticationManagerBuilder.authenticationProvider(refreshTokenAuthenticationProvider);
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
         httpSecurity.authenticationManager(authenticationManager);
@@ -136,6 +153,8 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST, "/v1/users")
                 .permitAll()
                 .antMatchers(HttpMethod.POST, "/v1/auth/token")
+                .permitAll()
+                .antMatchers(HttpMethod.POST, "/v1/auth/refresh")
                 .permitAll()
                 .anyRequest()
                 .authenticated();

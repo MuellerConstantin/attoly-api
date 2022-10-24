@@ -15,7 +15,11 @@ import org.springframework.stereotype.Component;
 @Builder
 public class TokenProperties {
 
-    private AccessTokenProperties access;
+    @Builder.Default
+    private AccessTokenProperties access = new AccessTokenProperties();
+
+    @Builder.Default
+    private RefreshTokenProperties refresh = new RefreshTokenProperties();
 
     @AllArgsConstructor
     @NoArgsConstructor
@@ -27,5 +31,18 @@ public class TokenProperties {
 
         @Builder.Default
         private long expiresIn = 300000L; // 5 minutes
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class RefreshTokenProperties {
+
+        @Builder.Default
+        private int length = 16;
+
+        @Builder.Default
+        private long expiresIn = 7200000L; // 2 hours
     }
 }
