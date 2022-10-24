@@ -6,10 +6,7 @@ import de.x1c1b.attoly.api.domain.payload.UserCreationPayload;
 import de.x1c1b.attoly.api.domain.payload.UserUpdatePayload;
 import de.x1c1b.attoly.api.security.CurrentPrincipal;
 import de.x1c1b.attoly.api.security.Principal;
-import de.x1c1b.attoly.api.web.v1.dto.RegistrationDto;
-import de.x1c1b.attoly.api.web.v1.dto.UserDto;
-import de.x1c1b.attoly.api.web.v1.dto.UserUpdateDto;
-import de.x1c1b.attoly.api.web.v1.dto.UserVerificationDto;
+import de.x1c1b.attoly.api.web.v1.dto.*;
 import de.x1c1b.attoly.api.web.v1.dto.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -67,9 +64,21 @@ public class UserController {
         userService.verifyByToken(dto.getVerificationToken());
     }
 
-    @GetMapping("/user/retry-verify")
+    @GetMapping("/user/verify")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void resendUserVerificationMessage(@RequestParam(name = "email") String email) {
+    void sendUserVerificationMessage(@RequestParam(name = "email") String email) {
         userService.sendVerificationMessageByEmail(email);
+    }
+
+    @PostMapping("/user/reset")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void resetCurrentPassword(@RequestBody @Valid UserResetDto dto) {
+        userService.resetPasswordByToken(dto.getResetToken(), dto.getPassword());
+    }
+
+    @GetMapping("/user/reset")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void sendPasswordResetMessage(@RequestParam(name = "email") String email) {
+        userService.sendResetMessageByEmail(email);
     }
 }

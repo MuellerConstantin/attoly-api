@@ -100,4 +100,28 @@ public interface UserService {
      * @throws InvalidVerificationTokenException Thrown if the verification token doesn't longer exist.
      */
     void verifyByToken(String verificationToken) throws InvalidVerificationTokenException;
+
+    /**
+     * Generates and sends a reset token to reset a password.
+     *
+     * @param id The identifier of the user for which a token should be sent.
+     */
+    void sendResetMessageById(UUID id);
+
+    /**
+     * Generates and sends a reset token to reset a password.
+     *
+     * @param email The email of the user for which a token should be sent.
+     */
+    void sendResetMessageByEmail(String email);
+
+    /**
+     * Resets a user's password using a token. This step is necessary, for example, if a user can no
+     * longer remember a password.
+     *
+     * @param resetToken  The reset token to use.
+     * @param newPassword The new password to use.
+     * @throws InvalidResetTokenException Thrown if the reset token doesn't longer exist.
+     */
+    void resetPasswordByToken(String resetToken, String newPassword) throws InvalidResetTokenException;
 }

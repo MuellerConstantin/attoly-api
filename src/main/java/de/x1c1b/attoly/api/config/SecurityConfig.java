@@ -150,15 +150,11 @@ public class SecurityConfig {
 
     protected void authorizeRequests(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/v1/users")
+                .antMatchers(HttpMethod.POST, "/v1/users", "/v1/user/verify", "/v1/user/reset")
                 .permitAll()
-                .antMatchers(HttpMethod.POST, "/v1/user/verify")
+                .antMatchers(HttpMethod.GET, "/v1/user/verify", "/v1/user/reset")
                 .permitAll()
-                .antMatchers(HttpMethod.GET, "/v1/user/retry-verify")
-                .permitAll()
-                .antMatchers(HttpMethod.POST, "/v1/auth/token")
-                .permitAll()
-                .antMatchers(HttpMethod.POST, "/v1/auth/refresh")
+                .antMatchers(HttpMethod.POST, "/v1/auth/token", "/v1/auth/refresh")
                 .permitAll()
                 .anyRequest()
                 .authenticated();

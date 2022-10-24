@@ -212,4 +212,47 @@ public class UserServiceImpl implements UserService {
             throw new InvalidVerificationTokenException();
         }
     }
+
+    @Override
+    public void sendResetMessageById(UUID id) {
+        sendResetMessage(findById(id));
+    }
+
+    @Override
+    public void sendResetMessageByEmail(String email) {
+        sendResetMessage(findByEmail(email));
+    }
+
+    @SneakyThrows({IOException.class, MessagingException.class, TemplateException.class})
+    protected void sendResetMessage(User user) {
+        SecureRandom secureRandom = new SecureRandom();
+        byte[] secret = new byte[6];
+        secureRandom.nextBytes(secret);
+
+        String resetToken = Base64.getEncoder().encodeToString(secret);
+        String storageKey = String.format("resetToken:%s", resetToken);
+
+        redisTemplate.opsForValue().set(storageKey, user.getEmail(), 300000L, TimeUnit.MILLISECONDS);
+
+        emailService.sendTemplateMessage(user.getEmail(),
+                "noreply@attoly.com",
+                "Attoly Password Reset",
+                "password-reset.ftlh",
+                Map.of("resetToken", resetToken));
+    }
+
+    @Override
+    public void resetPasswordByToken(String resetToken, String newPassword) {
+        String storageKey = String.format("resetToken:%s", resetToken);
+
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(storageKey))) {
+            String email = (String) redisTemplate.opsForValue().get(storageKey);
+            User user = userRepository.findByEmail(email).orElseThrow(InvalidResetTokenException::new);
+
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+        } else {
+            throw new InvalidResetTokenException();
+        }
+    }
 }
