@@ -9,24 +9,87 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Central interface for all business operations related to user accounts.
+ */
 public interface UserService {
 
+    /**
+     * Loads all available users. This can lead to performance problems.
+     *
+     * @return The list of all users.
+     */
     List<User> findAll();
 
+    /**
+     * Loads all available users in individual pages.
+     *
+     * @param pageable The pagination settings.
+     * @return The requested page of users.
+     */
     Page<User> findAll(Pageable pageable);
 
+    /**
+     * Loads a user by its identifier.
+     *
+     * @param id The user's unique identifier.
+     * @return The loaded user.
+     * @throws EntityNotFoundException Thrown if the user cannot be found.
+     */
     User findById(UUID id) throws EntityNotFoundException;
 
+    /**
+     * Loads a user by its email.
+     *
+     * @param email The user's unique email.
+     * @return The loaded user.
+     * @throws EntityNotFoundException Thrown if the user cannot be found.
+     */
     User findByEmail(String email) throws EntityNotFoundException;
 
+    /**
+     * Checks whether a user exists using the identifier.
+     *
+     * @param id The user's unique identifier.
+     * @return True if the user exists, otherwise false.
+     */
     boolean existsById(UUID id);
 
+    /**
+     * Checks whether a user exists using the identifier.
+     *
+     * @param email The user's unique email.
+     * @return True if the user exists, otherwise false.
+     */
     boolean existsByEmail(String email);
 
+    /**
+     * Creates a new user account.
+     *
+     * @param payload The payload data from which the user is created.
+     * @return The newly created user.
+     * @throws EmailAlreadyInUseException Thrown if an account is already using the specified email.
+     */
     User create(UserCreationPayload payload) throws EmailAlreadyInUseException;
 
+    /**
+     * Partially updates an existing user based on the identifier.
+     *
+     * @param id      The user's unique identifier.
+     * @param payload Payload with the optional changes.
+     * @return The updated user.
+     * @throws EntityNotFoundException Thrown if the user cannot be found.
+     */
     User updateById(UUID id, UserUpdatePayload payload) throws EntityNotFoundException;
 
+    /**
+     * Partially updates an existing user based on the email.
+     *
+     * @param email   The user's unique email.
+     * @param payload Payload with the optional changes.
+     * @return The updated user.
+     * @throws EntityNotFoundException Thrown if the user cannot be found.
+     */
     User updateByEmail(String email, UserUpdatePayload payload) throws EntityNotFoundException;
 
     /**
@@ -73,21 +136,31 @@ public interface UserService {
      */
     User removeRoleByEmail(String email, String roleName) throws EntityNotFoundException, IllegalArgumentException;
 
+    /**
+     * Deletes a user account using the identifier.
+     *
+     * @param id The user's unique identifier.
+     * @throws EntityNotFoundException Thrown if the user cannot be found.
+     */
     void deleteById(UUID id) throws EntityNotFoundException;
 
+    /**
+     * Deletes a user account using the email.
+     *
+     * @param email The user's unique email.
+     * @throws EntityNotFoundException Thrown if the user cannot be found.
+     */
     void deleteByEmail(String email) throws EntityNotFoundException;
 
     /**
-     * Generates a verification token to verify a user or their email and sends the token.
-     * This option can be used to enable accounts.
+     * Generates and sends a verification token. Verification tokens are used to verify a user's account and email.
      *
      * @param id The identifier of the user for which a token should be sent.
      */
     void sendVerificationMessageById(UUID id);
 
     /**
-     * Generates a verification token to verify a user or their email and sends the token.
-     * This option can be used to enable accounts.
+     * Generates and sends a verification token. Verification tokens are used to verify a user's account and email.
      *
      * @param email The email of the user for which a token should be sent.
      */

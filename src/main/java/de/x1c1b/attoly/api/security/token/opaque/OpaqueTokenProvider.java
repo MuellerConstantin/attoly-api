@@ -35,7 +35,7 @@ public class OpaqueTokenProvider implements TokenProvider<RefreshToken> {
         secureRandom.nextBytes(secret);
 
         String rawToken = Base64.getEncoder().encodeToString(secret);
-        String storageKey = String.format("refreshToken:%s", rawToken);
+        String storageKey = String.format("RefreshToken:%s", rawToken);
 
         redisTemplate.opsForValue().set(storageKey, user.getUsername(),
                 tokenProperties.getRefresh().getExpiresIn(), TimeUnit.MILLISECONDS);
@@ -49,11 +49,11 @@ public class OpaqueTokenProvider implements TokenProvider<RefreshToken> {
 
     @Override
     public RefreshToken validateToken(String rawToken) throws InvalidTokenException {
-        String storageKey = String.format("refreshToken:%s", rawToken);
+        String storageKey = String.format("RefreshToken:%s", rawToken);
 
         if (Boolean.TRUE.equals(redisTemplate.hasKey(storageKey))) {
             String principal = (String) redisTemplate.opsForValue().get(storageKey);
-            long expiresIn = redisTemplate.getExpire(storageKey) * 1000;
+            long expiresIn = redisTemplate.getExpire(storageKey, TimeUnit.MILLISECONDS);
 
             return RefreshToken.builder()
                     .rawToken(rawToken)

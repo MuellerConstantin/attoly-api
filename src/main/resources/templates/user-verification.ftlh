@@ -25,7 +25,7 @@
     </tr>
     <tr>
         <td style="padding: 0px 10px 0px 10px;">
-            Token: <span style="font-weight: bold;">${verificationToken}</span>
+            Token: <span style="font-weight: bold;">${verificationToken.token}</span>
         </td>
     </tr>
     <tr>

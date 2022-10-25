@@ -1,5 +1,8 @@
 package de.x1c1b.attoly.api.domain;
 
+/**
+ * Thrown when an invalid reset token is used to reset the password.
+ */
 public class InvalidResetTokenException extends RuntimeException {
 
     public InvalidResetTokenException() {

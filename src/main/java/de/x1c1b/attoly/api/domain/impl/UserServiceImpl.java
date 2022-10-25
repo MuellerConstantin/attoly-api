@@ -1,18 +1,21 @@
 package de.x1c1b.attoly.api.domain.impl;
 
 import de.x1c1b.attoly.api.domain.*;
+import de.x1c1b.attoly.api.domain.model.ResetToken;
 import de.x1c1b.attoly.api.domain.model.Role;
 import de.x1c1b.attoly.api.domain.model.User;
+import de.x1c1b.attoly.api.domain.model.VerificationToken;
 import de.x1c1b.attoly.api.domain.payload.UserCreationPayload;
 import de.x1c1b.attoly.api.domain.payload.UserUpdatePayload;
+import de.x1c1b.attoly.api.repository.ResetTokenRepository;
 import de.x1c1b.attoly.api.repository.RoleRepository;
 import de.x1c1b.attoly.api.repository.UserRepository;
+import de.x1c1b.attoly.api.repository.VerificationTokenRepository;
 import freemarker.template.TemplateException;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +24,6 @@ import javax.mail.MessagingException;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,19 +31,24 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final ResetTokenRepository resetTokenRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
-    private final RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
-                           PasswordEncoder passwordEncoder, EmailService emailService,
-                           RedisTemplate<String, Object> redisTemplate) {
+    public UserServiceImpl(UserRepository userRepository,
+                           RoleRepository roleRepository,
+                           ResetTokenRepository resetTokenRepository,
+                           VerificationTokenRepository verificationTokenRepository,
+                           PasswordEncoder passwordEncoder,
+                           EmailService emailService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.resetTokenRepository = resetTokenRepository;
+        this.verificationTokenRepository = verificationTokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
-        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -183,34 +190,35 @@ public class UserServiceImpl implements UserService {
     protected void sendVerificationMessage(User user) {
         SecureRandom secureRandom = new SecureRandom();
         byte[] secret = new byte[6];
+
         secureRandom.nextBytes(secret);
+        String token = Base64.getEncoder().encodeToString(secret);
 
-        String verificationToken = Base64.getEncoder().encodeToString(secret);
-        String storageKey = String.format("verificationToken:%s", verificationToken);
+        VerificationToken verificationToken = VerificationToken.builder()
+                .token(token)
+                .principal(user.getEmail())
+                .build();
 
-        redisTemplate.opsForValue().set(storageKey, user.getEmail(), 300000L, TimeUnit.MILLISECONDS);
+        VerificationToken newVerificationToken = verificationTokenRepository.save(verificationToken);
 
         emailService.sendTemplateMessage(user.getEmail(),
                 "noreply@attoly.com",
                 "Attoly Account Verification",
                 "user-verification.ftlh",
-                Map.of("verificationToken", verificationToken));
+                Map.of("verificationToken", newVerificationToken));
     }
 
     @Override
     @Transactional
-    public void verifyByToken(String verificationToken) {
-        String storageKey = String.format("verificationToken:%s", verificationToken);
+    public void verifyByToken(String token) {
+        VerificationToken verificationToken = verificationTokenRepository.findById(token)
+                .orElseThrow(InvalidVerificationTokenException::new);
 
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(storageKey))) {
-            String email = (String) redisTemplate.opsForValue().get(storageKey);
-            User user = userRepository.findByEmail(email).orElseThrow(InvalidVerificationTokenException::new);
+        User user = userRepository.findByEmail(verificationToken.getPrincipal())
+                .orElseThrow(InvalidVerificationTokenException::new);
 
-            user.setEmailVerified(true);
-            userRepository.save(user);
-        } else {
-            throw new InvalidVerificationTokenException();
-        }
+        user.setEmailVerified(true);
+        userRepository.save(user);
     }
 
     @Override
@@ -227,32 +235,33 @@ public class UserServiceImpl implements UserService {
     protected void sendResetMessage(User user) {
         SecureRandom secureRandom = new SecureRandom();
         byte[] secret = new byte[6];
+
         secureRandom.nextBytes(secret);
+        String token = Base64.getEncoder().encodeToString(secret);
 
-        String resetToken = Base64.getEncoder().encodeToString(secret);
-        String storageKey = String.format("resetToken:%s", resetToken);
+        ResetToken resetToken = ResetToken.builder()
+                .token(token)
+                .principal(user.getEmail())
+                .build();
 
-        redisTemplate.opsForValue().set(storageKey, user.getEmail(), 300000L, TimeUnit.MILLISECONDS);
+        ResetToken newResetToken = resetTokenRepository.save(resetToken);
 
         emailService.sendTemplateMessage(user.getEmail(),
                 "noreply@attoly.com",
                 "Attoly Password Reset",
                 "password-reset.ftlh",
-                Map.of("resetToken", resetToken));
+                Map.of("resetToken", newResetToken));
     }
 
     @Override
-    public void resetPasswordByToken(String resetToken, String newPassword) {
-        String storageKey = String.format("resetToken:%s", resetToken);
+    public void resetPasswordByToken(String token, String newPassword) {
+        ResetToken resetToken = resetTokenRepository.findById(token)
+                .orElseThrow(InvalidVerificationTokenException::new);
 
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(storageKey))) {
-            String email = (String) redisTemplate.opsForValue().get(storageKey);
-            User user = userRepository.findByEmail(email).orElseThrow(InvalidResetTokenException::new);
+        User user = userRepository.findByEmail(resetToken.getPrincipal())
+                .orElseThrow(InvalidVerificationTokenException::new);
 
-            user.setPassword(passwordEncoder.encode(newPassword));
-            userRepository.save(user);
-        } else {
-            throw new InvalidResetTokenException();
-        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }

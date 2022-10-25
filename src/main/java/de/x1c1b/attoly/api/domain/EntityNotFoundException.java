@@ -1,5 +1,8 @@
 package de.x1c1b.attoly.api.domain;
 
+/**
+ * Thrown when an entity cannot be found. The entity no longer exists or never existed.
+ */
 public class EntityNotFoundException extends RuntimeException {
 
     public EntityNotFoundException() {

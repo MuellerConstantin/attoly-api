@@ -2,6 +2,9 @@ package de.x1c1b.attoly.api.domain;
 
 import lombok.Getter;
 
+/**
+ * Thrown when trying to use an email that is already being used by another user account.
+ */
 @Getter
 public class EmailAlreadyInUseException extends RuntimeException {
 
