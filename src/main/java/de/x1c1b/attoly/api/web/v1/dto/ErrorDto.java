@@ -28,6 +28,11 @@ public class ErrorDto {
     public static class ErrorDtoBuilder {
 
         public ErrorDtoBuilder detail(Object detail) {
+            if (!this.details$set) {
+                this.details$value = new ArrayList<>();
+                this.details$set = true;
+            }
+
             this.details$value.add(detail);
             return this;
         }
