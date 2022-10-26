@@ -83,7 +83,7 @@ public class SecurityConfig {
         authorizeRequests(httpSecurity);
 
         httpSecurity.apply(new AjaxAuthenticationProcessingFilterConfigurer())
-                .requestMatcher(new AntPathRequestMatcher("/v1/auth/token", HttpMethod.POST.name()))
+                .requestMatcher(new AntPathRequestMatcher("/api/v1/auth/token", HttpMethod.POST.name()))
                 .authenticationFailureHandler(authenticationFailureHandler)
                 .authenticationSuccessHandler(authenticationSuccessHandler)
                 .usernameField("email")
@@ -91,7 +91,7 @@ public class SecurityConfig {
                 .objectMapper(objectMapper)
                 .and()
                 .apply(new RefreshTokenAuthenticationProcessingFilterConfigurer())
-                .requestMatcher(new AntPathRequestMatcher("/v1/auth/refresh", HttpMethod.POST.name()))
+                .requestMatcher(new AntPathRequestMatcher("/api/v1/auth/refresh", HttpMethod.POST.name()))
                 .authenticationFailureHandler(authenticationFailureHandler)
                 .authenticationSuccessHandler(authenticationSuccessHandler)
                 .objectMapper(objectMapper)
@@ -150,11 +150,11 @@ public class SecurityConfig {
 
     protected void authorizeRequests(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/v1/users", "/v1/user/verify", "/v1/user/reset")
+                .antMatchers(HttpMethod.POST, "/api/v1/users", "/api/v1/user/verify", "/api/v1/user/reset")
                 .permitAll()
-                .antMatchers(HttpMethod.GET, "/v1/user/verify", "/v1/user/reset")
+                .antMatchers(HttpMethod.GET, "/api/v1/user/verify", "/api/v1/user/reset")
                 .permitAll()
-                .antMatchers(HttpMethod.POST, "/v1/auth/token", "/v1/auth/refresh")
+                .antMatchers(HttpMethod.POST, "/api/v1/auth/token", "/api/v1/auth/refresh")
                 .permitAll()
                 .anyRequest()
                 .authenticated();
