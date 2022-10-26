@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -71,11 +72,13 @@ public class ShortcutServiceImpl implements ShortcutService {
     }
 
     @Override
+    @Transactional
     public void deleteById(UUID id) throws EntityNotFoundException {
         delete(findById(id));
     }
 
     @Override
+    @Transactional
     public void deleteByTag(String tag) throws EntityNotFoundException {
         delete(findByTag(tag));
     }

@@ -20,30 +20,34 @@ import java.util.stream.Collectors;
 @Builder
 public class Principal implements UserDetails {
 
-    private String email;
-    private String password;
-    private boolean enabled;
+    private User user;
 
     @Builder.Default
     private Set<GrantedAuthority> authorities = new HashSet<>();
 
     public Principal(User user) {
-        this.email = user.getEmail();
-        this.password = user.getPassword();
-        this.enabled = user.isEmailVerified();
-        this.authorities = user.getRoles().stream()
+        this.user = user;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return user.getRoles().stream()
                 .map((role) -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toSet());
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+    public String getUsername() {
+        return user.getEmail();
+    }
+
+    public String getEmail() {
+        return user.getEmail();
     }
 
     @Override
-    public String getUsername() {
-        return getEmail();
+    public String getPassword() {
+        return user.getPassword();
     }
 
     @Override
@@ -63,6 +67,6 @@ public class Principal implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return user.isEmailVerified();
     }
 }
