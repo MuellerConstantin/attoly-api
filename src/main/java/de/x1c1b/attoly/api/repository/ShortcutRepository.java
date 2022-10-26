@@ -23,7 +23,11 @@ public interface ShortcutRepository extends BaseRepository<Shortcut, UUID> {
 
     @Transactional(readOnly = true)
     @Query("SELECT s FROM Shortcut s WHERE s.deleted = false AND s.createdBy.id = ?1")
-    Page<Shortcut> findByCreatorId(UUID creatorId, Pageable pageable);
+    Page<Shortcut> findByOwnership(UUID creatorId, Pageable pageable);
+
+    @Transactional(readOnly = true)
+    @Query("SELECT s FROM Shortcut s WHERE s.deleted = false AND s.createdBy.email = ?1")
+    Page<Shortcut> findByOwnership(String email, Pageable pageable);
 
     @Modifying
     @Query("UPDATE Shortcut s SET s.deleted = true WHERE s.createdBy IS NULL AND s.createdAt < ?1")
