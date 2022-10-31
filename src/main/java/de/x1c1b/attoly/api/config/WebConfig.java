@@ -8,6 +8,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -24,7 +25,7 @@ public class WebConfig implements WebMvcConfigurer {
 
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
 
-        messageSource.setBasename("classpath:message/validation");
+        messageSource.setBasename("classpath:messages/validation");
         messageSource.setDefaultEncoding("UTF-8");
 
         return messageSource;
@@ -42,5 +43,16 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public Validator getValidator() {
         return localValidatorFactoryBean(reloadableResourceBundleMessageSource());
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/site/**")
+                .addResourceLocations("classpath:/META-INF/resources/",
+                        "classpath:/resources/",
+                        "classpath:/static/",
+                        "classpath:/public/",
+                        "classpath:/site/")
+                .setCachePeriod(5000);
     }
 }

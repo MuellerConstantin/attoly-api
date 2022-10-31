@@ -1,0 +1,775 @@
+openapi: "3.0.1"
+info:
+  title: Attoly
+  version: v1
+  description: |
+    This is the backend of the Attoly URL shortener platform, responsible for
+    data storage and exchange. Attoly allows creating short links as aliases
+    for long URLs, which are easier to embed in websites, chats and documents.
+    
+    # Introduction
+    This is the official documentation of the Attoly RESTful API. Based on
+    simple REST principles, the Attoly RESTful API endpoints return JSON
+    metadata about created and managed short link URL mappings aka shortcuts.
+    This API also provides access to user related data, like account information
+    and your personal shortcut library.
+    
+    # Overview
+    The following settings and techniques apply to the entire Attoly RESTful API.
+    
+    ## HTTP Verbs
+    There are a couple of possible HTTP verbs used for the RESTful API. The following
+    table clearly clarifies their use and meaning within the API.
+    
+    | Verb         | Description                                                       |
+    |--------------|-------------------------------------------------------------------|
+    | HEAD         | Can be ran against any resource to get just the HTTP header info. |
+    | GET          | Used for retrieving resources.                                    |
+    | POST         | Used for creating resources.                                      |
+    | PATCH        | Used for updating resources partially.                            |
+    | PUT          | Used for replacing resources or collections.                      |
+    | DELETE       | Used for deleting resources.                                      |
+    
+    ## Timestamps
+    Timestamps are returned in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+    format with the time zone offset of the server: `YYYY-MM-DDTHH:mm:ss.sss`.
+    The time stamp is always specified with the offset addition in the server's
+    time zone. Despite the specification of the fractions of the second, inaccuracies
+    can occur with the timestamps in the millisecond range.
+    
+    ## Pagination
+    Some of the queries read from a larger subset of the data set. In these cases,
+    pagination is used to avoid performance problems. In general, the pagination
+    behaviour is controlled by the query parameters `page` and `perPage`. You can
+    specify the page offset with the `page` parameter. For some resources, its is
+    also possible set a custom page size with the `perPage` parameter.
+    
+    ---
+    **NOTE**
+
+    The offset numbering is zero-based. Omitting the offset parameter sets the
+    requested page to zero by default and returns the first X elements of a
+    collection. Requests that return multiple items will be paginated to 25
+    items by default.
+    ---
+    
+    ## Authentication
+    Some of the endpoints require authentication to function properly. This applies
+    in principle but not exclusively to all user account-related operations.
+    Authentication is achieved by a stateless token based authentication mechanism
+    that is using the *HTTP Bearer Authentication* scheme.
+    
+    ```
+    Authorization: Bearer <ACCESS TOKEN>
+    ```
+    
+    So-called JWT access tokens are used, which can be requested once in exchange
+    for credentials and are now used for authentication instead of email and
+    password. There are also opaque refresh tokens that can be used to generate
+    new access tokens without having to resend the credentials. This is necessary
+    to stay logged in for a longer period of time, as the access tokens have a
+    relatively short lifespan.
+    
+    <SecurityDefinitions />
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    name: "0x1C1B"
+    url: https://github.com/0x1C1B
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Development Server
+tags:
+  - name: User
+    description: Everything about user and account management.
+  - name: Auth
+    description: Allows the client to authenticate themselves.
+  - name: Shortcut
+    description: Allows shortcuts to be managed.
+paths:
+  /users:
+    post:
+      tags:
+        - User
+      summary: Creates a new user.
+      description: >
+        Creates a new user account. The user account is irretrievably linked
+        to the stored email and must first be activated by verifying the email.
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrationDto"
+            example:
+              email: m.mustermann@localhost.com
+              password: Abc123
+      responses:
+        201:
+          description: Successfully created the new user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+              example:
+                id: 3377cf8f-da29-4aa7-9036-91951b8fce87
+                email: m.mustermann@localhost.com
+                createdAt: 2022-06-27T15:18:16.706776+02:00
+        422:
+          $ref: "#/components/responses/UnprocessableEntity"
+  /users/{id}:
+    patch:
+      tags:
+        - User
+      summary: Updates a single user.
+      description: >
+        Updates a user. Without higher rights, only your own user can be updated.
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the user.
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 3377cf8f-da29-4aa7-9036-91951b8fce87
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdateDto"
+            example:
+              password: Def456
+      responses:
+        200:
+          description: Successfully updated the selected user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+              example:
+                id: 3377cf8f-da29-4aa7-9036-91951b8fce87
+                email: m.mustermann@localhost.com
+                createdAt: 2022-06-27T15:18:16.706776+02:00
+        422:
+          $ref: "#/components/responses/UnprocessableEntity"
+        403:
+          $ref: "#/components/responses/AccessDenied"
+        404:
+          $ref: "#/components/responses/NotFound"
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+    delete:
+      tags:
+        - User
+      summary: Deletes a single user.
+      description: >
+        Allows deleting a user account. Even if the path is generic, it is
+        only possible to delete your own user without higher rights due to
+        the security policy. Warning, the deletion is immediate executed
+        and irreversible.
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the user.
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 3377cf8f-da29-4aa7-9036-91951b8fce87
+      responses:
+        204:
+          description: Successfully deleted the selected user.
+        403:
+          $ref: "#/components/responses/AccessDenied"
+        404:
+          $ref: "#/components/responses/NotFound"
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+  /user/me:
+    get:
+      tags:
+        - User
+      summary: Retrieves the currently authenticated user.
+      description: >
+        Returns the account details of the currently authenticated user.
+        Only the account information of your own authenticated account can be queried.
+      responses:
+        200:
+          description: Successfully fetched the authenticated user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+              example:
+                id: 3377cf8f-da29-4aa7-9036-91951b8fce87
+                email: m.mustermann@localhost.com
+                createdAt: 2022-06-27T15:18:16.706776+02:00
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+  /user/verify:
+    post:
+      tags:
+        - User
+      summary: Activates a user by verifying email.
+      description: >
+        Activates a user by verifying email. Without this verification, the user
+        cannot be logged in and the account cannot be used. The verification is
+        carried out by sending a verification token to the user via email
+        beforehand and the user must include this in the request.
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserVerificationDto"
+            example:
+              verificationToken: vT6Nafaz
+      responses:
+        204:
+          description: Successfully verified and enabled the user account.
+        422:
+          $ref: "#/components/responses/UnprocessableEntity"
+        410:
+          $ref: "#/components/responses/Gone"
+    get:
+      tags:
+        - User
+      summary: Requests a verification token via email.
+      description: >
+        Causes a verification token to be sent via email. This token is
+        used to verify the email and activate the account.
+      security: [ ]
+      parameters:
+        - name: email
+          in: query
+          description: Email of the user for whom a verification token should be sent.
+          required: true
+          schema:
+            type: string
+            format: email
+            example: m.mustermann@localhost.com
+      responses:
+        204:
+          description: Successfully sent a verification token.
+        404:
+          $ref: "#/components/responses/NotFound"
+  /user/reset:
+    post:
+      tags:
+        - User
+      summary: Resets a user's password.
+      description: >
+        Resets a user's password using a reset token. This variant can be
+        used to recover an account for which the password has been forgotten.
+        A reset token is sent to the user via email and must be included in
+        the request along with the new password.
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserResetDto"
+            example:
+              resetToken: WlDXlr/b
+              password: Def456
+      responses:
+        204:
+          description: Successfully reset the user's password.
+        422:
+          $ref: "#/components/responses/UnprocessableEntity"
+        410:
+          $ref: "#/components/responses/Gone"
+    get:
+      tags:
+        - User
+      summary: Requests a reset token via email.
+      description: >
+        Causes a reset token to be sent to the user via email. This
+        sent token can be used to reset the password.
+      security: [ ]
+      parameters:
+        - name: email
+          in: query
+          description: Email of the user for whom a reset token should be sent.
+          required: true
+          schema:
+            type: string
+            format: email
+            example: m.mustermann@localhost.com
+      responses:
+        204:
+          description: Successfully sent a reset token.
+        404:
+          $ref: "#/components/responses/NotFound"
+  /auth/token:
+    post:
+      tags:
+        - Auth
+      summary: Signs in a user.
+      description: >
+        Signs in a user stateless by generating a JWT access token and an opaque
+        refresh token in exchange for the credentials. The access token can be
+        used in all further requests for authentication.
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CredentialsDto"
+            example:
+              email: m.mustermann@localhost.com
+              password: Abc123
+      responses:
+        200:
+          description: Successfully signed in the user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenDto"
+              example:
+                type: Bearer
+                principal: m.mustermann@localhost.com
+                refreshToken: Z2xFlZIH8mw32hXYhmidIA==
+                accessToken: >
+                  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXhpMTIzIiwiaWF0IjoxNjU2MzM1ODg2LCJleHAiOjE2NTYzMzY0ODZ9.p4KjWLKOsgly
+                  J4Dqme3fPAkqtsf0jsksPr6Y-0pZe3hPYUdWz18eKius8fmijsQFf-5lxVM4kQLKBI4tmBQ3Dw
+                accessExpiresIn: 300000
+                refreshExpiresIn: 7200000
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+  /auth/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Renews the user's authentication session.
+      description: >
+        Refreshes a user's stateless session by requesting a new access token in
+        exchange for a valid refresh token. Despite the short-lived access token,
+        it is possible for a user to remain logged in for a longer period of time
+        by repeatedly requesting new access tokens.
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshSessionDto"
+            example:
+              refreshToken: /QwSXxYuhkPmdwqSZQ4wjQ==
+      responses:
+        200:
+          description: Successfully renewed the user's session.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenDto"
+              example:
+                type: Bearer
+                principal: m.mustermann@localhost.com
+                refreshToken: Z2xFlZIH8mw32hXYhmidIA==
+                accessToken: >
+                  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYXhpMTIzIiwiaWF0IjoxNjU2MzM1ODg2LCJleHAiOjE2NTYzMzY0ODZ9.p4KjWLKOsgly
+                  J4Dqme3fPAkqtsf0jsksPr6Y-0pZe3hPYUdWz18eKius8fmijsQFf-5lxVM4kQLKBI4tmBQ3Dw
+                accessExpiresIn: 300000
+                refreshExpiresIn: 7200000
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+  /shortcuts:
+    post:
+      tags:
+        - Shortcut
+      summary: Creates a new shortcut.
+      description: >
+        Creates a new shortcut for a URL to be abbreviated. Access can be
+        authenticated, in which case the shortcut is assigned to the user,
+        or unauthenticated, in which case an anonymous shortcut is created.
+        While user shortcuts are permanently available, anonymous shortcuts
+        are deleted after some time.
+      security:
+        - { }
+        - jwt: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShortcutCreationDto"
+            example:
+              url: http://localhost:8080
+      responses:
+        201:
+          description: Successfully created the new shortcut.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShortcutDto"
+              example:
+                id: 97aeee91-1fd4-4228-9c76-33564188e6fd
+                tag: hluEinvI
+                url: http://localhost:8080
+                createdAt: 2022-06-27T15:18:16.706776+02:00
+        422:
+          $ref: "#/components/responses/UnprocessableEntity"
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+  /shortcuts/{tag}:
+    get:
+      tags:
+        - Shortcut
+      summary: Resolves a shortcut.
+      description: >
+        Resolves a shortcut based on its short link or tag.
+      security: [ ]
+      parameters:
+        - name: tag
+          in: path
+          description: Unique tag of the shortcut.
+          required: true
+          schema:
+            type: string
+            example: hluEinvI
+      responses:
+        200:
+          description: Successfully resolved the shortcut.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShortcutDto"
+              example:
+                id: 97aeee91-1fd4-4228-9c76-33564188e6fd
+                tag: hluEinvI
+                url: http://localhost:8080
+                createdAt: 2022-06-27T15:18:16.706776+02:00
+        404:
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags:
+        - Shortcut
+      summary: Deletes a single shortcut.
+      description: >
+        Deletes a personal shortcut based on its tag. Only your own personal
+        shortcuts can be deleted. Anonymous shortcuts cannot be deleted and
+        will be automatically removed after some time.
+      parameters:
+        - name: tag
+          in: path
+          description: Unique tag of the shortcut.
+          required: true
+          schema:
+            type: string
+            example: hluEinvI
+      responses:
+        204:
+          description: Successfully deleted the selected shortcut.
+        403:
+          $ref: "#/components/responses/AccessDenied"
+        404:
+          $ref: "#/components/responses/NotFound"
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+  /user/me/shortcuts:
+    get:
+      tags:
+        - Shortcut
+      summary: Retrieves all shortcuts of current user.
+      description: >
+        Loads the list of all personal shortcuts of the currently authenticated
+        user. The result is returned in pages because of the possible size.
+      parameters:
+        - name: page
+          in: query
+          description: Zero based index of page to load.
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - name: perPage
+          in: query
+          description: Number of elements per page.
+          required: false
+          schema:
+            type: integer
+            example: 25
+      responses:
+        200:
+          description: Successfully fetched all available shortcuts.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShortcutPageDto"
+              example:
+                page: 0
+                perPage: 25
+                totalElements: 1
+                totalPages: 1
+                content:
+                  - id: 97aeee91-1fd4-4228-9c76-33564188e6fd
+                    tag: hluEinvI
+                    url: http://localhost:8080
+                    createdAt: 2022-06-27T15:18:16.706776+02:00
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+components:
+  schemas:
+    ErrorDto:
+      type: object
+      properties:
+        message:
+          type: string
+          description: The human-readable error message.
+        status:
+          type: integer
+          description: The HTTP status code number.
+        timestamp:
+          type: string
+          format: date-time
+          description: The time the error occurred.
+        path:
+          type: string
+          description: The endpoint path on which the error occurred.
+        details:
+          description: Further information on the error or its cause.
+          type: array
+          items:
+            type: object
+      required:
+        - message
+        - status
+        - timestamp
+        - path
+    PageDto:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Zero-based index of the current page.
+        perPage:
+          type: integer
+          description: Number of elements per page.
+        totalElements:
+          type: integer
+          description: Number of all elements of the collection.
+        totalPages:
+          type: integer
+          description: Number of all pages into which the collection was divided.
+      required:
+        - page
+        - perPage
+        - totalElements
+        - totalPages
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of user.
+        email:
+          type: string
+          format: email
+          description: Unique email to contact.
+        createdAt:
+          type: string
+          format: date-time
+          description: Time of creation of the user account.
+      required:
+        - id
+        - email
+        - createdAt
+    RegistrationDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: Unique email to contact.
+          maxLength: 1024
+        password:
+          type: string
+          description: The user's password.
+          maxLength: 256
+          pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,100}$
+      required:
+        - email
+        - password
+    UserUpdateDto:
+      type: object
+      properties:
+        password:
+          type: string
+          description: The user's password.
+          maxLength: 256
+          pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$
+    UserVerificationDto:
+      type: object
+      properties:
+        verificationToken:
+          type: string
+          description: A valid verification token.
+      required:
+        - verificationToken
+    UserResetDto:
+      type: object
+      properties:
+        resetToken:
+          type: string
+          description: A valid reset token.
+        password:
+          type: string
+          description: The user's password.
+          maxLength: 256
+          pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$
+      required:
+        - resetToken
+        - password
+    CredentialsDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: The email of the user to log in.
+        password:
+          type: string
+          description: The user's password.
+      required:
+        - email
+        - password
+    RefreshSessionDto:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          description: A valid refresh token.
+      required:
+        - refreshToken
+    TokenDto:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of returned token.
+        principal:
+          type: string
+          format: username
+          description: The authenticated user.
+        accessToken:
+          type: string
+          description: The actual access token.
+        accessExpiresIn:
+          type: integer
+          description: Number of milliseconds for which the token is still valid.
+        refreshToken:
+          type: string
+          description: The actual refresh token.
+        refreshExpiresIn:
+          type: integer
+          description: Number of milliseconds for which the token is still valid.
+      required:
+        - type
+        - principal
+        - accessToken
+        - refreshToken
+        - accessExpiresIn
+        - refreshExpiresIn
+    ShortcutDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of shortcut.
+        tag:
+          type: string
+          description: Unique tag which is used as a short link.
+        url:
+          type: string
+          format: url
+          description: The actual URL to resolve.
+        createdAt:
+          type: string
+          format: date-time
+          description: Time at which the shortcut was created.
+      required:
+        - id
+        - tag
+        - url
+        - createdAt
+    ShortcutPageDto:
+      allOf:
+        - $ref: "#/components/schemas/PageDto"
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/ShortcutDto"
+          required:
+            - content
+    ShortcutCreationDto:
+      type: object
+      properties:
+        url:
+          type: string
+          format: url
+          description: The actual URL to resolve.
+      required:
+        - tag
+        - url
+  responses:
+    InternalError:
+      description: An internal error has occurred on the server side.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDto"
+    NotFound:
+      description: The specified resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDto"
+    UnprocessableEntity:
+      description: User input validation failed.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDto"
+    AccessDenied:
+      description: Access was denied due to insufficient rights.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDto"
+    Unauthenticated:
+      description: The access must be authenticated.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDto"
+    Conflict:
+      description: There was a resource conflict.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDto"
+    Gone:
+      description: The original resource was moved.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDto"
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: jwt
+security:
+  - jwt: [ ]
