@@ -2,11 +2,20 @@
 
 > Data management and programming interface for the Attoly URL shortener platform.
 
+![Logo](docs/img/banner.svg)
+
+![](https://img.shields.io/badge/dynamic/xml?color=red&label=Java&query=%2F%2A%5Blocal-name%28%29%3D%27project%27%5D%2F%2A%5Blocal-name%28%29%3D%27properties%27%5D%2F%2A%5Blocal-name%28%29%3D%27java.version%27%5D&url=https%3A%2F%2Fraw.githubusercontent.com%2F0x1C1B%2Ftaskcare-service%2Fmaster%2Fpom.xml&logo=openjdk)
+![](https://img.shields.io/badge/dynamic/xml?color=green&label=Spring%20Boot&query=%2F%2A%5Blocal-name%28%29%3D%27project%27%5D%2F%2A%5Blocal-name%28%29%3D%27parent%27%5D%2F%2A%5Blocal-name%28%29%3D%27version%27%5D&url=https%3A%2F%2Fraw.githubusercontent.com%2F0x1C1B%2Ftaskcare-service%2Fmaster%2Fpom.xml&logo=spring-boot)
+![](https://img.shields.io/badge/ORM-Hibernate-blue?logo=hibernate)
+![](https://img.shields.io/badge/Database-MySQL-blue?logo=mysql)
+![](https://img.shields.io/badge/Database-Redis-red?logo=redis)
+![](https://img.shields.io/badge/OpenAPI-3.0.1-green?logo=openapi-initiative)
+
 ## Table of contents
 
 - [Introduction](#introduction)
 - [License](#license)
-    - [Forbidden](#forbidden)
+  - [Forbidden](#forbidden)
 
 ## Introduction
 

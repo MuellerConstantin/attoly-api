@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-    <title>Attoly API Documentation</title>
+    <title>Attoly API Documentation (v1)</title>
+
+    <link rel="icon" href="/site/favicon.svg" type="image/svg+xml">
 
     <style>
         body {
@@ -17,7 +19,22 @@
 <div id="redoc"></div>
 <script src="/site/js/redoc.standalone.js"></script>
 <script>
-    Redoc.init('/site/docs/v1/openapi.yml', {}, document.getElementById('redoc'));
+    Redoc.init('/site/docs/v1/openapi.yml', {
+        theme: {
+            colors: {
+                primary: {
+                    main: "#0ea5e9",
+                    light: "#7dd3fc",
+                    dark: "#0369a1"
+                },
+                secondary: {
+                    main: "#f97316",
+                    light: "#fdba74",
+                    dark: "#c2410c"
+                }
+            }
+        }
+    }, document.getElementById('redoc'));
 </script>
 </body>
 </html>

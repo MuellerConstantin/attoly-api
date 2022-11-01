@@ -2,6 +2,9 @@ openapi: "3.0.1"
 info:
   title: Attoly
   version: v1
+  x-logo:
+    url: /site/img/banner.svg
+    altText: Attoly Logo
   description: |
     This is the backend of the Attoly URL shortener platform, responsible for
     data storage and exchange. Attoly allows creating short links as aliases
