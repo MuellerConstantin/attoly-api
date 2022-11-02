@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -41,6 +42,7 @@ public class ShortcutController {
 
     @DeleteMapping("/shortcuts/{tag}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ROLE_ADMIN') || @domainMethodSecurityEvaluator.isShortcutOwnerOf(#tag)")
     void deleteById(@PathVariable("tag") String tag) {
         shortcutService.deleteByTag(tag);
     }

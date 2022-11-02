@@ -10,6 +10,7 @@ import de.x1c1b.attoly.api.web.v1.dto.*;
 import de.x1c1b.attoly.api.web.v1.dto.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -38,6 +39,7 @@ public class UserController {
     }
 
     @PatchMapping("/users/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') || @domainMethodSecurityEvaluator.isAccountOwnerOf(#id)")
     UserDto updateById(@PathVariable("id") UUID id, @RequestBody @Valid UserUpdateDto dto) {
         UserUpdatePayload payload = userMapper.mapToPayload(dto);
         User user = userService.updateById(id, payload);
@@ -47,6 +49,7 @@ public class UserController {
 
     @DeleteMapping("/users/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ROLE_ADMIN') || @domainMethodSecurityEvaluator.isAccountOwnerOf(#id)")
     void deleteById(@PathVariable("id") UUID id) {
         userService.deleteById(id);
     }
