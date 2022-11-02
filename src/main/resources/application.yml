@@ -1,6 +1,6 @@
 spring:
   application:
-    name: taskcare-service
+    name: attoly-api
   web:
     locale: en_EN
     locale-resolver: fixed
