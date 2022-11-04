@@ -122,6 +122,8 @@ public class SecurityConfig {
         httpSecurity.cors().configurationSource(request -> {
             CorsConfiguration configuration = new CorsConfiguration();
             configuration.setAllowedOrigins(List.of("*"));
+            configuration.setAllowedMethods(List.of("*"));
+            configuration.setAllowedHeaders(List.of("*"));
 
             return configuration;
         });
