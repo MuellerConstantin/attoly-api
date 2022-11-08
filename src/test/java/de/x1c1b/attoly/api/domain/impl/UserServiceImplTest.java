@@ -1,6 +1,5 @@
 package de.x1c1b.attoly.api.domain.impl;
 
-import de.x1c1b.attoly.api.domain.model.Role;
 import de.x1c1b.attoly.api.domain.model.User;
 import de.x1c1b.attoly.api.repository.RoleRepository;
 import de.x1c1b.attoly.api.repository.UserRepository;
@@ -35,20 +34,10 @@ class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-    private Role sampleRole;
     private User sampleUser;
 
     @BeforeEach
     void setUp() {
-        this.sampleRole = Role.builder()
-                .id(UUID.randomUUID())
-                .createdAt(Instant.now())
-                .lastModifiedAt(Instant.now())
-                .version(0)
-                .deleted(false)
-                .name("ROLE_USER")
-                .build();
-
         this.sampleUser = User.builder()
                 .id(UUID.randomUUID())
                 .createdAt(Instant.now())
@@ -80,18 +69,5 @@ class UserServiceImplTest {
         verify(userRepository, times(1)).findByEmail(eq(sampleUser.getEmail()));
 
         assertEquals(sampleUser.getEmail(), user.getEmail());
-    }
-
-    @Test
-    void assignRolesByEmail() {
-        when(userRepository.findByEmail(eq(sampleUser.getEmail()))).thenReturn(Optional.of(sampleUser));
-        when(roleRepository.findByName(eq(sampleRole.getName()))).thenReturn(Optional.of(sampleRole));
-        when(userRepository.save(any())).thenReturn(sampleUser);
-
-        User user = userService.assignRolesByEmail(sampleUser.getEmail(), sampleRole.getName());
-
-        verify(userRepository, times(1)).findByEmail(eq(sampleUser.getEmail()));
-
-        assertEquals(1, user.getRoles().size());
     }
 }

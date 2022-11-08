@@ -1,9 +1,6 @@
 package de.x1c1b.attoly.api.web.v1.error;
 
-import de.x1c1b.attoly.api.domain.EmailAlreadyInUseException;
-import de.x1c1b.attoly.api.domain.EntityNotFoundException;
-import de.x1c1b.attoly.api.domain.InvalidResetTokenException;
-import de.x1c1b.attoly.api.domain.InvalidVerificationTokenException;
+import de.x1c1b.attoly.api.domain.exception.*;
 import de.x1c1b.attoly.api.web.v1.dto.ErrorDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -270,8 +267,8 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(EmailAlreadyInUseException.class)
-    public ResponseEntity<Object> handleEmailAlreadyInUser(EmailAlreadyInUseException exc,
-                                                           WebRequest request) {
+    public ResponseEntity<Object> handleEmailAlreadyInUse(EmailAlreadyInUseException exc,
+                                                          WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
                 .message("The validation of the request body failed on a semantic level.")
@@ -280,6 +277,23 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
                 .detail(new ValidationErrorDetails("email",
                         messageSource.getMessage("de.x1c1b.attoly.api.web.v1.dto.validation.UniqueEmail.message",
+                                new Object[]{}, LocaleContextHolder.getLocale())))
+                .build();
+
+        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
+    }
+
+    @ExceptionHandler(RoleNameAlreadyInUseException.class)
+    public ResponseEntity<Object> handleRoleNameAlreadyInUse(RoleNameAlreadyInUseException exc,
+                                                             WebRequest request) {
+
+        ErrorDto dto = ErrorDto.builder()
+                .message("The validation of the request body failed on a semantic level.")
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .detail(new ValidationErrorDetails("name",
+                        messageSource.getMessage("de.x1c1b.attoly.api.web.v1.dto.validation.UniqueName.message",
                                 new Object[]{}, LocaleContextHolder.getLocale())))
                 .build();
 

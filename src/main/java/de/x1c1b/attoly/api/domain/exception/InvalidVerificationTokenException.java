@@ -1,4 +1,4 @@
-package de.x1c1b.attoly.api.domain;
+package de.x1c1b.attoly.api.domain.exception;
 
 /**
  * Thrown when an invalid verification token is used to activate a user account or verify an email address.

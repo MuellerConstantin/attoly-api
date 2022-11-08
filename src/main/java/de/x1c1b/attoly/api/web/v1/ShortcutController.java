@@ -42,7 +42,7 @@ public class ShortcutController {
 
     @DeleteMapping("/shortcuts/{tag}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ROLE_ADMIN') || @domainMethodSecurityEvaluator.isShortcutOwnerOf(#tag)")
+    @PreAuthorize("@domainMethodSecurityEvaluator.isShortcutOwnerOf(#tag)")
     void deleteById(@PathVariable("tag") String tag) {
         shortcutService.deleteByTag(tag);
     }

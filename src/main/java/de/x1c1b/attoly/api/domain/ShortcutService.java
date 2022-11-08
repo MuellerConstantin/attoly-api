@@ -1,5 +1,6 @@
 package de.x1c1b.attoly.api.domain;
 
+import de.x1c1b.attoly.api.domain.exception.EntityNotFoundException;
 import de.x1c1b.attoly.api.domain.model.Shortcut;
 import de.x1c1b.attoly.api.domain.payload.ShortcutCreationPayload;
 import org.springframework.data.domain.Page;

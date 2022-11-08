@@ -1,7 +1,7 @@
 package de.x1c1b.attoly.api.domain.impl;
 
-import de.x1c1b.attoly.api.domain.EntityNotFoundException;
 import de.x1c1b.attoly.api.domain.ShortcutService;
+import de.x1c1b.attoly.api.domain.exception.EntityNotFoundException;
 import de.x1c1b.attoly.api.domain.model.Shortcut;
 import de.x1c1b.attoly.api.domain.payload.ShortcutCreationPayload;
 import de.x1c1b.attoly.api.repository.ShortcutRepository;

@@ -1,6 +1,8 @@
 package de.x1c1b.attoly.api.web.v1;
 
+import de.x1c1b.attoly.api.domain.PasswordResetService;
 import de.x1c1b.attoly.api.domain.UserService;
+import de.x1c1b.attoly.api.domain.UserVerificationService;
 import de.x1c1b.attoly.api.domain.model.User;
 import de.x1c1b.attoly.api.domain.payload.UserCreationPayload;
 import de.x1c1b.attoly.api.domain.payload.UserUpdatePayload;
@@ -21,11 +23,18 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final UserVerificationService userVerificationService;
+    private final PasswordResetService passwordResetService;
     private final UserMapper userMapper;
 
     @Autowired
-    public UserController(UserService userService, UserMapper userMapper) {
+    public UserController(UserService userService,
+                          UserVerificationService userVerificationService,
+                          PasswordResetService passwordResetService,
+                          UserMapper userMapper) {
         this.userService = userService;
+        this.userVerificationService = userVerificationService;
+        this.passwordResetService = passwordResetService;
         this.userMapper = userMapper;
     }
 
@@ -39,7 +48,7 @@ public class UserController {
     }
 
     @PatchMapping("/users/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') || @domainMethodSecurityEvaluator.isAccountOwnerOf(#id)")
+    @PreAuthorize("@domainMethodSecurityEvaluator.isAccountOwnerOf(#id)")
     UserDto updateById(@PathVariable("id") UUID id, @RequestBody @Valid UserUpdateDto dto) {
         UserUpdatePayload payload = userMapper.mapToPayload(dto);
         User user = userService.updateById(id, payload);
@@ -49,7 +58,7 @@ public class UserController {
 
     @DeleteMapping("/users/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ROLE_ADMIN') || @domainMethodSecurityEvaluator.isAccountOwnerOf(#id)")
+    @PreAuthorize("@domainMethodSecurityEvaluator.isAccountOwnerOf(#id)")
     void deleteById(@PathVariable("id") UUID id) {
         userService.deleteById(id);
     }
@@ -63,25 +72,25 @@ public class UserController {
 
     @PostMapping("/user/verify")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void verifyCurrentUser(@RequestBody @Valid UserVerificationDto dto) {
-        userService.verifyByToken(dto.getVerificationToken());
+    void verifyUser(@RequestBody @Valid UserVerificationDto dto) {
+        userVerificationService.verifyByToken(dto.getVerificationToken());
     }
 
     @GetMapping("/user/verify")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void sendUserVerificationMessage(@RequestParam(name = "email") String email) {
-        userService.sendVerificationMessageByEmail(email);
+        userVerificationService.sendVerificationMessageByEmail(email);
     }
 
     @PostMapping("/user/reset")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void resetCurrentPassword(@RequestBody @Valid UserResetDto dto) {
-        userService.resetPasswordByToken(dto.getResetToken(), dto.getPassword());
+    void resetPassword(@RequestBody @Valid UserResetDto dto) {
+        passwordResetService.resetByToken(dto.getResetToken(), dto.getPassword());
     }
 
     @GetMapping("/user/reset")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void sendPasswordResetMessage(@RequestParam(name = "email") String email) {
-        userService.sendResetMessageByEmail(email);
+        passwordResetService.sendResetMessageByEmail(email);
     }
 }

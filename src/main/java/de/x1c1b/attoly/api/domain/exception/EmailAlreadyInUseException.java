@@ -1,4 +1,4 @@
-package de.x1c1b.attoly.api.domain;
+package de.x1c1b.attoly.api.domain.exception;
 
 import lombok.Getter;
 

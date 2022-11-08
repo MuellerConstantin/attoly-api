@@ -1,4 +1,4 @@
-package de.x1c1b.attoly.api.domain;
+package de.x1c1b.attoly.api.domain.exception;
 
 /**
  * Thrown when an entity cannot be found. The entity no longer exists or never existed.
