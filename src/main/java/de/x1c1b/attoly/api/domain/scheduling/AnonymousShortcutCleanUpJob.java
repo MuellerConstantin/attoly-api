@@ -19,7 +19,7 @@ import java.time.Instant;
  * database.
  */
 @Component
-@ConditionalOnProperty(value = "attoly.scheduling.jobs.anonymous-shortcut-clean-up.enabled", matchIfMissing = true, havingValue = "true")
+@ConditionalOnProperty(prefix = "attoly.scheduling.jobs.anonymous-shortcut-clean-up", name = "enabled", matchIfMissing = true, havingValue = "true")
 public class AnonymousShortcutCleanUpJob {
 
     private final Logger logger = LoggerFactory.getLogger(ShortcutServiceImpl.class);

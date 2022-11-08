@@ -14,6 +14,7 @@ import de.x1c1b.attoly.api.repository.VerificationTokenRepository;
 import freemarker.template.TemplateException;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,19 +37,27 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
+    private final String verifyUserWebUri;
+
+    private final String resetPasswordWebUri;
+
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            RoleRepository roleRepository,
                            ResetTokenRepository resetTokenRepository,
                            VerificationTokenRepository verificationTokenRepository,
                            PasswordEncoder passwordEncoder,
-                           EmailService emailService) {
+                           EmailService emailService,
+                           @Value("${attoly.web.verify-user-uri}") String verifyUserWebUri,
+                           @Value("${attoly.web.reset-password-uri}") String resetPasswordWebUri) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.resetTokenRepository = resetTokenRepository;
         this.verificationTokenRepository = verificationTokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.verifyUserWebUri = verifyUserWebUri;
+        this.resetPasswordWebUri = resetPasswordWebUri;
     }
 
     @Override
@@ -205,7 +214,7 @@ public class UserServiceImpl implements UserService {
                 "noreply@attoly.com",
                 "Attoly Account Verification",
                 "user-verification.ftlh",
-                Map.of("verificationToken", newVerificationToken));
+                Map.of("verificationToken", newVerificationToken, "verificationWebUri", verifyUserWebUri));
     }
 
     @Override
@@ -250,7 +259,7 @@ public class UserServiceImpl implements UserService {
                 "noreply@attoly.com",
                 "Attoly Password Reset",
                 "password-reset.ftlh",
-                Map.of("resetToken", newResetToken));
+                Map.of("resetToken", newResetToken, "resetWebUri", resetPasswordWebUri));
     }
 
     @Override

@@ -164,7 +164,7 @@
     <tr>
         <td>
             <div>
-                <a href="#" class="button">Reset your pasword</a>
+                <a href="${resetWebUri}?token=${resetToken.token}" class="button">Reset your pasword</a>
             </div>
             <div style="margin-top: 5px">
                 Token: <span style="font-weight: bold;">${resetToken.token}</span>

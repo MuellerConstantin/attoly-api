@@ -178,7 +178,7 @@
     <tr>
         <td>
             <div>
-                <a href="#" class="button">Verify your email</a>
+                <a href="${verificationWebUri}?token=${verificationToken.token}" class="button">Verify your email</a>
             </div>
             <div style="margin-top: 5px">
                 Token: <span style="font-weight: bold;">${verificationToken.token}</span>
