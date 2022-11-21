@@ -3,7 +3,7 @@ info:
   title: Attoly
   version: v1
   x-logo:
-    url: /site/img/banner.svg
+    url: /site/img/logo.svg
     altText: Attoly Logo
   description: |
     This is the backend of the Attoly URL shortener platform, responsible for
@@ -55,6 +55,21 @@ info:
     collection. Requests that return multiple items will be paginated to 25
     items by default.
     ---
+    
+    ## Internationalization
+    In principle, this API supports internationalization, but to a limited extent.
+    Currently internationalization is supported for error messages and validation
+    as well as server-generated responses. By default, the server responds in
+    English. If another language is desired, this can be controlled via the
+    `Accept-Language` header.
+    
+    ```
+    Accept-Language: en
+    ```
+    
+    At the moment the following languages are supported on the server side:
+    - English (en)
+    - German (de)
     
     ## Authentication
     Some of the endpoints require authentication to function properly. This applies

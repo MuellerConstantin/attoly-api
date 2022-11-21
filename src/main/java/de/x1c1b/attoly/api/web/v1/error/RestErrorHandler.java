@@ -49,6 +49,10 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
         this.messageSource = messageSource;
     }
 
+    protected String getMessage(String key, Object[] args) {
+        return messageSource.getMessage(key, args, LocaleContextHolder.getLocale());
+    }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException exc,
@@ -61,7 +65,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                 .collect(Collectors.toList());
 
         ErrorDto dto = ErrorDto.builder()
-                .message("The validation of the request body failed on a semantic level.")
+                .message(getMessage("ValidationError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
@@ -79,11 +83,12 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
             WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("A required query parameter was not specified for this request.")
+                .message(getMessage("MissingQueryParameterError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
-                .detail(new InvalidParameterErrorDetails(exc.getParameterName(), "Is required."))
+                .detail(new InvalidParameterErrorDetails(exc.getParameterName(),
+                        getMessage("javax.validation.constraints.NotNull.message", null)))
                 .build();
 
         return handleExceptionInternal(exc, dto, headers, HttpStatus.valueOf(dto.getStatus()), request);
@@ -96,11 +101,12 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                                WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("A required path variable was not specified for this request.")
+                .message(getMessage("MissingPathVariableError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
-                .detail(new InvalidParameterErrorDetails(exc.getVariableName(), "Is required."))
+                .detail(new InvalidParameterErrorDetails(exc.getVariableName(),
+                        getMessage("javax.validation.constraints.NotNull.message", null)))
                 .build();
 
         return handleExceptionInternal(exc, dto, headers, HttpStatus.valueOf(dto.getStatus()), request);
@@ -114,7 +120,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
             WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("The resource doesn't support the specified HTTP verb.")
+                .message(getMessage("HttpRequestMethodNotSupportedError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.METHOD_NOT_ALLOWED.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
@@ -133,7 +139,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
             WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("The requested media type is not supported by the server.")
+                .message(getMessage("HttpMediaTypeNotSupportedError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.NOT_ACCEPTABLE.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
@@ -151,7 +157,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                                       WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("The requested media type is not supported by the server.")
+                .message(getMessage("HttpMediaTypeNotSupportedError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.NOT_ACCEPTABLE.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
@@ -169,12 +175,12 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                         WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("The type of a body field is wrong.")
+                .message(getMessage("TypeMismatchError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
                 .detail(new InvalidParameterErrorDetails(exc.getPropertyName(),
-                        "Should be of type %s.".formatted(Objects.requireNonNull(exc.getRequiredType()).getName())))
+                        getMessage("de.x1c1b.attoly.api.web.v1.dto.validation.Type.message", new Object[]{exc.getRequiredType().getName()})))
                 .build();
 
         return handleExceptionInternal(exc, dto, headers, HttpStatus.valueOf(dto.getStatus()), request);
@@ -187,7 +193,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                                   WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("The specified body is not syntactically valid.")
+                .message(getMessage("InvalidPayloadFormatError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
@@ -203,7 +209,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                                   WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("The server encountered an internal error. Please retry the request.")
+                .message(getMessage("InternalError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
@@ -221,7 +227,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                                           WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("The server encountered an internal error. Please retry the request.")
+                .message(getMessage("InternalError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
@@ -239,7 +245,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                          WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("The server encountered an internal error. Please retry the request.")
+                .message(getMessage("InternalError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
@@ -255,12 +261,12 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                                    WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("The type of a request parameter is wrong.")
+                .message(getMessage("TypeMismatchError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
                 .detail(new InvalidParameterErrorDetails(exc.getParameter().getParameterName(),
-                        "Should be of type %s.".formatted(Objects.requireNonNull(exc.getRequiredType()).getName())))
+                        getMessage("de.x1c1b.attoly.api.web.v1.dto.validation.Type.message", new Object[]{exc.getRequiredType().getName()})))
                 .build();
 
         return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
@@ -271,13 +277,12 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                           WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("The validation of the request body failed on a semantic level.")
+                .message(getMessage("ValidationError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
                 .detail(new ValidationErrorDetails("email",
-                        messageSource.getMessage("de.x1c1b.attoly.api.web.v1.dto.validation.UniqueEmail.message",
-                                new Object[]{}, LocaleContextHolder.getLocale())))
+                        getMessage("de.x1c1b.attoly.api.web.v1.dto.validation.UniqueEmail.message", null)))
                 .build();
 
         return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
@@ -288,13 +293,12 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                              WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("The validation of the request body failed on a semantic level.")
+                .message(getMessage("ValidationError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
                 .detail(new ValidationErrorDetails("name",
-                        messageSource.getMessage("de.x1c1b.attoly.api.web.v1.dto.validation.UniqueName.message",
-                                new Object[]{}, LocaleContextHolder.getLocale())))
+                        getMessage("de.x1c1b.attoly.api.web.v1.dto.validation.UniqueName.message", null)))
                 .build();
 
         return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
@@ -305,7 +309,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                        WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("The specified resource does not exist.")
+                .message(getMessage("NotFoundError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.NOT_FOUND.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
@@ -319,7 +323,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                                  WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("The verification token does not exist or is no longer valid.")
+                .message(getMessage("InvalidVerificationTokenError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.GONE.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
@@ -333,7 +337,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                           WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("The reset token does not exist or is no longer valid.")
+                .message(getMessage("InvalidResetTokenError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.GONE.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
@@ -347,7 +351,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                          WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("Username and/or password are invalid.")
+                .message(getMessage("InvalidCredentialsError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.UNAUTHORIZED.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
@@ -361,7 +365,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                        WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("Username and/or password are invalid.")
+                .message(getMessage("InvalidCredentialsError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.UNAUTHORIZED.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
@@ -375,7 +379,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                        WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("Access must be authenticated.")
+                .message(getMessage("AuthenticationError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.UNAUTHORIZED.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
@@ -389,7 +393,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                      WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("Permissions for access are missing.")
+                .message(getMessage("InsufficientPermissionsError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.FORBIDDEN.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
@@ -402,7 +406,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleDefault(Exception exc, WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
-                .message("The server encountered an internal error. Please retry the request.")
+                .message(getMessage("InternalError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())

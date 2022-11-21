@@ -1,6 +1,7 @@
 spring:
   application:
     name: attoly-api
-  web:
-    locale: en_EN
-    locale-resolver: fixed
+  messages:
+    basename: messages/validation, messages/error
+    encoding: UTF-8
+    fallback-to-system-locale: false
