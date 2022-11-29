@@ -105,6 +105,8 @@ tags:
     description: Allows the client to authenticate themselves.
   - name: Shortcut
     description: Allows shortcuts to be managed.
+  - name: Report
+    description: Manages reports of shortcuts, i.e. all reports about potentially unwanted shortcuts.
 paths:
   /users:
     post:
@@ -534,6 +536,39 @@ paths:
                     createdAt: 2022-06-27T15:18:16.706776+02:00
         401:
           $ref: "#/components/responses/Unauthenticated"
+  /shortcuts/{tag}/reports:
+    post:
+      tags:
+        - Report
+      summary: Reports a shortcut.
+      description: >
+        Reports a shortcut based on its tag. The report is sent to the
+        administrator of the service. The administrator can then decide
+        whether to delete the shortcut or not.
+      parameters:
+        - name: tag
+          in: path
+          description: Unique tag of the shortcut.
+          required: true
+          schema:
+            type: string
+            example: hluEinvI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportCreationDto"
+            example:
+              reason: SPAM
+              comment: Contains offensive content.
+      responses:
+        204:
+          description: Successfully reported the shortcut.
+        404:
+          $ref: "#/components/responses/NotFound"
+        401:
+          $ref: "#/components/responses/Unauthenticated"
 components:
   schemas:
     ErrorDto:
@@ -741,6 +776,21 @@ components:
       required:
         - tag
         - url
+    ReportCreationDto:
+      type: object
+      properties:
+        reason:
+          type: string
+          enum: [ SPAM, MALWARE, PHISHING, DEFACEMENT ]
+          description: The reason for reporting the shortcut
+        comment:
+          type: string
+          description: A comment explaining the reason in more detail.
+          maxLength: 2000
+          minLength: 1
+      required:
+        - reason
+        - comment
   responses:
     InternalError:
       description: An internal error has occurred on the server side.

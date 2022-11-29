@@ -41,11 +41,11 @@ public interface ShortcutService {
     /**
      * Find all shortcuts created of a specific user.
      *
-     * @param tag      The shortcut's unique tag.
+     * @param email    The users's unique email.
      * @param pageable The pagination settings.
      * @return The requested page of shortcuts.
      */
-    Page<Shortcut> findAllByOwnership(String tag, Pageable pageable);
+    Page<Shortcut> findAllByOwnership(String email, Pageable pageable);
 
     /**
      * Loads a shortcut by its identifier.

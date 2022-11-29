@@ -166,6 +166,8 @@ public class SecurityConfig {
                 .permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/shortcuts/*")
                 .permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/shortcuts/*/reports")
+                .permitAll()
                 .anyRequest()
                 .authenticated();
     }

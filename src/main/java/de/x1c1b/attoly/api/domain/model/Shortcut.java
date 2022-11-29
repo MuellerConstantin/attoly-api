@@ -5,6 +5,8 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedBy;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "shortcuts", uniqueConstraints = {
@@ -29,4 +31,10 @@ public class Shortcut extends BaseEntity {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private User createdBy;
+
+    @OneToMany(mappedBy = "shortcut", cascade = CascadeType.REMOVE)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @Builder.Default
+    private List<Report> reports = new ArrayList<>();
 }
