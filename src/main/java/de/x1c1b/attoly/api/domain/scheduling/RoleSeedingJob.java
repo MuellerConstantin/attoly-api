@@ -6,9 +6,10 @@ import de.x1c1b.attoly.api.repository.RoleRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -18,8 +19,9 @@ import java.util.HashSet;
  * already exists.
  */
 @Component
-@ConditionalOnProperty(prefix = "attoly.scheduling.jobs.role-seeding", name = "enabled", matchIfMissing = true, havingValue = "true")
-public class RoleSeedingJob implements ApplicationRunner {
+@ConditionalOnProperty(prefix = "attoly.scheduling.jobs.role-seeding", name = "enabled", havingValue = "true")
+@Order(1)
+public class RoleSeedingJob implements ApplicationListener<ApplicationStartedEvent> {
 
     private final Logger logger = LoggerFactory.getLogger(RoleSeedingJob.class);
 
@@ -31,7 +33,8 @@ public class RoleSeedingJob implements ApplicationRunner {
     }
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void onApplicationEvent(ApplicationStartedEvent event) {
+        logger.info("Seeding security roles in database");
 
         if (!roleRepository.existsByName(RoleName.ROLE_ADMIN)) {
             roleRepository.save(new Role(RoleName.ROLE_ADMIN, new HashSet<>()));
