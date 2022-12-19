@@ -288,22 +288,6 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
     }
 
-    @ExceptionHandler(RoleNameAlreadyInUseException.class)
-    public ResponseEntity<Object> handleRoleNameAlreadyInUse(RoleNameAlreadyInUseException exc,
-                                                             WebRequest request) {
-
-        ErrorDto dto = ErrorDto.builder()
-                .message(getMessage("ValidationError.message", null))
-                .timestamp(OffsetDateTime.now())
-                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
-                .path(((ServletWebRequest) request).getRequest().getServletPath())
-                .detail(new ValidationErrorDetails("name",
-                        getMessage("de.x1c1b.attoly.api.web.v1.dto.validation.UniqueName.message", null)))
-                .build();
-
-        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
-    }
-
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException exc,
                                                        WebRequest request) {
@@ -312,6 +296,20 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                 .message(getMessage("NotFoundError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.NOT_FOUND.value())
+                .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .build();
+
+        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
+    }
+
+    @ExceptionHandler(MustBeAdministrableException.class)
+    public ResponseEntity<Object> handleMustBeAdministrable(MustBeAdministrableException exc,
+                                                            WebRequest request) {
+
+        ErrorDto dto = ErrorDto.builder()
+                .message(getMessage("MustBeAdministrableError.message", null))
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.CONFLICT.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
                 .build();
 

@@ -4,7 +4,9 @@ import de.x1c1b.attoly.api.domain.UserService;
 import de.x1c1b.attoly.api.domain.UserVerificationService;
 import de.x1c1b.attoly.api.domain.exception.EmailAlreadyInUseException;
 import de.x1c1b.attoly.api.domain.exception.EntityNotFoundException;
+import de.x1c1b.attoly.api.domain.exception.MustBeAdministrableException;
 import de.x1c1b.attoly.api.domain.model.Role;
+import de.x1c1b.attoly.api.domain.model.RoleName;
 import de.x1c1b.attoly.api.domain.model.User;
 import de.x1c1b.attoly.api.domain.payload.UserCreationPayload;
 import de.x1c1b.attoly.api.domain.payload.UserUpdatePayload;
@@ -85,7 +87,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .email(payload.getEmail())
                 .password(passwordEncoder.encode(payload.getPassword()))
-                .roles(Set.of(roleRepository.findByName("ROLE_USER").orElseThrow()))
+                .roles(Set.of(roleRepository.findByName(RoleName.ROLE_USER).orElseThrow()))
                 .build();
 
         User newUser = userRepository.save(user);
@@ -145,6 +147,11 @@ public class UserServiceImpl implements UserService {
     @Transactional
     protected void removeRole(User user, UUID roleId) throws EntityNotFoundException {
         Role role = roleRepository.findById(roleId).orElseThrow(EntityNotFoundException::new);
+        boolean affectsAdministration = role.getName().equals(RoleName.ROLE_ADMIN);
+
+        if (affectsAdministration && !userRepository.existsAnyWithRoleExceptEmail(RoleName.ROLE_ADMIN, user.getEmail())) {
+            throw new MustBeAdministrableException();
+        }
 
         user.getRoles().remove(role);
         userRepository.save(user);
@@ -163,6 +170,12 @@ public class UserServiceImpl implements UserService {
     }
 
     protected void delete(User user) {
+        boolean isAdministrator = user.getRoles().stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_ADMIN));
+
+        if (isAdministrator && !userRepository.existsAnyWithRoleExceptEmail(RoleName.ROLE_ADMIN, user.getEmail())) {
+            throw new MustBeAdministrableException();
+        }
+
         userRepository.deleteSoft(user);
     }
 }

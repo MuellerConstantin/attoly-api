@@ -2,9 +2,8 @@ package de.x1c1b.attoly.api.domain.impl;
 
 import de.x1c1b.attoly.api.domain.RoleService;
 import de.x1c1b.attoly.api.domain.exception.EntityNotFoundException;
-import de.x1c1b.attoly.api.domain.exception.RoleNameAlreadyInUseException;
 import de.x1c1b.attoly.api.domain.model.Role;
-import de.x1c1b.attoly.api.domain.payload.RoleCreationPayload;
+import de.x1c1b.attoly.api.domain.model.RoleName;
 import de.x1c1b.attoly.api.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -40,7 +39,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Role findByName(String name) throws EntityNotFoundException {
+    public Role findByName(RoleName name) throws EntityNotFoundException {
         return roleRepository.findByName(name).orElseThrow(EntityNotFoundException::new);
     }
 
@@ -50,34 +49,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public boolean existsByName(String name) {
+    public boolean existsByName(RoleName name) {
         return roleRepository.existsByName(name);
-    }
-
-    @Override
-    public Role create(RoleCreationPayload payload) throws RoleNameAlreadyInUseException {
-        if (roleRepository.existsAnyByName(payload.getName())) {
-            throw new RoleNameAlreadyInUseException(payload.getName());
-        }
-
-        Role role = Role.builder()
-                .name(payload.getName())
-                .build();
-
-        return roleRepository.save(role);
-    }
-
-    @Override
-    public void deleteById(UUID id) throws EntityNotFoundException {
-        delete(findById(id));
-    }
-
-    @Override
-    public void deleteByName(String name) throws EntityNotFoundException {
-        delete(findByName(name));
-    }
-
-    protected void delete(Role role) {
-        roleRepository.deleteSoft(role);
     }
 }

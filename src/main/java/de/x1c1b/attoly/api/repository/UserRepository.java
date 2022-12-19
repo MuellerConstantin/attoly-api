@@ -1,5 +1,6 @@
 package de.x1c1b.attoly.api.repository;
 
+import de.x1c1b.attoly.api.domain.model.RoleName;
 import de.x1c1b.attoly.api.domain.model.User;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -37,4 +38,10 @@ public interface UserRepository extends BaseRepository<User, UUID> {
     default boolean existsAnyByEmail(String email) {
         return findAnyByEmail(email).isPresent();
     }
+
+    @Query("SELECT COUNT(u) >= 1 FROM User u INNER JOIN u.roles r WHERE u.deleted = false AND r.name = ?1 AND u.id <> ?2")
+    boolean existsAnyWithRoleExceptId(RoleName role, UUID id);
+
+    @Query("SELECT COUNT(u) >= 1 FROM User u INNER JOIN u.roles r WHERE u.deleted = false AND r.name = ?1 AND u.email <> ?2")
+    boolean existsAnyWithRoleExceptEmail(RoleName role, String email);
 }

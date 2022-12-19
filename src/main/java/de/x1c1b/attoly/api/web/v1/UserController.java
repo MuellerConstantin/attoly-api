@@ -89,13 +89,13 @@ public class UserController {
         return userMapper.mapToDto(user);
     }
 
-    @DeleteMapping("/users/me")
+    @DeleteMapping("/user/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteCurrentUser(@CurrentPrincipal Principal principal) {
         userService.deleteByEmail(principal.getEmail());
     }
 
-    @PatchMapping("/users/me")
+    @PatchMapping("/user/me")
     UserDto updateCurrentUser(@CurrentPrincipal Principal principal, @RequestBody @Valid UserUpdateDto dto) {
         UserUpdatePayload payload = userMapper.mapToPayload(dto);
         User user = userService.updateByEmail(principal.getEmail(), payload);

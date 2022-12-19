@@ -19,7 +19,8 @@ import java.util.Set;
 public class Role extends BaseEntity {
 
     @Column(name = "name", unique = true)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private RoleName name;
 
     @ManyToMany(mappedBy = "roles")
     @EqualsAndHashCode.Exclude

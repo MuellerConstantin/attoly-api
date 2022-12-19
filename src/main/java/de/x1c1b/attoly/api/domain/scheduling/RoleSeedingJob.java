@@ -1,6 +1,7 @@
 package de.x1c1b.attoly.api.domain.scheduling;
 
 import de.x1c1b.attoly.api.domain.model.Role;
+import de.x1c1b.attoly.api.domain.model.RoleName;
 import de.x1c1b.attoly.api.repository.RoleRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +33,12 @@ public class RoleSeedingJob implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        if (!roleRepository.existsByName("ROLE_ADMIN")) {
-            roleRepository.save(new Role("ROLE_ADMIN", new HashSet<>()));
+        if (!roleRepository.existsByName(RoleName.ROLE_ADMIN)) {
+            roleRepository.save(new Role(RoleName.ROLE_ADMIN, new HashSet<>()));
         }
 
-        if (!roleRepository.existsByName("ROLE_USER")) {
-            roleRepository.save(new Role("ROLE_USER", new HashSet<>()));
+        if (!roleRepository.existsByName(RoleName.ROLE_USER)) {
+            roleRepository.save(new Role(RoleName.ROLE_USER, new HashSet<>()));
         }
     }
 }

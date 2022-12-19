@@ -1,9 +1,8 @@
 package de.x1c1b.attoly.api.domain;
 
 import de.x1c1b.attoly.api.domain.exception.EntityNotFoundException;
-import de.x1c1b.attoly.api.domain.exception.RoleNameAlreadyInUseException;
 import de.x1c1b.attoly.api.domain.model.Role;
-import de.x1c1b.attoly.api.domain.payload.RoleCreationPayload;
+import de.x1c1b.attoly.api.domain.model.RoleName;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -46,7 +45,7 @@ public interface RoleService {
      * @return The loaded name.
      * @throws EntityNotFoundException Thrown if the role cannot be found.
      */
-    Role findByName(String name) throws EntityNotFoundException;
+    Role findByName(RoleName name) throws EntityNotFoundException;
 
     /**
      * Checks whether a role exists using the identifier.
@@ -62,30 +61,5 @@ public interface RoleService {
      * @param name The role's unique name.
      * @return True if the role exists, otherwise false.
      */
-    boolean existsByName(String name);
-
-    /**
-     * Creates a new user role.
-     *
-     * @param payload The payload data from which the role is created.
-     * @return The newly created role.
-     * @throws RoleNameAlreadyInUseException Thrown if a role is already using the specified name.
-     */
-    Role create(RoleCreationPayload payload) throws RoleNameAlreadyInUseException;
-
-    /**
-     * Deletes a user role using the identifier.
-     *
-     * @param id The role's unique identifier.
-     * @throws EntityNotFoundException Thrown if the role cannot be found.
-     */
-    void deleteById(UUID id) throws EntityNotFoundException;
-
-    /**
-     * Deletes a user role using the name.
-     *
-     * @param name The role's unique name.
-     * @throws EntityNotFoundException Thrown if the role cannot be found.
-     */
-    void deleteByName(String name) throws EntityNotFoundException;
+    boolean existsByName(RoleName name);
 }

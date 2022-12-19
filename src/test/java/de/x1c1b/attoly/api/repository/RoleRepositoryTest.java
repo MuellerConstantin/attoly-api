@@ -1,6 +1,7 @@
 package de.x1c1b.attoly.api.repository;
 
 import de.x1c1b.attoly.api.domain.model.Role;
+import de.x1c1b.attoly.api.domain.model.RoleName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ class RoleRepositoryTest {
     @Test
     void save() {
         Role role = Role.builder()
-                .name("ROLE_MAINTAINER")
+                .name(RoleName.ROLE_ADMIN)
                 .build();
 
         Role newRole = roleRepository.save(role);
@@ -53,19 +54,13 @@ class RoleRepositoryTest {
 
     @Test
     void countAny() {
-        assertEquals(3, roleRepository.countAny());
+        assertEquals(2, roleRepository.countAny());
     }
 
     @Test
     void findByName() {
-        Optional<Role> optionalRole = roleRepository.findByName("ROLE_USER");
+        Optional<Role> optionalRole = roleRepository.findByName(RoleName.ROLE_USER);
         assertTrue(optionalRole.isPresent());
-    }
-
-    @Test
-    void findByNameMissing() {
-        Optional<Role> optionalRole = roleRepository.findByName("ROLE_VISITOR");
-        assertFalse(optionalRole.isPresent());
     }
 
     @TestConfiguration
