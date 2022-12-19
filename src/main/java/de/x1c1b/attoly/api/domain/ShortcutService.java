@@ -6,6 +6,7 @@ import de.x1c1b.attoly.api.domain.payload.ShortcutCreationPayload;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -88,4 +89,11 @@ public interface ShortcutService {
      * @throws EntityNotFoundException Thrown if the shortcut cannot be found.
      */
     void deleteByTag(String tag) throws EntityNotFoundException;
+
+    /**
+     * Deletes all expired and anonymously created shortcuts.
+     *
+     * @param date The offset date.
+     */
+    void deleteAllAnonymousCreatedBefore(OffsetDateTime date);
 }

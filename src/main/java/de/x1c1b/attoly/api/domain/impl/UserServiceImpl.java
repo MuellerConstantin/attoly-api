@@ -4,9 +4,11 @@ import de.x1c1b.attoly.api.domain.UserService;
 import de.x1c1b.attoly.api.domain.UserVerificationService;
 import de.x1c1b.attoly.api.domain.exception.EmailAlreadyInUseException;
 import de.x1c1b.attoly.api.domain.exception.EntityNotFoundException;
+import de.x1c1b.attoly.api.domain.model.Role;
 import de.x1c1b.attoly.api.domain.model.User;
 import de.x1c1b.attoly.api.domain.payload.UserCreationPayload;
 import de.x1c1b.attoly.api.domain.payload.UserUpdatePayload;
+import de.x1c1b.attoly.api.repository.RoleRepository;
 import de.x1c1b.attoly.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,20 +18,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserVerificationService userVerificationService;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
+                           RoleRepository roleRepository,
                            PasswordEncoder passwordEncoder,
                            UserVerificationService userVerificationService) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.userVerificationService = userVerificationService;
     }
@@ -65,6 +71,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public long count() {
+        return userRepository.count();
+    }
+
+    @Override
     @Transactional
     public User create(UserCreationPayload payload) throws EmailAlreadyInUseException {
         if (userRepository.existsAnyByEmail(payload.getEmail())) {
@@ -74,6 +85,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .email(payload.getEmail())
                 .password(passwordEncoder.encode(payload.getPassword()))
+                .roles(Set.of(roleRepository.findByName("ROLE_USER").orElseThrow()))
                 .build();
 
         User newUser = userRepository.save(user);
@@ -100,6 +112,42 @@ public class UserServiceImpl implements UserService {
         }
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public void assignRoleById(UUID id, UUID role) throws EntityNotFoundException {
+        assignsRole(findById(id), role);
+    }
+
+    @Override
+    public void assignRoleByEmail(String email, UUID role) throws EntityNotFoundException {
+        assignsRole(findByEmail(email), role);
+    }
+
+    @Transactional
+    protected void assignsRole(User user, UUID roleId) throws EntityNotFoundException {
+        Role role = roleRepository.findById(roleId).orElseThrow(EntityNotFoundException::new);
+
+        user.getRoles().add(role);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void removeRoleById(UUID userId, UUID roleId) throws EntityNotFoundException {
+        removeRole(findById(userId), roleId);
+    }
+
+    @Override
+    public void removeRoleByEmail(String email, UUID roleId) throws EntityNotFoundException {
+        removeRole(findByEmail(email), roleId);
+    }
+
+    @Transactional
+    protected void removeRole(User user, UUID roleId) throws EntityNotFoundException {
+        Role role = roleRepository.findById(roleId).orElseThrow(EntityNotFoundException::new);
+
+        user.getRoles().remove(role);
+        userRepository.save(user);
     }
 
     @Override

@@ -66,6 +66,13 @@ public interface UserService {
     boolean existsByEmail(String email);
 
     /**
+     * Counts the number of users.
+     *
+     * @return The number of users.
+     */
+    long count();
+
+    /**
      * Creates a new user account.
      *
      * @param payload The payload data from which the user is created.
@@ -93,6 +100,14 @@ public interface UserService {
      * @throws EntityNotFoundException Thrown if the user cannot be found.
      */
     User updateByEmail(String email, UserUpdatePayload payload) throws EntityNotFoundException;
+
+    void assignRoleById(UUID userId, UUID roleId) throws EntityNotFoundException;
+
+    void assignRoleByEmail(String email, UUID roleId) throws EntityNotFoundException;
+
+    void removeRoleById(UUID userId, UUID roleId) throws EntityNotFoundException;
+
+    void removeRoleByEmail(String email, UUID roleId) throws EntityNotFoundException;
 
     /**
      * Deletes a user account using the identifier.

@@ -31,6 +31,15 @@ public class ShortcutController {
         this.shortcutMapper = shortcutMapper;
     }
 
+    @GetMapping("/shortcuts")
+    @PreAuthorize("hasRole('ADMIN')")
+    PageDto<ShortcutDto> findAll(@RequestParam(value = "page", required = false, defaultValue = "0") int selectedPage,
+                                 @RequestParam(value = "perPage", required = false, defaultValue = "25") int perPage) {
+        Page<Shortcut> page = shortcutService.findAll(PageRequest.of(selectedPage, perPage));
+
+        return shortcutMapper.mapToDto(page);
+    }
+
     @PostMapping("/shortcuts")
     @ResponseStatus(HttpStatus.CREATED)
     ShortcutDto create(@RequestBody @Valid ShortcutCreationDto dto) {
@@ -42,7 +51,7 @@ public class ShortcutController {
 
     @DeleteMapping("/shortcuts/{tag}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("@domainMethodSecurityEvaluator.isShortcutOwnerOf(#tag)")
+    @PreAuthorize("hasRole('ADMIN') || @domainMethodSecurityEvaluator.isShortcutOwnerOf(#tag)")
     void deleteById(@PathVariable("tag") String tag) {
         shortcutService.deleteByTag(tag);
     }

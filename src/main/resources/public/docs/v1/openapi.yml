@@ -101,6 +101,8 @@ servers:
 tags:
   - name: User
     description: Everything about user and account management.
+  - name: Role
+    description: Manage roles and user permissions.
   - name: Auth
     description: Allows the client to authenticate themselves.
   - name: Shortcut
@@ -139,13 +141,69 @@ paths:
                 createdAt: 2022-06-27T15:18:16.706776+02:00
         422:
           $ref: "#/components/responses/UnprocessableEntity"
+    get:
+      tags:
+        - User
+      summary: Returns all user details.
+      description: >
+        Returns all user details. This endpoint is only available to administrators.
+      responses:
+        200:
+          description: Successfully fetched all available shortcuts.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrincipalPageDto"
+              example:
+                page: 0
+                perPage: 25
+                totalElements: 1
+                totalPages: 1
+                content:
+                  - id: 3377cf8f-da29-4aa7-9036-91951b8fce87
+                    email: m.mustermann@localhost.com
+                    createdAt: 2022-06-27T15:18:16.706776+02:00
+                    emailVerified: true
   /users/{id}:
+    get:
+      tags:
+        - User
+      summary: Gets a user by its identifier.
+      description: >
+        Gets a user's details by its identifier. You'll need administrative privileges to retrieve a user's details.
+      parameters:
+        - name: id
+          in: path
+          description: The identifier of the user.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Successfully retrieved the user's details.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrincipalDto"
+              example:
+                id: 3377cf8f-da29-4aa7-9036-91951b8fce87
+                email: m.mustermann@localhost.com
+                createdAt: 2022-06-27T15:18:16.706776+02:00
+                emailVerified: true
+        403:
+          $ref: "#/components/responses/AccessDenied"
+        404:
+          $ref: "#/components/responses/NotFound"
+        401:
+          $ref: "#/components/responses/Unauthenticated"
     patch:
       tags:
         - User
-      summary: Updates a single user.
+      summary: Updates the details of a single user.
       description: >
-        Updates a user. Without higher rights, only your own user can be updated.
+        Updates a user's details. Without higher rights, only your own user can be updated. Therefore, this endpoint
+        is only available for administrators.
       parameters:
         - name: id
           in: path
@@ -160,7 +218,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserUpdateDto"
+              $ref: "#/components/schemas/PrincipalUpdateDto"
             example:
               password: Def456
       responses:
@@ -169,11 +227,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserDto"
+                $ref: "#/components/schemas/PrincipalDto"
               example:
                 id: 3377cf8f-da29-4aa7-9036-91951b8fce87
                 email: m.mustermann@localhost.com
                 createdAt: 2022-06-27T15:18:16.706776+02:00
+                emailVerified: true
         422:
           $ref: "#/components/responses/UnprocessableEntity"
         403:
@@ -190,7 +249,8 @@ paths:
         Allows deleting a user account. Even if the path is generic, it is
         only possible to delete your own user without higher rights due to
         the security policy. Warning, the deletion is immediate executed
-        and irreversible.
+        and irreversible. To delete other user accounts, you have to be
+        an administrator.
       parameters:
         - name: id
           in: path
@@ -228,6 +288,56 @@ paths:
                 id: 3377cf8f-da29-4aa7-9036-91951b8fce87
                 email: m.mustermann@localhost.com
                 createdAt: 2022-06-27T15:18:16.706776+02:00
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+    patch:
+      tags:
+        - User
+      summary: Updates your own user account.
+      description: >
+        Updates the account of the currently authenticated user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdateDto"
+            example:
+              password: Def456
+      responses:
+        200:
+          description: Successfully updated your user account.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+              example:
+                id: 3377cf8f-da29-4aa7-9036-91951b8fce87
+                email: m.mustermann@localhost.com
+                createdAt: 2022-06-27T15:18:16.706776+02:00
+        422:
+          $ref: "#/components/responses/UnprocessableEntity"
+        403:
+          $ref: "#/components/responses/AccessDenied"
+        404:
+          $ref: "#/components/responses/NotFound"
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+    delete:
+      tags:
+        - User
+      summary: Deletes a your own user account.
+      description: >
+        Allows deleting a user account. Warning, the deletion is immediate
+        executed and irreversible. To delete other user accounts, you have
+        to be an administrator.
+      responses:
+        204:
+          description: Successfully deleted your user account.
+        403:
+          $ref: "#/components/responses/AccessDenied"
+        404:
+          $ref: "#/components/responses/NotFound"
         401:
           $ref: "#/components/responses/Unauthenticated"
   /user/verify:
@@ -401,6 +511,184 @@ paths:
                 refreshExpiresIn: 7200000
         401:
           $ref: "#/components/responses/Unauthenticated"
+  /roles:
+    get:
+      tags:
+        - Role
+      summary: Lists all available security roles.
+      description: >
+        Lists all available security roles. Only administrators can retrieve all available roles.
+      responses:
+        200:
+          description: Successfully fetched all available roles.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RolePageDto"
+              example:
+                page: 0
+                perPage: 25
+                totalElements: 1
+                totalPages: 1
+                content:
+                  - id: 97aeee91-1fd4-4228-9c76-33564188e6fd
+                    name: ROLE_ADMIN
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+        403:
+          $ref: "#/components/responses/AccessDenied"
+  /roles/{id}:
+    get:
+      tags:
+        - Role
+      summary: Gets a role by its identifier.
+      description: >
+        Gets a role by its identifier. You'll need administrative privileges to retrieve a role.
+      parameters:
+        - name: id
+          in: path
+          description: The identifier of the role.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Successfully retrieved the role.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleDto"
+              example:
+                id: 97aeee91-1fd4-4228-9c76-33564188e6fd
+                name: ROLE_ADMIN
+        403:
+          $ref: "#/components/responses/AccessDenied"
+        404:
+          $ref: "#/components/responses/NotFound"
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+  /users/{userId}/roles:
+    get:
+      tags:
+        - Role
+      summary: Lists all security roles of a user.
+      description: >
+        Lists all security roles of a user. Only administrators can see a user's roles.
+      parameters:
+        - name: userId
+          in: path
+          description: The identifier of the user.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Successfully fetched all roles.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RolePageDto"
+              example:
+                page: 0
+                perPage: 25
+                totalElements: 1
+                totalPages: 1
+                content:
+                  - id: 97aeee91-1fd4-4228-9c76-33564188e6fd
+                    name: ROLE_ADMIN
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+        403:
+          $ref: "#/components/responses/AccessDenied"
+        404:
+          $ref: "#/components/responses/NotFound"
+  /user/me/roles:
+    get:
+      tags:
+        - Role
+      summary: Lists all security roles of the current user.
+      description: >
+        Lists all security roles of the current user.
+      responses:
+        200:
+          description: Successfully fetched all roles.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RolePageDto"
+              example:
+                page: 0
+                perPage: 25
+                totalElements: 1
+                totalPages: 1
+                content:
+                  - id: 97aeee91-1fd4-4228-9c76-33564188e6fd
+                    name: ROLE_USER
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+  /users/{userId}/roles/{roleId}:
+    post:
+      tags:
+        - Role
+      summary: Adds a role to a user.
+      description: >
+        Adds a role to a user. You need administrative privileges to grant permissions/roles.
+      parameters:
+        - name: userId
+          in: path
+          description: The identifier of the user.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: roleId
+          in: path
+          description: The identifier of the role.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: Successfully added the role.
+        403:
+          $ref: "#/components/responses/AccessDenied"
+        404:
+          $ref: "#/components/responses/NotFound"
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+    delete:
+      tags:
+        - Role
+      summary: Removes a role from a user.
+      description: >
+        Removes a role from a user. You'll need administrative privileges to revoke permissions/roles.
+      parameters:
+        - name: userId
+          in: path
+          description: The identifier of the user.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: roleId
+          in: path
+          description: The identifier of the role.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: Successfully revoked the role.
+        403:
+          $ref: "#/components/responses/AccessDenied"
+        404:
+          $ref: "#/components/responses/NotFound"
+        401:
+          $ref: "#/components/responses/Unauthenticated"
   /shortcuts:
     post:
       tags:
@@ -439,6 +727,33 @@ paths:
           $ref: "#/components/responses/UnprocessableEntity"
         401:
           $ref: "#/components/responses/Unauthenticated"
+    get:
+      tags:
+        - Shortcut
+      summary: Lists all shortcuts.
+      description: >
+        Lists all available shortcuts. Only administrators can retrieve all available shortcuts.
+      responses:
+        200:
+          description: Successfully fetched all available shortcuts.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShortcutPageDto"
+              example:
+                page: 0
+                perPage: 25
+                totalElements: 1
+                totalPages: 1
+                content:
+                  - id: 97aeee91-1fd4-4228-9c76-33564188e6fd
+                    tag: hluEinvI
+                    url: http://localhost:8080
+                    createdAt: 2022-06-27T15:18:16.706776+02:00
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+        403:
+          $ref: "#/components/responses/AccessDenied"
   /shortcuts/{tag}:
     get:
       tags:
@@ -569,6 +884,110 @@ paths:
           $ref: "#/components/responses/NotFound"
         401:
           $ref: "#/components/responses/Unauthenticated"
+        403:
+          $ref: "#/components/responses/AccessDenied"
+  /reports:
+    get:
+      tags:
+        - Report
+      summary: Retrieves all reports.
+      description: >
+        Loads the list of all reports. The result is returned in pages
+        because of the possible size. Only administrators are able to
+        retrieve reports.
+      parameters:
+        - name: page
+          in: query
+          description: Zero based index of page to load.
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - name: perPage
+          in: query
+          description: Number of elements per page.
+          required: false
+          schema:
+            type: integer
+            example: 25
+      responses:
+        200:
+          description: Successfully fetched all available reports.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportPageDto"
+              example:
+                page: 0
+                perPage: 25
+                totalElements: 1
+                totalPages: 1
+                content:
+                  - id: 97aeee91-1fd4-4228-9c76-33564188e6fd
+                    reason: SPAM
+                    comment: Contains offensive content.
+                    createdAt: 2022-06-27T15:18:16.706776+02:00
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+        403:
+          $ref: "#/components/responses/AccessDenied"
+  /reports/{id}:
+    get:
+      tags:
+        - Report
+      summary: Retrieves a single report.
+      description: >
+        Loads a single report based on its unique identifier.
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the report.
+          required: true
+          schema:
+            type: string
+            example: 97aeee91-1fd4-4228-9c76-33564188e6fd
+      responses:
+        200:
+          description: Successfully fetched the selected report.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportDto"
+              example:
+                id: 97aeee91-1fd4-4228-9c76-33564188e6fd
+                reason: SPAM
+                comment: Contains offensive content.
+                createdAt: 2022-06-27T15:18:16.706776+02:00
+        404:
+          $ref: "#/components/responses/NotFound"
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+        403:
+          $ref: "#/components/responses/AccessDenied"
+    delete:
+      tags:
+        - Report
+      summary: Deletes a single report.
+      description: >
+        Deletes a single report based on its unique identifier. Only
+        administrators can delete reports.
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the report.
+          required: true
+          schema:
+            type: string
+            example: 97aeee91-1fd4-4228-9c76-33564188e6fd
+      responses:
+        204:
+          description: Successfully deleted the selected report.
+        403:
+          $ref: "#/components/responses/AccessDenied"
+        404:
+          $ref: "#/components/responses/NotFound"
+        401:
+          $ref: "#/components/responses/Unauthenticated"
 components:
   schemas:
     ErrorDto:
@@ -636,6 +1055,51 @@ components:
         - id
         - email
         - createdAt
+    PrincipalDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of user.
+        email:
+          type: string
+          format: email
+          description: Unique email to contact.
+        createdAt:
+          type: string
+          format: date-time
+          description: Time of creation of the user account.
+        emailVerified:
+          type: boolean
+          description: Indicates if a user account is activated.
+      required:
+        - id
+        - email
+        - createdAt
+        - emailVerified
+    UserPageDto:
+      allOf:
+        - $ref: "#/components/schemas/PageDto"
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/UserDto"
+          required:
+            - content
+    PrincipalPageDto:
+      allOf:
+        - $ref: "#/components/schemas/PageDto"
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/PrincipalDto"
+          required:
+            - content
     RegistrationDto:
       type: object
       properties:
@@ -653,6 +1117,14 @@ components:
         - email
         - password
     UserUpdateDto:
+      type: object
+      properties:
+        password:
+          type: string
+          description: The user's password.
+          maxLength: 256
+          pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$
+    PrincipalUpdateDto:
       type: object
       properties:
         password:
@@ -732,6 +1204,27 @@ components:
         - refreshToken
         - accessExpiresIn
         - refreshExpiresIn
+    RoleDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of shortcut.
+        name:
+          type: string
+          description: Unique name of the role.
+    RolePageDto:
+      allOf:
+        - $ref: "#/components/schemas/PageDto"
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/RoleDto"
+          required:
+            - content
     ShortcutDto:
       type: object
       properties:
@@ -791,6 +1284,42 @@ components:
       required:
         - reason
         - comment
+    ReportDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of report.
+        reason:
+          type: string
+          enum: [ SPAM, MALWARE, PHISHING, DEFACEMENT ]
+          description: The reason for reporting the shortcut
+        comment:
+          type: string
+          description: A comment explaining the reason in more detail.
+          maxLength: 2000
+          minLength: 1
+        createdAt:
+          type: string
+          format: date-time
+          description: Time at which the report was created.
+      required:
+        - id
+        - reason
+        - comment
+        - createdAt
+    ReportPageDto:
+      allOf:
+        - $ref: "#/components/schemas/PageDto"
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/ReportDto"
+          required:
+            - content
   responses:
     InternalError:
       description: An internal error has occurred on the server side.

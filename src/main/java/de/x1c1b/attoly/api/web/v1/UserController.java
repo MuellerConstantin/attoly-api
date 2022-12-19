@@ -11,6 +11,8 @@ import de.x1c1b.attoly.api.security.Principal;
 import de.x1c1b.attoly.api.web.v1.dto.*;
 import de.x1c1b.attoly.api.web.v1.dto.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +40,23 @@ public class UserController {
         this.userMapper = userMapper;
     }
 
+    @GetMapping("/users")
+    @PreAuthorize("hasRole('ADMIN')")
+    PageDto<PrincipalDto> findAll(@RequestParam(value = "page", required = false, defaultValue = "0") int selectedPage,
+                                  @RequestParam(value = "perPage", required = false, defaultValue = "25") int perPage) {
+        Page<User> page = userService.findAll(PageRequest.of(selectedPage, perPage));
+
+        return userMapper.mapToPrincipalDto(page);
+    }
+
+    @GetMapping("/users/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    PrincipalDto findById(@PathVariable("id") UUID id) {
+        User user = userService.findById(id);
+
+        return userMapper.mapToPrincipalDto(user);
+    }
+
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
     UserDto create(@RequestBody @Valid RegistrationDto dto) {
@@ -48,17 +67,17 @@ public class UserController {
     }
 
     @PatchMapping("/users/{id}")
-    @PreAuthorize("@domainMethodSecurityEvaluator.isAccountOwnerOf(#id)")
-    UserDto updateById(@PathVariable("id") UUID id, @RequestBody @Valid UserUpdateDto dto) {
+    @PreAuthorize("hasRole('ADMIN')")
+    PrincipalDto updateById(@PathVariable("id") UUID id, @RequestBody @Valid PrincipalUpdateDto dto) {
         UserUpdatePayload payload = userMapper.mapToPayload(dto);
         User user = userService.updateById(id, payload);
 
-        return userMapper.mapToDto(user);
+        return userMapper.mapToPrincipalDto(user);
     }
 
     @DeleteMapping("/users/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("@domainMethodSecurityEvaluator.isAccountOwnerOf(#id)")
+    @PreAuthorize("hasRole('ADMIN')")
     void deleteById(@PathVariable("id") UUID id) {
         userService.deleteById(id);
     }
@@ -66,6 +85,20 @@ public class UserController {
     @GetMapping("/user/me")
     UserDto findCurrentUser(@CurrentPrincipal Principal principal) {
         User user = userService.findByEmail(principal.getEmail());
+
+        return userMapper.mapToDto(user);
+    }
+
+    @DeleteMapping("/users/me")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteCurrentUser(@CurrentPrincipal Principal principal) {
+        userService.deleteByEmail(principal.getEmail());
+    }
+
+    @PatchMapping("/users/me")
+    UserDto updateCurrentUser(@CurrentPrincipal Principal principal, @RequestBody @Valid UserUpdateDto dto) {
+        UserUpdatePayload payload = userMapper.mapToPayload(dto);
+        User user = userService.updateByEmail(principal.getEmail(), payload);
 
         return userMapper.mapToDto(user);
     }

@@ -3,10 +3,10 @@ package de.x1c1b.attoly.api.web.v1.dto.mapper;
 import de.x1c1b.attoly.api.domain.model.User;
 import de.x1c1b.attoly.api.domain.payload.UserCreationPayload;
 import de.x1c1b.attoly.api.domain.payload.UserUpdatePayload;
-import de.x1c1b.attoly.api.web.v1.dto.RegistrationDto;
-import de.x1c1b.attoly.api.web.v1.dto.UserDto;
-import de.x1c1b.attoly.api.web.v1.dto.UserUpdateDto;
+import de.x1c1b.attoly.api.web.v1.dto.*;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.springframework.data.domain.Page;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -20,7 +20,19 @@ public interface UserMapper {
 
     UserUpdatePayload mapToPayload(UserUpdateDto dto);
 
+    UserUpdatePayload mapToPayload(PrincipalUpdateDto dto);
+
     UserDto mapToDto(User entity);
+
+    PrincipalDto mapToPrincipalDto(User entity);
+
+    @Mapping(target = "page", source = "number")
+    @Mapping(target = "perPage", source = "size")
+    PageDto<UserDto> mapToDto(Page<User> users);
+
+    @Mapping(target = "page", source = "number")
+    @Mapping(target = "perPage", source = "size")
+    PageDto<PrincipalDto> mapToPrincipalDto(Page<User> users);
 
     default OffsetDateTime mapInstantToOffsetDateTime(Instant instant) {
         return instant.atZone(ZoneId.systemDefault()).toOffsetDateTime();
