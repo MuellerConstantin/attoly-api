@@ -32,7 +32,7 @@ public class ShortcutController {
     }
 
     @GetMapping("/shortcuts")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     PageDto<ShortcutDto> findAll(@RequestParam(value = "page", required = false, defaultValue = "0") int selectedPage,
                                  @RequestParam(value = "perPage", required = false, defaultValue = "25") int perPage) {
         Page<Shortcut> page = shortcutService.findAll(PageRequest.of(selectedPage, perPage));
@@ -51,7 +51,7 @@ public class ShortcutController {
 
     @DeleteMapping("/shortcuts/{tag}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN') || @domainMethodSecurityEvaluator.isShortcutOwnerOf(#tag)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR') || @domainMethodSecurityEvaluator.isShortcutOwnerOf(#tag)")
     void deleteById(@PathVariable("tag") String tag) {
         shortcutService.deleteByTag(tag);
     }

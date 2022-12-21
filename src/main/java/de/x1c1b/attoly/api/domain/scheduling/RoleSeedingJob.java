@@ -40,6 +40,10 @@ public class RoleSeedingJob implements ApplicationListener<ApplicationStartedEve
             roleRepository.save(new Role(RoleName.ROLE_ADMIN, new HashSet<>()));
         }
 
+        if (!roleRepository.existsByName(RoleName.ROLE_MODERATOR)) {
+            roleRepository.save(new Role(RoleName.ROLE_MODERATOR, new HashSet<>()));
+        }
+
         if (!roleRepository.existsByName(RoleName.ROLE_USER)) {
             roleRepository.save(new Role(RoleName.ROLE_USER, new HashSet<>()));
         }

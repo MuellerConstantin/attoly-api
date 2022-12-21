@@ -30,7 +30,7 @@ public class ReportController {
     }
 
     @GetMapping("/reports")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     PageDto<ReportDto> findAll(@RequestParam(value = "page", required = false, defaultValue = "0") int selectedPage,
                                @RequestParam(value = "perPage", required = false, defaultValue = "25") int perPage) {
         Page<Report> page = reportService.findAll(PageRequest.of(selectedPage, perPage));
@@ -39,7 +39,7 @@ public class ReportController {
     }
 
     @GetMapping("/reports/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     ReportDto findById(@PathVariable("id") UUID id) {
         Report report = reportService.findById(id);
         return reportMapper.mapToDto(report);
@@ -53,7 +53,7 @@ public class ReportController {
 
     @DeleteMapping("/reports/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     void deleteById(@PathVariable("id") UUID id) {
         reportService.deleteById(id);
     }
