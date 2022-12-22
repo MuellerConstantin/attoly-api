@@ -18,4 +18,5 @@ public class PrincipalDto {
     private String email;
     private OffsetDateTime createdAt;
     private boolean emailVerified;
+    private boolean locked;
 }

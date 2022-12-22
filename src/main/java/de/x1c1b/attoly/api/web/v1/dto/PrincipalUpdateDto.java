@@ -17,7 +17,13 @@ public class PrincipalUpdateDto {
 
     private String password;
 
+    private Boolean locked;
+
     public Optional<@NullOrNotEmpty @Password String> getPassword() {
         return Optional.ofNullable(this.password);
+    }
+
+    public Optional<Boolean> getLocked() {
+        return Optional.ofNullable(this.locked);
     }
 }

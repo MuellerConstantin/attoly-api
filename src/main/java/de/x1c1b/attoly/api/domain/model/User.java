@@ -30,6 +30,10 @@ public class User extends BaseEntity {
     @Builder.Default
     private boolean emailVerified = false;
 
+    @Column(name = "locked", nullable = false)
+    @Builder.Default
+    private boolean locked = false;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",

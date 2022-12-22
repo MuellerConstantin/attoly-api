@@ -44,4 +44,7 @@ public abstract class BaseEntity implements Serializable {
     @Column(name = "deleted", nullable = false)
     @Builder.Default
     private boolean deleted = false;
+
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
 }

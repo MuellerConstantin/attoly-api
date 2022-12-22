@@ -113,6 +113,10 @@ public class UserServiceImpl implements UserService {
             user.setPassword(passwordEncoder.encode(payload.getPassword().get()));
         }
 
+        if (payload.getLocked().isPresent()) {
+            user.setLocked(payload.getLocked().get());
+        }
+
         return userRepository.save(user);
     }
 

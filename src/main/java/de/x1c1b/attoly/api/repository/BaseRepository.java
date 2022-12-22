@@ -12,6 +12,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -66,6 +67,7 @@ public interface BaseRepository<T extends BaseEntity, ID extends UUID> extends P
         }
 
         entity.setDeleted(true);
+        entity.setDeletedAt(Instant.now());
         save(entity);
     }
 
@@ -77,6 +79,7 @@ public interface BaseRepository<T extends BaseEntity, ID extends UUID> extends P
         }
 
         entity.setDeleted(true);
+        entity.setDeletedAt(Instant.now());
         save(entity);
     }
 
