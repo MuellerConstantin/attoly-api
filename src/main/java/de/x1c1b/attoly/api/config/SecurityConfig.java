@@ -154,6 +154,8 @@ public class SecurityConfig {
 
     protected void authorizeRequests(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/actuator/**")
+                .permitAll()
                 .antMatchers(HttpMethod.GET, "/site/**")
                 .permitAll()
                 .antMatchers(HttpMethod.POST, "/api/v1/users", "/api/v1/user/verify", "/api/v1/user/reset")
