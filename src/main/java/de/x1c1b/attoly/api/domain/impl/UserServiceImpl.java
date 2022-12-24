@@ -114,6 +114,12 @@ public class UserServiceImpl implements UserService {
         }
 
         if (payload.getLocked().isPresent()) {
+            boolean isAdministrator = user.getRoles().stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_ADMIN));
+
+            if (isAdministrator && !userRepository.existsAnyWithRoleExceptEmail(RoleName.ROLE_ADMIN, user.getEmail())) {
+                throw new MustBeAdministrableException();
+            }
+
             user.setLocked(payload.getLocked().get());
         }
 

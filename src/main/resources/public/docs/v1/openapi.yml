@@ -1073,6 +1073,9 @@ components:
         emailVerified:
           type: boolean
           description: Indicates if a user account is activated.
+        locked:
+          type: boolean
+          description: Indicates if a user account is locked.
       required:
         - id
         - email
