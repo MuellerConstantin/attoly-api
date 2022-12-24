@@ -7,6 +7,7 @@ import de.x1c1b.attoly.api.domain.payload.UserCreationPayload;
 import de.x1c1b.attoly.api.domain.payload.UserUpdatePayload;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,6 +31,15 @@ public interface UserService {
      * @return The requested page of users.
      */
     Page<User> findAll(Pageable pageable);
+
+    /**
+     * Loads all available users in individual pages.
+     *
+     * @param specification The specification to filter the users.
+     * @param pageable      The pagination settings.
+     * @return The requested page of users.
+     */
+    Page<User> findAll(Specification<User> specification, Pageable pageable);
 
     /**
      * Loads a user by its identifier.

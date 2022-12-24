@@ -147,6 +147,28 @@ paths:
       summary: Returns all user details.
       description: >
         Returns all user details. This endpoint is only available to administrators.
+      parameters:
+        - name: page
+          in: query
+          description: Zero based index of page to load.
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - name: perPage
+          in: query
+          description: Number of elements per page.
+          required: false
+          schema:
+            type: integer
+            example: 25
+        - name: filter
+          in: query
+          description: RSQL/FIQL based filter.
+          required: false
+          schema:
+            type: string
+            example: name=like=test
       responses:
         200:
           description: Successfully fetched all available shortcuts.
@@ -518,6 +540,21 @@ paths:
       summary: Lists all available security roles.
       description: >
         Lists all available security roles. Only administrators can retrieve all available roles.
+      parameters:
+        - name: page
+          in: query
+          description: Zero based index of page to load.
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - name: perPage
+          in: query
+          description: Number of elements per page.
+          required: false
+          schema:
+            type: integer
+            example: 25
       responses:
         200:
           description: Successfully fetched all available roles.
@@ -733,6 +770,28 @@ paths:
       summary: Lists all shortcuts.
       description: >
         Lists all available shortcuts. Only administrators can retrieve all available shortcuts.
+      parameters:
+        - name: page
+          in: query
+          description: Zero based index of page to load.
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - name: perPage
+          in: query
+          description: Number of elements per page.
+          required: false
+          schema:
+            type: integer
+            example: 25
+        - name: filter
+          in: query
+          description: RSQL/FIQL based filter.
+          required: false
+          schema:
+            type: string
+            example: name=like=test
       responses:
         200:
           description: Successfully fetched all available shortcuts.

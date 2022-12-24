@@ -1,11 +1,15 @@
 package de.x1c1b.attoly.api.web.v1;
 
+import cz.jirutka.rsql.parser.RSQLParser;
+import cz.jirutka.rsql.parser.ast.Node;
 import de.x1c1b.attoly.api.domain.PasswordResetService;
 import de.x1c1b.attoly.api.domain.UserService;
 import de.x1c1b.attoly.api.domain.UserVerificationService;
 import de.x1c1b.attoly.api.domain.model.User;
 import de.x1c1b.attoly.api.domain.payload.UserCreationPayload;
 import de.x1c1b.attoly.api.domain.payload.UserUpdatePayload;
+import de.x1c1b.attoly.api.repository.rsql.JpaRSQLOperator;
+import de.x1c1b.attoly.api.repository.rsql.JpaRSQLVisitor;
 import de.x1c1b.attoly.api.security.CurrentPrincipal;
 import de.x1c1b.attoly.api.security.Principal;
 import de.x1c1b.attoly.api.web.v1.dto.*;
@@ -13,6 +17,7 @@ import de.x1c1b.attoly.api.web.v1.dto.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -43,10 +48,17 @@ public class UserController {
     @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
     PageDto<PrincipalDto> findAll(@RequestParam(value = "page", required = false, defaultValue = "0") int selectedPage,
-                                  @RequestParam(value = "perPage", required = false, defaultValue = "25") int perPage) {
-        Page<User> page = userService.findAll(PageRequest.of(selectedPage, perPage));
-
-        return userMapper.mapToPrincipalDto(page);
+                                  @RequestParam(value = "perPage", required = false, defaultValue = "25") int perPage,
+                                  @RequestParam(value = "filter", required = false) String filter) {
+        if (filter != null && !filter.isEmpty()) {
+            Node rootNode = new RSQLParser(JpaRSQLOperator.getOperators()).parse(filter);
+            Specification<User> specification = rootNode.accept(new JpaRSQLVisitor<>());
+            Page<User> users = userService.findAll(specification, PageRequest.of(selectedPage, perPage));
+            return userMapper.mapToPrincipalDto(users);
+        } else {
+            Page<User> users = userService.findAll(PageRequest.of(selectedPage, perPage));
+            return userMapper.mapToPrincipalDto(users);
+        }
     }
 
     @GetMapping("/users/{id}")

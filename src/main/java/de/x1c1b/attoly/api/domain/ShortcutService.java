@@ -5,6 +5,7 @@ import de.x1c1b.attoly.api.domain.model.Shortcut;
 import de.x1c1b.attoly.api.domain.payload.ShortcutCreationPayload;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -29,6 +30,15 @@ public interface ShortcutService {
      * @return The requested page of shortcuts.
      */
     Page<Shortcut> findAll(Pageable pageable);
+
+    /**
+     * Loads all available shortcuts in individual pages.
+     *
+     * @param specification The specification to filter the results.
+     * @param pageable      The pagination settings.
+     * @return The requested page of shortcuts.
+     */
+    Page<Shortcut> findAll(Specification<Shortcut> specification, Pageable pageable);
 
     /**
      * Find all shortcuts created of a specific user.

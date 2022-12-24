@@ -6,6 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -18,7 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @NoRepositoryBean
-public interface BaseRepository<T extends BaseEntity, ID extends UUID> extends PagingAndSortingRepository<T, ID> {
+public interface BaseRepository<T extends BaseEntity, ID extends UUID> extends PagingAndSortingRepository<T, ID>, JpaSpecificationExecutor<T> {
 
     @Override
     @Transactional(readOnly = true)

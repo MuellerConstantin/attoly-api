@@ -1,8 +1,12 @@
 package de.x1c1b.attoly.api.web.v1;
 
+import cz.jirutka.rsql.parser.RSQLParser;
+import cz.jirutka.rsql.parser.ast.Node;
 import de.x1c1b.attoly.api.domain.ShortcutService;
 import de.x1c1b.attoly.api.domain.model.Shortcut;
 import de.x1c1b.attoly.api.domain.payload.ShortcutCreationPayload;
+import de.x1c1b.attoly.api.repository.rsql.JpaRSQLOperator;
+import de.x1c1b.attoly.api.repository.rsql.JpaRSQLVisitor;
 import de.x1c1b.attoly.api.security.CurrentPrincipal;
 import de.x1c1b.attoly.api.security.Principal;
 import de.x1c1b.attoly.api.web.v1.dto.PageDto;
@@ -12,6 +16,7 @@ import de.x1c1b.attoly.api.web.v1.dto.mapper.ShortcutMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -34,10 +39,17 @@ public class ShortcutController {
     @GetMapping("/shortcuts")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     PageDto<ShortcutDto> findAll(@RequestParam(value = "page", required = false, defaultValue = "0") int selectedPage,
-                                 @RequestParam(value = "perPage", required = false, defaultValue = "25") int perPage) {
-        Page<Shortcut> page = shortcutService.findAll(PageRequest.of(selectedPage, perPage));
-
-        return shortcutMapper.mapToDto(page);
+                                 @RequestParam(value = "perPage", required = false, defaultValue = "25") int perPage,
+                                 @RequestParam(value = "filter", required = false) String filter) {
+        if (filter != null && !filter.isEmpty()) {
+            Node rootNode = new RSQLParser(JpaRSQLOperator.getOperators()).parse(filter);
+            Specification<Shortcut> specification = rootNode.accept(new JpaRSQLVisitor<>());
+            Page<Shortcut> shortcuts = shortcutService.findAll(specification, PageRequest.of(selectedPage, perPage));
+            return shortcutMapper.mapToDto(shortcuts);
+        } else {
+            Page<Shortcut> shortcuts = shortcutService.findAll(PageRequest.of(selectedPage, perPage));
+            return shortcutMapper.mapToDto(shortcuts);
+        }
     }
 
     @PostMapping("/shortcuts")
