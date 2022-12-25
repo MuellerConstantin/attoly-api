@@ -5,6 +5,7 @@ import de.x1c1b.attoly.api.domain.model.Report;
 import de.x1c1b.attoly.api.domain.payload.ReportCreationPayload;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +26,15 @@ public interface ReportService {
      * @return The requested page of reports.
      */
     Page<Report> findAll(Pageable pageable);
+
+    /**
+     * Loads all available reports in individual pages.
+     *
+     * @param specification The specification to filter the reports.
+     * @param pageable      The pagination settings.
+     * @return The requested page of reports.
+     */
+    Page<Report> findAll(Specification<Report> specification, Pageable pageable);
 
     /**
      * Find all reports created for a specific shortcut.

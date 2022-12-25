@@ -16,8 +16,9 @@ import de.x1c1b.attoly.api.web.v1.dto.*;
 import de.x1c1b.attoly.api.web.v1.dto.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -47,16 +48,15 @@ public class UserController {
 
     @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
-    PageDto<PrincipalDto> findAll(@RequestParam(value = "page", required = false, defaultValue = "0") int selectedPage,
-                                  @RequestParam(value = "perPage", required = false, defaultValue = "25") int perPage,
+    PageDto<PrincipalDto> findAll(@PageableDefault Pageable pageable,
                                   @RequestParam(value = "filter", required = false) String filter) {
         if (filter != null && !filter.isEmpty()) {
             Node rootNode = new RSQLParser(JpaRSQLOperator.getOperators()).parse(filter);
             Specification<User> specification = rootNode.accept(new JpaRSQLVisitor<>());
-            Page<User> users = userService.findAll(specification, PageRequest.of(selectedPage, perPage));
+            Page<User> users = userService.findAll(specification, pageable);
             return userMapper.mapToPrincipalDto(users);
         } else {
-            Page<User> users = userService.findAll(PageRequest.of(selectedPage, perPage));
+            Page<User> users = userService.findAll(pageable);
             return userMapper.mapToPrincipalDto(users);
         }
     }

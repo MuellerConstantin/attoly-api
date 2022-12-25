@@ -16,7 +16,9 @@ import de.x1c1b.attoly.api.web.v1.dto.mapper.ShortcutMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -38,16 +40,15 @@ public class ShortcutController {
 
     @GetMapping("/shortcuts")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
-    PageDto<ShortcutDto> findAll(@RequestParam(value = "page", required = false, defaultValue = "0") int selectedPage,
-                                 @RequestParam(value = "perPage", required = false, defaultValue = "25") int perPage,
+    PageDto<ShortcutDto> findAll(@PageableDefault Pageable pageable,
                                  @RequestParam(value = "filter", required = false) String filter) {
         if (filter != null && !filter.isEmpty()) {
             Node rootNode = new RSQLParser(JpaRSQLOperator.getOperators()).parse(filter);
             Specification<Shortcut> specification = rootNode.accept(new JpaRSQLVisitor<>());
-            Page<Shortcut> shortcuts = shortcutService.findAll(specification, PageRequest.of(selectedPage, perPage));
+            Page<Shortcut> shortcuts = shortcutService.findAll(specification, pageable);
             return shortcutMapper.mapToDto(shortcuts);
         } else {
-            Page<Shortcut> shortcuts = shortcutService.findAll(PageRequest.of(selectedPage, perPage));
+            Page<Shortcut> shortcuts = shortcutService.findAll(pageable);
             return shortcutMapper.mapToDto(shortcuts);
         }
     }
