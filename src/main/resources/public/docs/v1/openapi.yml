@@ -564,43 +564,18 @@ paths:
       summary: Lists all available security roles.
       description: >
         Lists all available security roles. Only administrators can retrieve all available roles.
-      parameters:
-        - name: page
-          in: query
-          description: Zero based index of page to load.
-          required: false
-          schema:
-            type: integer
-            example: 0
-        - name: perPage
-          in: query
-          description: Number of elements per page.
-          required: false
-          schema:
-            type: integer
-            example: 25
-        - name: sort
-          in: query
-          description: Sort criteria.
-          required: false
-          schema:
-            type: string
-            example: createdAt,desc
       responses:
         200:
           description: Successfully fetched all available roles.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RolePageDto"
+                type: array
+                items:
+                  $ref: "#/components/schemas/RoleDto"
               example:
-                page: 0
-                perPage: 25
-                totalElements: 1
-                totalPages: 1
-                content:
-                  - id: 97aeee91-1fd4-4228-9c76-33564188e6fd
-                    name: ROLE_ADMIN
+                - id: 97aeee91-1fd4-4228-9c76-33564188e6fd
+                  name: ROLE_ADMIN
         401:
           $ref: "#/components/responses/Unauthenticated"
         403:

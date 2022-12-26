@@ -6,17 +6,14 @@ import de.x1c1b.attoly.api.domain.model.Role;
 import de.x1c1b.attoly.api.domain.model.User;
 import de.x1c1b.attoly.api.security.CurrentPrincipal;
 import de.x1c1b.attoly.api.security.Principal;
-import de.x1c1b.attoly.api.web.v1.dto.PageDto;
 import de.x1c1b.attoly.api.web.v1.dto.RoleDto;
 import de.x1c1b.attoly.api.web.v1.dto.mapper.RoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -36,11 +33,9 @@ public class RoleController {
 
     @GetMapping("/roles")
     @PreAuthorize("hasRole('ADMIN')")
-    PageDto<RoleDto> findAll(@RequestParam(value = "page", required = false, defaultValue = "0") int selectedPage,
-                             @RequestParam(value = "perPage", required = false, defaultValue = "25") int perPage) {
-        Page<Role> page = roleService.findAll(PageRequest.of(selectedPage, perPage));
-
-        return roleMapper.mapToDto(page);
+    List<RoleDto> findAll() {
+        List<Role> roles = roleService.findAll();
+        return roleMapper.mapToDto(roles);
     }
 
     @GetMapping("/roles/{id}")
@@ -53,9 +48,8 @@ public class RoleController {
 
     @GetMapping("/users/{userId}/roles")
     @PreAuthorize("hasRole('ADMIN')")
-    Set<RoleDto> findAllByUser(@PathVariable("userId") UUID userId) {
+    List<RoleDto> findAllByUser(@PathVariable("userId") UUID userId) {
         User user = userService.findById(userId);
-
         return roleMapper.mapToDto(user.getRoles());
     }
 
@@ -76,9 +70,8 @@ public class RoleController {
     }
 
     @GetMapping("/user/me/roles")
-    Set<RoleDto> findCurrentUser(@CurrentPrincipal Principal principal) {
+    List<RoleDto> findCurrentUser(@CurrentPrincipal Principal principal) {
         User user = userService.findByEmail(principal.getEmail());
-
         return roleMapper.mapToDto(user.getRoles());
     }
 }

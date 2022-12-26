@@ -7,7 +7,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface RoleMapper {
@@ -18,5 +19,5 @@ public interface RoleMapper {
     @Mapping(target = "perPage", source = "size")
     PageDto<RoleDto> mapToDto(Page<Role> roles);
 
-    Set<RoleDto> mapToDto(Set<Role> roles);
+    List<RoleDto> mapToDto(Collection<Role> roles);
 }
