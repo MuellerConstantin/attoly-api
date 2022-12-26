@@ -1,10 +1,10 @@
 package de.x1c1b.attoly.api.web.v1.dto.mapper;
 
-import de.x1c1b.attoly.api.domain.model.Report;
-import de.x1c1b.attoly.api.domain.payload.ReportCreationPayload;
+import de.x1c1b.attoly.api.domain.model.Complaint;
+import de.x1c1b.attoly.api.domain.payload.ComplaintCreationPayload;
+import de.x1c1b.attoly.api.web.v1.dto.ComplaintCreationDto;
+import de.x1c1b.attoly.api.web.v1.dto.ComplaintDto;
 import de.x1c1b.attoly.api.web.v1.dto.PageDto;
-import de.x1c1b.attoly.api.web.v1.dto.ReportCreationDto;
-import de.x1c1b.attoly.api.web.v1.dto.ReportDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
@@ -14,15 +14,15 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
 @Mapper(componentModel = "spring")
-public interface ReportMapper {
+public interface ComplaintMapper {
 
-    ReportCreationPayload mapToPayload(ReportCreationDto dto);
+    ComplaintCreationPayload mapToPayload(ComplaintCreationDto dto);
 
-    ReportDto mapToDto(Report report);
+    ComplaintDto mapToDto(Complaint complaint);
 
     @Mapping(target = "page", source = "number")
     @Mapping(target = "perPage", source = "size")
-    PageDto<ReportDto> mapToDto(Page<Report> reports);
+    PageDto<ComplaintDto> mapToDto(Page<Complaint> reports);
 
     default OffsetDateTime mapInstantToOffsetDateTime(Instant instant) {
         return instant.atZone(ZoneId.systemDefault()).toOffsetDateTime();

@@ -56,6 +56,23 @@ info:
     items by default.
     ---
     
+    In addition to pagination, all endpoints that support pagination also support
+    sorting. The sorting is implemented via the query parameter `sort`. The sorting
+    should be specified in the following format: `property,property(,ASC|DESC)(,IgnoreCase)`.
+    The default sort direction is case-sensitive ascending.
+    
+    ```
+    ?page=0&perPage=30&sort=firstname&sort=lastname,desc&sort=city,ignorecase
+    ```
+    
+    ## Filtering
+    Some endpoints, usually the same ones that support pagination, also support
+    result filtering. Result filtering can be used to determine which results
+    are to be displayed on the basis of RSQL/FIQL. The filtering is implemented
+    via the query parameter `filter`. See
+    [FIQL: The Feed Item Query Language](https://datatracker.ietf.org/doc/html/draft-nottingham-atompub-fiql-00)
+    for syntax details.
+    
     ## Internationalization
     In principle, this API supports internationalization, but to a limited extent.
     Currently internationalization is supported for error messages and validation
@@ -107,8 +124,8 @@ tags:
     description: Allows the client to authenticate themselves.
   - name: Shortcut
     description: Allows shortcuts to be managed.
-  - name: Report
-    description: Manages reports of shortcuts, i.e. all reports about potentially unwanted shortcuts.
+  - name: Complaint
+    description: Manages complaints of shortcuts, i.e. all complaints about potentially unwanted shortcuts.
 paths:
   /users:
     post:
@@ -162,6 +179,13 @@ paths:
           schema:
             type: integer
             example: 25
+        - name: sort
+          in: query
+          description: Sort criteria.
+          required: false
+          schema:
+            type: string
+            example: createdAt,desc
         - name: filter
           in: query
           description: RSQL/FIQL based filter.
@@ -555,6 +579,13 @@ paths:
           schema:
             type: integer
             example: 25
+        - name: sort
+          in: query
+          description: Sort criteria.
+          required: false
+          schema:
+            type: string
+            example: createdAt,desc
       responses:
         200:
           description: Successfully fetched all available roles.
@@ -626,15 +657,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RolePageDto"
+                type: array
+                items:
+                  $ref: "#/components/schemas/RoleDto"
               example:
-                page: 0
-                perPage: 25
-                totalElements: 1
-                totalPages: 1
-                content:
-                  - id: 97aeee91-1fd4-4228-9c76-33564188e6fd
-                    name: ROLE_ADMIN
+                - id: 97aeee91-1fd4-4228-9c76-33564188e6fd
+                  name: ROLE_ADMIN
         401:
           $ref: "#/components/responses/Unauthenticated"
         403:
@@ -654,15 +682,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RolePageDto"
+                type: array
+                items:
+                  $ref: "#/components/schemas/RoleDto"
               example:
-                page: 0
-                perPage: 25
-                totalElements: 1
-                totalPages: 1
-                content:
-                  - id: 97aeee91-1fd4-4228-9c76-33564188e6fd
-                    name: ROLE_USER
+                - id: 97aeee91-1fd4-4228-9c76-33564188e6fd
+                  name: ROLE_USER
         401:
           $ref: "#/components/responses/Unauthenticated"
   /users/{userId}/roles/{roleId}:
@@ -785,6 +810,13 @@ paths:
           schema:
             type: integer
             example: 25
+        - name: sort
+          in: query
+          description: Sort criteria.
+          required: false
+          schema:
+            type: string
+            example: createdAt,desc
         - name: filter
           in: query
           description: RSQL/FIQL based filter.
@@ -891,6 +923,13 @@ paths:
           schema:
             type: integer
             example: 25
+        - name: sort
+          in: query
+          description: Sort criteria.
+          required: false
+          schema:
+            type: string
+            example: createdAt,desc
       responses:
         200:
           description: Successfully fetched all available shortcuts.
@@ -910,13 +949,13 @@ paths:
                     createdAt: 2022-06-27T15:18:16.706776+02:00
         401:
           $ref: "#/components/responses/Unauthenticated"
-  /shortcuts/{tag}/reports:
+  /shortcuts/{tag}/complaints:
     post:
       tags:
-        - Report
-      summary: Reports a shortcut.
+        - Complaint
+      summary: Complaints a shortcut.
       description: >
-        Reports a shortcut based on its tag. The report is sent to the
+        Complains a shortcut based on its tag. The complaint is sent to the
         administrator of the service. The administrator can then decide
         whether to delete the shortcut or not.
       parameters:
@@ -932,28 +971,28 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ReportCreationDto"
+              $ref: "#/components/schemas/ComplaintCreationDto"
             example:
               reason: SPAM
               comment: Contains offensive content.
       responses:
         204:
-          description: Successfully reported the shortcut.
+          description: Successfully complained the shortcut.
         404:
           $ref: "#/components/responses/NotFound"
         401:
           $ref: "#/components/responses/Unauthenticated"
         403:
           $ref: "#/components/responses/AccessDenied"
-  /reports:
+  /complaints:
     get:
       tags:
-        - Report
-      summary: Retrieves all reports.
+        - Complaint
+      summary: Retrieves all complaints.
       description: >
-        Loads the list of all reports. The result is returned in pages
+        Loads the list of all complaints. The result is returned in pages
         because of the possible size. Only administrators are able to
-        retrieve reports.
+        retrieve complaints.
       parameters:
         - name: page
           in: query
@@ -969,13 +1008,20 @@ paths:
           schema:
             type: integer
             example: 25
+        - name: sort
+          in: query
+          description: Sort criteria.
+          required: false
+          schema:
+            type: string
+            example: createdAt,desc
       responses:
         200:
-          description: Successfully fetched all available reports.
+          description: Successfully fetched all available complaints.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ReportPageDto"
+                $ref: "#/components/schemas/ComplaintPageDto"
               example:
                 page: 0
                 perPage: 25
@@ -990,28 +1036,28 @@ paths:
           $ref: "#/components/responses/Unauthenticated"
         403:
           $ref: "#/components/responses/AccessDenied"
-  /reports/{id}:
+  /complaints/{id}:
     get:
       tags:
-        - Report
-      summary: Retrieves a single report.
+        - Complaint
+      summary: Retrieves a single complaint.
       description: >
-        Loads a single report based on its unique identifier.
+        Loads a single complaint based on its unique identifier.
       parameters:
         - name: id
           in: path
-          description: Unique identifier of the report.
+          description: Unique identifier of the complaint.
           required: true
           schema:
             type: string
             example: 97aeee91-1fd4-4228-9c76-33564188e6fd
       responses:
         200:
-          description: Successfully fetched the selected report.
+          description: Successfully fetched the selected complaint.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ReportDto"
+                $ref: "#/components/schemas/ComplaintDto"
               example:
                 id: 97aeee91-1fd4-4228-9c76-33564188e6fd
                 reason: SPAM
@@ -1025,22 +1071,22 @@ paths:
           $ref: "#/components/responses/AccessDenied"
     delete:
       tags:
-        - Report
-      summary: Deletes a single report.
+        - Complaint
+      summary: Deletes a single complaint.
       description: >
-        Deletes a single report based on its unique identifier. Only
-        administrators can delete reports.
+        Deletes a single complaint based on its unique identifier. Only
+        administrators can delete complaints.
       parameters:
         - name: id
           in: path
-          description: Unique identifier of the report.
+          description: Unique identifier of the complaint.
           required: true
           schema:
             type: string
             example: 97aeee91-1fd4-4228-9c76-33564188e6fd
       responses:
         204:
-          description: Successfully deleted the selected report.
+          description: Successfully deleted the selected complaint.
         403:
           $ref: "#/components/responses/AccessDenied"
         404:
@@ -1334,13 +1380,13 @@ components:
       required:
         - tag
         - url
-    ReportCreationDto:
+    ComplaintCreationDto:
       type: object
       properties:
         reason:
           type: string
           enum: [ SPAM, MALWARE, PHISHING, DEFACEMENT ]
-          description: The reason for reporting the shortcut
+          description: The reason for complaining about the shortcut
         comment:
           type: string
           description: A comment explaining the reason in more detail.
@@ -1349,17 +1395,17 @@ components:
       required:
         - reason
         - comment
-    ReportDto:
+    ComplaintDto:
       type: object
       properties:
         id:
           type: string
           format: uuid
-          description: Unique identifier of report.
+          description: Unique identifier of complaint.
         reason:
           type: string
           enum: [ SPAM, MALWARE, PHISHING, DEFACEMENT ]
-          description: The reason for reporting the shortcut
+          description: The reason for complaining about the shortcut
         comment:
           type: string
           description: A comment explaining the reason in more detail.
@@ -1368,13 +1414,13 @@ components:
         createdAt:
           type: string
           format: date-time
-          description: Time at which the report was created.
+          description: Time at which the complaint was created.
       required:
         - id
         - reason
         - comment
         - createdAt
-    ReportPageDto:
+    ComplaintPageDto:
       allOf:
         - $ref: "#/components/schemas/PageDto"
         - type: object
@@ -1382,7 +1428,7 @@ components:
             content:
               type: array
               items:
-                $ref: "#/components/schemas/ReportDto"
+                $ref: "#/components/schemas/ComplaintDto"
           required:
             - content
   responses:

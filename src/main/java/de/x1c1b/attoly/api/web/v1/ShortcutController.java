@@ -15,7 +15,6 @@ import de.x1c1b.attoly.api.web.v1.dto.ShortcutDto;
 import de.x1c1b.attoly.api.web.v1.dto.mapper.ShortcutMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
@@ -77,9 +76,8 @@ public class ShortcutController {
 
     @GetMapping("/user/me/shortcuts")
     PageDto<ShortcutDto> findCurrentUser(@CurrentPrincipal Principal principal,
-                                         @RequestParam(value = "page", required = false, defaultValue = "0") int selectedPage,
-                                         @RequestParam(value = "perPage", required = false, defaultValue = "25") int perPage) {
-        Page<Shortcut> page = shortcutService.findAllByOwnership(principal.getEmail(), PageRequest.of(selectedPage, perPage));
+                                         @PageableDefault Pageable pageable) {
+        Page<Shortcut> page = shortcutService.findAllByOwnership(principal.getEmail(), pageable);
 
         return shortcutMapper.mapToDto(page);
     }

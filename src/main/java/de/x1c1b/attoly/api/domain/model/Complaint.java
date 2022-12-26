@@ -6,13 +6,13 @@ import lombok.experimental.SuperBuilder;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "reports")
+@Table(name = "complaints")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
-public class Report extends BaseEntity {
+public class Complaint extends BaseEntity {
 
     @Column(name = "reason", nullable = false)
     @Enumerated(EnumType.STRING)

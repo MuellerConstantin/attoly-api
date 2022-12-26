@@ -36,5 +36,5 @@ public class Shortcut extends BaseEntity {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @Builder.Default
-    private List<Report> reports = new ArrayList<>();
+    private List<Complaint> complaints = new ArrayList<>();
 }

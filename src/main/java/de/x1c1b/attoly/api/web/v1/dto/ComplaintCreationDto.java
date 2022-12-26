@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Data
 @Builder
-public class ReportCreationDto {
+public class ComplaintCreationDto {
 
     @NotNull
     @EnumValues({"SPAM", "PHISHING", "MALWARE", "DEFACEMENT"})

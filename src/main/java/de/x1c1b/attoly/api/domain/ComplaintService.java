@@ -1,8 +1,8 @@
 package de.x1c1b.attoly.api.domain;
 
 import de.x1c1b.attoly.api.domain.exception.EntityNotFoundException;
-import de.x1c1b.attoly.api.domain.model.Report;
-import de.x1c1b.attoly.api.domain.payload.ReportCreationPayload;
+import de.x1c1b.attoly.api.domain.model.Complaint;
+import de.x1c1b.attoly.api.domain.payload.ComplaintCreationPayload;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -10,14 +10,14 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.List;
 import java.util.UUID;
 
-public interface ReportService {
+public interface ComplaintService {
 
     /**
      * Loads all available reports. This can lead to performance problems.
      *
      * @return The list of all reports.
      */
-    List<Report> findAll();
+    List<Complaint> findAll();
 
     /**
      * Loads all available reports in individual pages.
@@ -25,7 +25,7 @@ public interface ReportService {
      * @param pageable The pagination settings.
      * @return The requested page of reports.
      */
-    Page<Report> findAll(Pageable pageable);
+    Page<Complaint> findAll(Pageable pageable);
 
     /**
      * Loads all available reports in individual pages.
@@ -34,7 +34,7 @@ public interface ReportService {
      * @param pageable      The pagination settings.
      * @return The requested page of reports.
      */
-    Page<Report> findAll(Specification<Report> specification, Pageable pageable);
+    Page<Complaint> findAll(Specification<Complaint> specification, Pageable pageable);
 
     /**
      * Find all reports created for a specific shortcut.
@@ -43,7 +43,7 @@ public interface ReportService {
      * @param pageable The pagination settings.
      * @return The requested page of reports.
      */
-    Page<Report> findAllByShortcut(String tag, Pageable pageable);
+    Page<Complaint> findAllByShortcut(String tag, Pageable pageable);
 
     /**
      * Find all reports created for a specific shortcut.
@@ -52,7 +52,7 @@ public interface ReportService {
      * @param pageable The pagination settings.
      * @return The requested page of reports.
      */
-    Page<Report> findAllByShortcut(UUID id, Pageable pageable);
+    Page<Complaint> findAllByShortcut(UUID id, Pageable pageable);
 
     /**
      * Loads a report by its identifier.
@@ -61,11 +61,11 @@ public interface ReportService {
      * @return The loaded report.
      * @throws EntityNotFoundException Thrown if the report cannot be found.
      */
-    Report findById(UUID id) throws EntityNotFoundException;
+    Complaint findById(UUID id) throws EntityNotFoundException;
 
-    void create(String tag, ReportCreationPayload payload) throws EntityNotFoundException;
+    void create(String tag, ComplaintCreationPayload payload) throws EntityNotFoundException;
 
-    void create(UUID id, ReportCreationPayload payload) throws EntityNotFoundException;
+    void create(UUID id, ComplaintCreationPayload payload) throws EntityNotFoundException;
 
     /**
      * Deletes a report using the identifier.

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class ReportCreationPayload {
+public class ComplaintCreationPayload {
 
     private String reason;
     private String comment;
