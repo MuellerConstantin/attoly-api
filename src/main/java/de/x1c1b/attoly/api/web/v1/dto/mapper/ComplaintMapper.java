@@ -18,6 +18,7 @@ public interface ComplaintMapper {
 
     ComplaintCreationPayload mapToPayload(ComplaintCreationDto dto);
 
+    @Mapping(target = "shortcutTag", source = "shortcut.tag")
     ComplaintDto mapToDto(Complaint complaint);
 
     @Mapping(target = "page", source = "number")

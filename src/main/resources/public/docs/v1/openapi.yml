@@ -1393,6 +1393,9 @@ components:
           type: string
           format: date-time
           description: Time at which the complaint was created.
+        shortcutTag:
+          type: string
+          description: Unique tag which is used as a short link.
       required:
         - id
         - reason

@@ -18,4 +18,5 @@ public class ComplaintDto {
     private String reason;
     private String comment;
     private OffsetDateTime createdAt;
+    private String shortcutTag;
 }
