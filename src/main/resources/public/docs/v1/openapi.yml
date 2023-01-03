@@ -1329,6 +1329,9 @@ components:
           type: string
           format: date-time
           description: Time at which the shortcut was created.
+        anonymous:
+          type: boolean
+          description: Indicates if the shortcut was created anonymously.
       required:
         - id
         - tag

@@ -47,7 +47,7 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     PageDto<PrincipalDto> findAll(@PageableDefault Pageable pageable,
                                   @RequestParam(value = "filter", required = false) String filter) {
         if (filter != null && !filter.isEmpty()) {

@@ -18,4 +18,5 @@ public class ShortcutDto {
     private String tag;
     private String url;
     private OffsetDateTime createdAt;
+    private boolean anonymous;
 }
