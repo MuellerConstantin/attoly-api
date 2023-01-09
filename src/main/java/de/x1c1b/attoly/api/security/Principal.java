@@ -8,25 +8,33 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class Principal implements UserDetails {
+public class Principal implements UserDetails, OAuth2User {
 
     private User user;
+    private String name;
+
+    @Builder.Default
+    private Map<String, Object> attributes = new HashMap<>();
 
     @Builder.Default
     private Set<GrantedAuthority> authorities = new HashSet<>();
 
     public Principal(User user) {
         this.user = user;
+    }
+
+    public Principal(User user, Map<String, Object> attributes) {
+        this.user = user;
+        this.attributes = attributes;
     }
 
     @Override

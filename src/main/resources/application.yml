@@ -1,6 +1,14 @@
 spring:
   application:
     name: attoly-api
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            scope:
+              - user:email
+              - read:user
   messages:
     basename: messages/validation, messages/error
     encoding: UTF-8

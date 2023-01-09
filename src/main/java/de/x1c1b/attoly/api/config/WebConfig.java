@@ -3,6 +3,7 @@ package de.x1c1b.attoly.api.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -41,5 +42,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public PageableHandlerMethodArgumentResolverCustomizer pageableResolverCustomizer() {
         return customizer -> customizer.setSizeParameterName("perPage");
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }

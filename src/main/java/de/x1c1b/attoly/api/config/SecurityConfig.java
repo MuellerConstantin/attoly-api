@@ -2,6 +2,7 @@ package de.x1c1b.attoly.api.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.x1c1b.attoly.api.security.ajax.AjaxAuthenticationProcessingFilterConfigurer;
+import de.x1c1b.attoly.api.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import de.x1c1b.attoly.api.security.token.AccessToken;
 import de.x1c1b.attoly.api.security.token.RefreshToken;
 import de.x1c1b.attoly.api.security.token.TokenProvider;
@@ -24,11 +25,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -52,10 +56,19 @@ public class SecurityConfig {
     private AuthenticationSuccessHandler authenticationSuccessHandler;
 
     @Autowired
+    private SimpleUrlAuthenticationSuccessHandler simpleUrlAuthenticationSuccessHandler;
+
+    @Autowired
+    private SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private DefaultOAuth2UserService oAuth2UserService;
 
     @Autowired
     private TokenProvider<AccessToken> accessTokenProvider;
@@ -72,6 +85,11 @@ public class SecurityConfig {
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
+        return new HttpCookieOAuth2AuthorizationRequestRepository();
     }
 
     @Bean
@@ -130,6 +148,15 @@ public class SecurityConfig {
     }
 
     protected void authenticateRequests(HttpSecurity httpSecurity) throws Exception {
+
+        httpSecurity.oauth2Login()
+                .userInfoEndpoint().userService(oAuth2UserService)
+                .and()
+                .authorizationEndpoint()
+                .authorizationRequestRepository(cookieAuthorizationRequestRepository())
+                .and()
+                .successHandler(simpleUrlAuthenticationSuccessHandler)
+                .failureHandler(simpleUrlAuthenticationFailureHandler);
 
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);

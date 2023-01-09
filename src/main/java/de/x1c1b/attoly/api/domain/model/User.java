@@ -23,7 +23,7 @@ public class User extends BaseEntity {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
 
     @Column(name = "email_verified", nullable = false)
@@ -33,6 +33,13 @@ public class User extends BaseEntity {
     @Column(name = "locked", nullable = false)
     @Builder.Default
     private boolean locked = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "identity_provider")
+    private IdentityProvider identityProvider;
+
+    @Column(name = "identity_provider_id")
+    private String identityProviderId;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
