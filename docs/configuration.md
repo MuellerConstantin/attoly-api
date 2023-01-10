@@ -1,52 +1,60 @@
 # Configuration
 
-The configuration can be done in different ways,
+The configuration is based on the used Spring Boot framework. For the various configuration options that Spring Boot
+offers,
 see [Spring Externalized Configuration](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.external-config)
-for details. Usually via environment variables or via so-called property files, the latter should be found in the
-current working directory under the filename *application.yml*. Basically, the entire application can be personalized
-via external configuration. Settings relevant to the application are listed below, for further options please see
-[Common Application Properties](https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html)
+.
+Usually property files or environment variables are used, the latter should be found in the current working directory.
+Basically, the entire application can be personalized via external configuration. Settings relevant to the application
+are listed below, for further options please
+see [Common Application Properties](https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html)
 .
 
-| Property                                                       | Environment Variable                                           | Description                                                                                                                | Required |
-|----------------------------------------------------------------|----------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|----------|
-| server.port                                                    | SERVER_PORT                                                    | Port of the internal application server. By default it listens on port 8080.                                               | false    |
-| spring.datasource.url                                          | SPRING_DATASOURCE_URL                                          | The URL to the relational database to use.¹                                                                                | true     |
-| spring.datasource.driver-class-name                            | SPRING_DATASOURCE_DRIVERCLASSNAME                              | The database driver used to control database.                                                                              | true     |
-| spring.datasource.username                                     | SPRING_DATASOURCE_USERNAME                                     | The database user with which access is made.                                                                               | false    |
-| spring.datasource.password                                     | SPRING_DATASOURCE_PASSWORD                                     | An optional password associated with the database user.                                                                    | false    |
-| spring.redis.host                                              | SPRING_REDIS_HOST                                              | The host of the Redis database to use. This is mainly required for temporary data.                                         | true     |
-| spring.redis.port                                              | SPRING_REDIS_PORT                                              | The port of the Redis database.                                                                                            | true     |
-| spring.redis.username                                          | SPRING_REDIS_USERNAME                                          | An optional user to authenticate with redis.                                                                               | false    |
-| spring.redis.password                                          | SPRING_REDIS_PASSWORD                                          | If authentication is required, the password for the user.                                                                  | false    |
-| spring.redis.database                                          | SPRING_REDIS_DATABASE                                          | The Redis Server database to use. By default, database 0 is used.                                                          | false    |
-| spring.mail.host                                               | SPRING_MAIL_HOST                                               | Host of the SMTP server used by Java Mail.                                                                                 | true     |
-| spring.mail.port                                               | SPRING_MAIL_PORT                                               | Port of the SMTP server used by Java Mail.                                                                                 | true     |
-| spring.mail.username                                           | SPRING_MAIL_USERNAME                                           | Name of user to authenticate with the SMTP server.                                                                         | false    |
-| spring.mail.password                                           | SPRING_MAIL_PASSWORD                                           | Password of the user to authenticate with the SMTP server.                                                                 | false    |
-| attoly.security.token.access.secret                            | ATTOLY_SECURITY_TOKEN_ACCESS_SECRET                            | The secret used to sign the JWT access tokens.                                                                             | true     |
-| attoly.security.token.access.expiresIn                         | ATTOLY_SECURITY_TOKEN_ACCESS_EXPIRESIN                         | The duration in milliseconds after which the access token expires.                                                         | false    |
-| attoly.security.token.refresh.length                           | ATTOLY_SECURITY_TOKEN_REFRESH_LENGTH                           | The length of the opaque refresh token.                                                                                    | false    |
-| attoly.security.token.refresh.expiresIn                        | ATTOLY_SECURITY_TOKEN_REFRESH_EXPIRESIN                        | The duration in milliseconds after which the refresh token expires.                                                        | false    |
-| attoly.web.verify-user-uri                                     | ATTOLY_WEB_VERIFYUSERURI                                       | The URL of the user verification page of the 1st party client. This URL enables a single click forwarding from the e-mail. | true     |
-| attoly.web.reset-password-uri                                  | ATTOLY_WEB_RESETPASSWORDURI                                    | The URL of the 1st party client's password reset page. This URL enables a single click forwarding from the e-mail.         | true     |
-| spring.security.oauth2.client.registration.github.clientId     | SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GITHUB_CLIENTID     | The unique identifier for the registered GitHub OAuth2 application.                                                        | true     |
-| spring.security.oauth2.client.registration.github.clientSecret | SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GITHUB_CLIENTSECRET | The secret of the registered GitHub OAuth2 application.                                                                    | true     |
+Each of the listed properties below can also be configured via environment variables. The name of the environment
+variable corresponds to the name of the property in upper case, with the period separator being replaced by an
+underscore and dashes are removed. Please
+see [Binding From Environment Variables](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables)
+for details.
+
+| Property                                                       | Description                                                                                                                | Required |
+|----------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|----------|
+| server.port                                                    | Port of the internal application server. By default it listens on port 8080.                                               | false    |
+| spring.datasource.url                                          | The URL to the relational database to use.¹                                                                                | true     |
+| spring.datasource.driver-class-name                            | The database driver used to control database.                                                                              | true     |
+| spring.datasource.username                                     | The database user with which access is made.                                                                               | false    |
+| spring.datasource.password                                     | An optional password associated with the database user.                                                                    | false    |
+| spring.redis.host                                              | The host of the Redis database to use. This is mainly required for temporary data.                                         | true     |
+| spring.redis.port                                              | The port of the Redis database.                                                                                            | true     |
+| spring.redis.username                                          | An optional user to authenticate with redis.                                                                               | false    |
+| spring.redis.password                                          | If authentication is required, the password for the user.                                                                  | false    |
+| spring.redis.database                                          | The Redis Server database to use. By default, database 0 is used.                                                          | false    |
+| spring.mail.host                                               | Host of the SMTP server used by Java Mail.                                                                                 | true     |
+| spring.mail.port                                               | Port of the SMTP server used by Java Mail.                                                                                 | true     |
+| spring.mail.username                                           | Name of user to authenticate with the SMTP server.                                                                         | false    |
+| spring.mail.password                                           | Password of the user to authenticate with the SMTP server.                                                                 | false    |
+| spring.security.oauth2.client.registration.github.clientId     | The unique identifier for the registered GitHub OAuth2 application.                                                        | true     |
+| spring.security.oauth2.client.registration.github.clientSecret | The secret of the registered GitHub OAuth2 application.                                                                    | true     |
+| attoly.security.token.access.secret                            | The secret used to sign the JWT access tokens.                                                                             | true     |
+| attoly.security.token.access.expiresIn                         | The duration in milliseconds after which the access token expires.                                                         | false    |
+| attoly.security.token.refresh.length                           | The length of the opaque refresh token.                                                                                    | false    |
+| attoly.security.token.refresh.expiresIn                        | The duration in milliseconds after which the refresh token expires.                                                        | false    |
+| attoly.web.verify-user-uri                                     | The URL of the user verification page of the 1st party client. This URL enables a single click forwarding from the e-mail. | true     |
+| attoly.web.reset-password-uri                                  | The URL of the 1st party client's password reset page. This URL enables a single click forwarding from the e-mail.         | true     |
 
 <small>¹In principle, any JPA/Hibernate capable relational database can be used. For this, however, the application must
-also
-have the corresponding drivers as a dependency in the Java Classpath. By default, only the MySQL drivers are included
+also have the corresponding drivers as a dependency in the Java Classpath. By default, only the MySQL drivers are
+included
 with the application.</small>
 
 In addition, the application uses various cron and start up jobs to set up the database and environment. Below are the
 options to enable/disable and configure these jobs.
 
-| Property                                                      | Environment Variable                                      | Description                                                                                                                                                                                      | Required |
-|---------------------------------------------------------------|-----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
-| attoly.scheduling.jobs.anonymous-shortcut-clean-up.enabled    | ATTOLY_SCHEDULING_JOBS_ANONYMOUSSHORTCUTCLEANUP_ENABLED   | Activates or deactivates the cron job, which removes anonymous shortcuts after a certain period of time.                                                                                         | false    |
-| attoly.scheduling.jobs.anonymous-shortcut-clean-up.cron       | ATTOLY_SCHEDULING_JOBS_ANONYMOUSSHORTCUTCLEANUP_CRON      | Sets the time at which the job should run cyclically. Must be a cron expression.                                                                                                                 | false    |
-| attoly.scheduling.jobs.anonymous-shortcut-clean-up.expires-in | ATTOLY_SCHEDULING_JOBS_ANONYMOUSSHORTCUTCLEANUP_EXPIRESIN | Sets the duration in milliseconds after which an anonymous shortcut expires.                                                                                                                     | false    |
-| attoly.scheduling.jobs.role-seeding.enabled                   | ATTOLY_SCHEDULING_JOBS_ROLESEEDING_ENABLED                | Enables/disables the job that creates the security roles when the application starts, if they don't already exist. Alternatively, the roles must be created manually in the database.            | false    |
-| attoly.scheduling.jobs.initial-admin-creation.enabled         | ATTOLY_SCHEDULING_JOBS_INITIALADMINCREATION_ENABLED       | Activates/deactivates the job which allows to create the default admin in the database. Alternatively, this must be created manually, since an administrator is required to manage the platform. | false    |
-| attoly.scheduling.jobs.initial-admin-creation.email           | ATTOLY_SCHEDULING_JOBS_INITIALADMINCREATION_EMAIL         | E-mail address of the default admin account to be created.                                                                                                                                       | false    |
-| attoly.scheduling.jobs.initial-admin-creation.password        | ATTOLY_SCHEDULING_JOBS_INITIALADMINCREATION_PASSWORD      | Password of the default admin account to be created.                                                                                                                                             | false    |
+| Property                                                      | Description                                                                                                                                                                                      | Required |
+|---------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| attoly.scheduling.jobs.anonymous-shortcut-clean-up.enabled    | Activates or deactivates the cron job, which removes anonymous shortcuts after a certain period of time.                                                                                         | false    |
+| attoly.scheduling.jobs.anonymous-shortcut-clean-up.cron       | Sets the time at which the job should run cyclically. Must be a cron expression.                                                                                                                 | false    |
+| attoly.scheduling.jobs.anonymous-shortcut-clean-up.expires-in | Sets the duration in milliseconds after which an anonymous shortcut expires.                                                                                                                     | false    |
+| attoly.scheduling.jobs.role-seeding.enabled                   | Enables/disables the job that creates the security roles when the application starts, if they don't already exist. Alternatively, the roles must be created manually in the database.            | false    |
+| attoly.scheduling.jobs.initial-admin-creation.enabled         | Activates/deactivates the job which allows to create the default admin in the database. Alternatively, this must be created manually, since an administrator is required to manage the platform. | false    |
+| attoly.scheduling.jobs.initial-admin-creation.email           | E-mail address of the default admin account to be created.                                                                                                                                       | false    |
+| attoly.scheduling.jobs.initial-admin-creation.password        | Password of the default admin account to be created.                                                                                                                                             | false    |
