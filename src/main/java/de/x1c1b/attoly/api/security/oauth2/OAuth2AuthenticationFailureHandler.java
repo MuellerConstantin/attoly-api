@@ -12,16 +12,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static de.x1c1b.attoly.api.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
+import static de.x1c1b.attoly.api.security.oauth2.StatelessOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 
 @Component
 public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
-    HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+    private final StatelessOAuth2AuthorizationRequestRepository statelessOAuth2AuthorizationRequestRepository;
 
     @Autowired
-    public OAuth2AuthenticationFailureHandler(HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
-        this.httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
+    public OAuth2AuthenticationFailureHandler(StatelessOAuth2AuthorizationRequestRepository statelessOAuth2AuthorizationRequestRepository) {
+        this.statelessOAuth2AuthorizationRequestRepository = statelessOAuth2AuthorizationRequestRepository;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationF
                 .queryParam("error", exception.getLocalizedMessage())
                 .build().toUriString();
 
-        httpCookieOAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
+        statelessOAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }

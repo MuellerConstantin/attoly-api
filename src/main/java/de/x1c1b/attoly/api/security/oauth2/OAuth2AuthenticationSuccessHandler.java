@@ -17,22 +17,22 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-import static de.x1c1b.attoly.api.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
+import static de.x1c1b.attoly.api.security.oauth2.StatelessOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 
 @Component
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final TokenProvider<AccessToken> accessTokenTokenProvider;
     private final TokenProvider<RefreshToken> refreshTokenTokenProvider;
-    private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+    private final StatelessOAuth2AuthorizationRequestRepository statelessOAuth2AuthorizationRequestRepository;
 
     @Autowired
     public OAuth2AuthenticationSuccessHandler(TokenProvider<AccessToken> accessTokenTokenProvider,
                                               TokenProvider<RefreshToken> refreshTokenTokenProvider,
-                                              HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
+                                              StatelessOAuth2AuthorizationRequestRepository statelessOAuth2AuthorizationRequestRepository) {
         this.accessTokenTokenProvider = accessTokenTokenProvider;
         this.refreshTokenTokenProvider = refreshTokenTokenProvider;
-        this.httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
+        this.statelessOAuth2AuthorizationRequestRepository = statelessOAuth2AuthorizationRequestRepository;
     }
 
     @Override
@@ -65,6 +65,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     protected void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
         super.clearAuthenticationAttributes(request);
-        httpCookieOAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
+        statelessOAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
     }
 }

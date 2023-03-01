@@ -2,7 +2,7 @@ package de.x1c1b.attoly.api.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.x1c1b.attoly.api.security.ajax.AjaxAuthenticationProcessingFilterConfigurer;
-import de.x1c1b.attoly.api.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import de.x1c1b.attoly.api.security.oauth2.StatelessOAuth2AuthorizationRequestRepository;
 import de.x1c1b.attoly.api.security.token.AccessToken;
 import de.x1c1b.attoly.api.security.token.RefreshToken;
 import de.x1c1b.attoly.api.security.token.TokenProvider;
@@ -62,6 +62,9 @@ public class SecurityConfig {
     private SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler;
 
     @Autowired
+    private StatelessOAuth2AuthorizationRequestRepository statelessOAuth2AuthorizationRequestRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -85,11 +88,6 @@ public class SecurityConfig {
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    @Bean
-    public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
-        return new HttpCookieOAuth2AuthorizationRequestRepository();
     }
 
     @Bean
@@ -153,7 +151,7 @@ public class SecurityConfig {
                 .userInfoEndpoint().userService(oAuth2UserService)
                 .and()
                 .authorizationEndpoint()
-                .authorizationRequestRepository(cookieAuthorizationRequestRepository())
+                .authorizationRequestRepository(statelessOAuth2AuthorizationRequestRepository)
                 .and()
                 .successHandler(simpleUrlAuthenticationSuccessHandler)
                 .failureHandler(simpleUrlAuthenticationFailureHandler);
