@@ -2,15 +2,9 @@ package de.x1c1b.attoly.api.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.x1c1b.attoly.api.security.ajax.AjaxAuthenticationProcessingFilterConfigurer;
-import de.x1c1b.attoly.api.security.error.MvcDelegatingAccessDeniedHandler;
-import de.x1c1b.attoly.api.security.error.MvcDelegatingAuthenticationEntryPoint;
-import de.x1c1b.attoly.api.security.error.MvcDelegatingAuthenticationFailureHandler;
-import de.x1c1b.attoly.api.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
-import de.x1c1b.attoly.api.security.oauth2.OAuth2AuthenticationFailureHandler;
-import de.x1c1b.attoly.api.security.oauth2.OAuth2AuthenticationSuccessHandler;
+import de.x1c1b.attoly.api.security.oauth2.StatelessOAuth2AuthorizationRequestRepository;
 import de.x1c1b.attoly.api.security.token.AccessToken;
 import de.x1c1b.attoly.api.security.token.RefreshToken;
-import de.x1c1b.attoly.api.security.token.TokenAuthenticationSuccessHandler;
 import de.x1c1b.attoly.api.security.token.TokenProvider;
 import de.x1c1b.attoly.api.security.token.auth.AccessTokenAuthenticationProvider;
 import de.x1c1b.attoly.api.security.token.auth.RefreshTokenAuthenticationProvider;
@@ -32,7 +26,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -44,22 +44,25 @@ import java.util.List;
 public class SecurityConfig {
 
     @Autowired
-    private MvcDelegatingAuthenticationEntryPoint mvcDelegatingAuthenticationEntryPoint;
+    private AuthenticationEntryPoint authenticationEntryPoint;
 
     @Autowired
-    private MvcDelegatingAccessDeniedHandler mvcDelegatingAccessDeniedHandler;
+    private AccessDeniedHandler accessDeniedHandler;
 
     @Autowired
-    private MvcDelegatingAuthenticationFailureHandler mvcDelegatingAuthenticationFailureHandler;
+    private AuthenticationFailureHandler authenticationFailureHandler;
 
     @Autowired
-    private TokenAuthenticationSuccessHandler tokenAuthenticationSuccessHandler;
+    private AuthenticationSuccessHandler authenticationSuccessHandler;
 
     @Autowired
-    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private SimpleUrlAuthenticationSuccessHandler simpleUrlAuthenticationSuccessHandler;
 
     @Autowired
-    private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+    private SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler;
+
+    @Autowired
+    private StatelessOAuth2AuthorizationRequestRepository statelessOAuth2AuthorizationRequestRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -88,11 +91,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
-        return new HttpCookieOAuth2AuthorizationRequestRepository();
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         sessionCreationPolicy(httpSecurity);
@@ -104,16 +102,16 @@ public class SecurityConfig {
 
         httpSecurity.apply(new AjaxAuthenticationProcessingFilterConfigurer())
                 .requestMatcher(new AntPathRequestMatcher("/api/v1/auth/token", HttpMethod.POST.name()))
-                .authenticationFailureHandler(mvcDelegatingAuthenticationFailureHandler)
-                .authenticationSuccessHandler(tokenAuthenticationSuccessHandler)
+                .authenticationFailureHandler(authenticationFailureHandler)
+                .authenticationSuccessHandler(authenticationSuccessHandler)
                 .usernameField("email")
                 .passwordField("password")
                 .objectMapper(objectMapper)
                 .and()
                 .apply(new RefreshTokenAuthenticationProcessingFilterConfigurer())
                 .requestMatcher(new AntPathRequestMatcher("/api/v1/auth/refresh", HttpMethod.POST.name()))
-                .authenticationFailureHandler(mvcDelegatingAuthenticationFailureHandler)
-                .authenticationSuccessHandler(tokenAuthenticationSuccessHandler)
+                .authenticationFailureHandler(authenticationFailureHandler)
+                .authenticationSuccessHandler(authenticationSuccessHandler)
                 .objectMapper(objectMapper)
                 .and()
                 .apply(new AccessTokenAuthenticationFilterConfigurer());
@@ -128,8 +126,8 @@ public class SecurityConfig {
 
     protected void exceptionHandling(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.exceptionHandling()
-                .authenticationEntryPoint(mvcDelegatingAuthenticationEntryPoint)
-                .accessDeniedHandler(mvcDelegatingAccessDeniedHandler);
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler);
     }
 
     protected void csrf(HttpSecurity httpSecurity) throws Exception {
@@ -153,10 +151,10 @@ public class SecurityConfig {
                 .userInfoEndpoint().userService(oAuth2UserService)
                 .and()
                 .authorizationEndpoint()
-                .authorizationRequestRepository(cookieAuthorizationRequestRepository())
+                .authorizationRequestRepository(statelessOAuth2AuthorizationRequestRepository)
                 .and()
-                .failureHandler(oAuth2AuthenticationFailureHandler)
-                .successHandler(oAuth2AuthenticationSuccessHandler);
+                .successHandler(simpleUrlAuthenticationSuccessHandler)
+                .failureHandler(simpleUrlAuthenticationFailureHandler);
 
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
@@ -181,8 +179,6 @@ public class SecurityConfig {
 
     protected void authorizeRequests(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/", "/error")
-                .permitAll()
                 .antMatchers(HttpMethod.GET, "/actuator/**")
                 .permitAll()
                 .antMatchers(HttpMethod.GET, "/site/**")

@@ -277,6 +277,7 @@ gradle-app.setting
 # End of https://www.toptal.com/developers/gitignore/api/git,svn,java,maven,gradle,intellij+all,eclipse,netbeans,visualstudiocode
 
 ### Spring ###
+.idea/*
 application-dev.*
 application-prod.*
 .env
