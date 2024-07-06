@@ -2,6 +2,13 @@ spring:
   jpa:
     properties:
       hibernate.show_sql: true
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: 0xCAFEBABE
+            clientSecret: 0xCAFEBABE
 logging:
   level:
     org.hibernate.type.descriptor.sql: trace
@@ -16,6 +23,8 @@ attoly:
         enabled: true
         cron: "@daily"
         expires-in: 2419200000
+      role-seeding:
+        enabled: true
   web:
     verify-user-uri: http://localhost:3000/verify-user
     reset-password-uri: http://localhost:3000/reset-password
