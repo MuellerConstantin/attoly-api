@@ -9,8 +9,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.ListPagingAndSortingRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -19,7 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @NoRepositoryBean
-public interface BaseRepository<T extends BaseEntity, ID extends UUID> extends PagingAndSortingRepository<T, ID>, JpaSpecificationExecutor<T> {
+public interface BaseRepository<T extends BaseEntity, ID extends UUID> extends ListCrudRepository<T, ID>, ListPagingAndSortingRepository<T, ID>, JpaSpecificationExecutor<T> {
 
     @Override
     @Transactional(readOnly = true)
@@ -41,7 +42,6 @@ public interface BaseRepository<T extends BaseEntity, ID extends UUID> extends P
     @Query("SELECT count(e) FROM #{#entityName} e WHERE e.deleted = false")
     long count();
 
-    @Override
     @Transactional(readOnly = true)
     default boolean existsById(ID id) {
         return findById(id).isPresent();

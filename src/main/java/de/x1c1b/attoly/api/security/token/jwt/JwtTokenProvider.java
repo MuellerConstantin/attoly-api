@@ -8,12 +8,13 @@ import de.x1c1b.attoly.api.security.token.TokenProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
@@ -31,11 +32,13 @@ public class JwtTokenProvider implements TokenProvider<AccessToken> {
     public AccessToken generateToken(Authentication authentication) {
         Principal user = (Principal) authentication.getPrincipal();
 
+        SecretKey secretKey = Keys.hmacShaKeyFor(tokenProperties.getAccess().getSecret().getBytes());
+
         String rawToken = Jwts.builder()
-                .setSubject(user.getUsername())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + tokenProperties.getAccess().getExpiresIn()))
-                .signWith(SignatureAlgorithm.HS512, tokenProperties.getAccess().getSecret())
+                .subject(user.getUsername())
+                .issuedAt(new Date())
+                .expiration(new Date(new Date().getTime() + tokenProperties.getAccess().getExpiresIn()))
+                .signWith(secretKey)
                 .compact();
 
         return AccessToken.builder()
@@ -48,9 +51,12 @@ public class JwtTokenProvider implements TokenProvider<AccessToken> {
     @Override
     public AccessToken validateToken(String rawToken) {
         try {
-            Claims claims = Jwts.parser().setSigningKey(tokenProperties.getAccess().getSecret())
-                    .parseClaimsJws(rawToken)
-                    .getBody();
+            SecretKey secretKey = Keys.hmacShaKeyFor(tokenProperties.getAccess().getSecret().getBytes());
+
+            Claims claims = Jwts.parser().verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(rawToken)
+                    .getPayload();
 
             return AccessToken.builder()
                     .rawToken(rawToken)

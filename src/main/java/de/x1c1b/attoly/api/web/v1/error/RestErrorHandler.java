@@ -10,14 +10,16 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -57,7 +59,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException exc,
             HttpHeaders headers,
-            HttpStatus status,
+            HttpStatusCode status,
             WebRequest request) {
 
         List<Object> details = exc.getBindingResult().getFieldErrors().stream()
@@ -79,7 +81,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMissingServletRequestParameter(
             MissingServletRequestParameterException exc,
             HttpHeaders headers,
-            HttpStatus status,
+            HttpStatusCode status,
             WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
@@ -97,7 +99,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException exc,
                                                                HttpHeaders headers,
-                                                               HttpStatus status,
+                                                               HttpStatusCode status,
                                                                WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
@@ -116,7 +118,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
             HttpRequestMethodNotSupportedException exc,
             HttpHeaders headers,
-            HttpStatus status,
+            HttpStatusCode status,
             WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
@@ -135,7 +137,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(
             HttpMediaTypeNotSupportedException exc,
             HttpHeaders headers,
-            HttpStatus status,
+            HttpStatusCode status,
             WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
@@ -153,7 +155,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException exc,
                                                                       HttpHeaders headers,
-                                                                      HttpStatus status,
+                                                                      HttpStatusCode status,
                                                                       WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
@@ -171,7 +173,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException exc,
                                                         HttpHeaders headers,
-                                                        HttpStatus status,
+                                                        HttpStatusCode status,
                                                         WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
@@ -189,7 +191,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException exc,
                                                                   HttpHeaders headers,
-                                                                  HttpStatus status,
+                                                                  HttpStatusCode status,
                                                                   WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
@@ -205,7 +207,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotWritable(HttpMessageNotWritableException exc,
                                                                   HttpHeaders headers,
-                                                                  HttpStatus status,
+                                                                  HttpStatusCode status,
                                                                   WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
@@ -223,26 +225,8 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleServletRequestBindingException(ServletRequestBindingException exc,
                                                                           HttpHeaders headers,
-                                                                          HttpStatus status,
+                                                                          HttpStatusCode status,
                                                                           WebRequest request) {
-
-        ErrorDto dto = ErrorDto.builder()
-                .message(getMessage("InternalError.message", null))
-                .timestamp(OffsetDateTime.now())
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .path(((ServletWebRequest) request).getRequest().getServletPath())
-                .build();
-
-        logger.error("Unexpected error occurred", exc);
-
-        return handleExceptionInternal(exc, dto, headers, HttpStatus.valueOf(dto.getStatus()), request);
-    }
-
-    @Override
-    protected ResponseEntity<Object> handleBindException(BindException exc,
-                                                         HttpHeaders headers,
-                                                         HttpStatus status,
-                                                         WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
                 .message(getMessage("InternalError.message", null))
@@ -350,6 +334,34 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
 
         ErrorDto dto = ErrorDto.builder()
                 .message(getMessage("InvalidCredentialsError.message", null))
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .build();
+
+        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<Object> handleDisabled(DisabledException exc,
+                                                         WebRequest request) {
+
+        ErrorDto dto = ErrorDto.builder()
+                .message(getMessage("AccountDisabledError.message", null))
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .build();
+
+        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
+    }
+
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<Object> handleLocked(LockedException exc,
+                                                         WebRequest request) {
+
+        ErrorDto dto = ErrorDto.builder()
+                .message(getMessage("AccountLockedError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.UNAUTHORIZED.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())

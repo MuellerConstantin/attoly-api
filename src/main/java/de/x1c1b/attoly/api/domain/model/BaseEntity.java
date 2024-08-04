@@ -2,12 +2,11 @@ package de.x1c1b.attoly.api.domain.model;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
@@ -21,7 +20,6 @@ import java.util.UUID;
 public abstract class BaseEntity implements Serializable {
 
     @Id
-    @Type(type = "uuid-char")
     @GeneratedValue
     @Column(name = "id", unique = true, nullable = false)
     private UUID id;

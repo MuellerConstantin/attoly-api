@@ -2,7 +2,7 @@ package de.x1c1b.attoly.api.domain;
 
 import freemarker.template.TemplateException;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 import java.io.IOException;
 import java.util.Map;
 

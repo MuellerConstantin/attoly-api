@@ -7,8 +7,8 @@ spring:
       client:
         registration:
           github:
-            clientId: 0xCAFEBABE
-            clientSecret: 0xCAFEBABE
+            clientId: 2jynvpbssz2ng2acqsw7c8k2q8vaajzd
+            clientSecret: 2jynvpbssz2ng2acqsw7c8k2q8vaajzd
 logging:
   level:
     org.hibernate.type.descriptor.sql: trace
@@ -16,7 +16,7 @@ attoly:
   security:
     token:
       access:
-        secret: 0xCAFEBABE
+        secret: sgisn6oukoyf0gl91nvphvclfw2hore6
   scheduling:
     jobs:
       anonymous-shortcut-clean-up:

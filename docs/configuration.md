@@ -23,18 +23,18 @@ for details.
 | spring.datasource.driver-class-name                            | The database driver used to control database.                                                                              | true     |
 | spring.datasource.username                                     | The database user with which access is made.                                                                               | false    |
 | spring.datasource.password                                     | An optional password associated with the database user.                                                                    | false    |
-| spring.redis.host                                              | The host of the Redis database to use. This is mainly required for temporary data.                                         | true     |
-| spring.redis.port                                              | The port of the Redis database.                                                                                            | true     |
-| spring.redis.username                                          | An optional user to authenticate with redis.                                                                               | false    |
-| spring.redis.password                                          | If authentication is required, the password for the user.                                                                  | false    |
-| spring.redis.database                                          | The Redis Server database to use. By default, database 0 is used.                                                          | false    |
+| spring.data.redis.host                                         | The host of the Redis database to use. This is mainly required for temporary data.                                         | true     |
+| spring.data.redis.port                                         | The port of the Redis database.                                                                                            | true     |
+| spring.data.redis.username                                     | An optional user to authenticate with redis.                                                                               | false    |
+| spring.data.redis.password                                     | If authentication is required, the password for the user.                                                                  | false    |
+| spring.data.redis.database                                     | The Redis Server database to use. By default, database 0 is used.                                                          | false    |
 | spring.mail.host                                               | Host of the SMTP server used by Java Mail.                                                                                 | true     |
 | spring.mail.port                                               | Port of the SMTP server used by Java Mail.                                                                                 | true     |
 | spring.mail.username                                           | Name of user to authenticate with the SMTP server.                                                                         | false    |
 | spring.mail.password                                           | Password of the user to authenticate with the SMTP server.                                                                 | false    |
 | spring.security.oauth2.client.registration.github.clientId     | The unique identifier for the registered GitHub OAuth2 application.                                                        | true     |
 | spring.security.oauth2.client.registration.github.clientSecret | The secret of the registered GitHub OAuth2 application.                                                                    | true     |
-| attoly.security.token.access.secret                            | The secret used to sign the JWT access tokens.                                                                             | true     |
+| attoly.security.token.access.secret                            | The secret used to sign the JWT access tokens. It must be at least 256 bits (32 Characters) long.                          | true     |
 | attoly.security.token.access.expiresIn                         | The duration in milliseconds after which the access token expires.                                                         | false    |
 | attoly.security.token.refresh.length                           | The length of the opaque refresh token.                                                                                    | false    |
 | attoly.security.token.refresh.expiresIn                        | The duration in milliseconds after which the refresh token expires.                                                        | false    |

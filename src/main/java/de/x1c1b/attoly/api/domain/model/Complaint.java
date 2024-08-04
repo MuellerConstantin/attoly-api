@@ -3,7 +3,7 @@ package de.x1c1b.attoly.api.domain.model;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "complaints")

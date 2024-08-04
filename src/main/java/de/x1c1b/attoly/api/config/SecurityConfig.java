@@ -21,6 +21,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -79,7 +80,6 @@ public class SecurityConfig {
     @Autowired
     private TokenProvider<RefreshToken> refreshTokenProvider;
 
-
     @Bean
     PasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -120,41 +120,40 @@ public class SecurityConfig {
     }
 
     protected void sessionCreationPolicy(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        httpSecurity.sessionManagement((sessionManagementConfigurer) -> sessionManagementConfigurer
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
     }
 
     protected void exceptionHandling(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.exceptionHandling()
+        httpSecurity.exceptionHandling((exceptionHandlingConfigurer) -> exceptionHandlingConfigurer
                 .authenticationEntryPoint(authenticationEntryPoint)
-                .accessDeniedHandler(accessDeniedHandler);
+                .accessDeniedHandler(accessDeniedHandler));
     }
 
     protected void csrf(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf().disable();
+        httpSecurity.csrf(AbstractHttpConfigurer::disable);
     }
 
     protected void cors(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.cors().configurationSource(request -> {
+        httpSecurity.cors((corsConfigurer) -> corsConfigurer.configurationSource(request -> {
             CorsConfiguration configuration = new CorsConfiguration();
             configuration.setAllowedOrigins(List.of("*"));
             configuration.setAllowedMethods(List.of("*"));
             configuration.setAllowedHeaders(List.of("*"));
 
             return configuration;
-        });
+        }));
     }
 
     protected void authenticateRequests(HttpSecurity httpSecurity) throws Exception {
 
-        httpSecurity.oauth2Login()
-                .userInfoEndpoint().userService(oAuth2UserService)
-                .and()
-                .authorizationEndpoint()
-                .authorizationRequestRepository(statelessOAuth2AuthorizationRequestRepository)
-                .and()
+        httpSecurity.oauth2Login((oauth2LoginConfigurer) -> oauth2LoginConfigurer
+                .userInfoEndpoint((userInfoEndpointConfigurer) -> userInfoEndpointConfigurer
+                        .userService(oAuth2UserService))
+                .authorizationEndpoint((authorizationEndpointConfigurer) -> authorizationEndpointConfigurer
+                        .authorizationRequestRepository(statelessOAuth2AuthorizationRequestRepository))
                 .successHandler(simpleUrlAuthenticationSuccessHandler)
-                .failureHandler(simpleUrlAuthenticationFailureHandler);
+                .failureHandler(simpleUrlAuthenticationFailureHandler));
 
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
@@ -178,7 +177,7 @@ public class SecurityConfig {
     }
 
     protected void authorizeRequests(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests()
+        httpSecurity.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
                 .requestMatchers(HttpMethod.GET, "/actuator/**")
                 .permitAll()
                 .requestMatchers(HttpMethod.GET, "/site/**")
@@ -196,6 +195,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/v1/shortcuts/*/reports")
                 .permitAll()
                 .anyRequest()
-                .authenticated();
+                .authenticated());
     }
 }
