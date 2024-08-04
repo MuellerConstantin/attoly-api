@@ -18,7 +18,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -40,7 +40,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
@@ -178,22 +178,22 @@ public class SecurityConfig {
     }
 
     protected void authorizeRequests(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/actuator/**")
+        httpSecurity.authorizeHttpRequests()
+                .requestMatchers(HttpMethod.GET, "/actuator/**")
                 .permitAll()
-                .antMatchers(HttpMethod.GET, "/site/**")
+                .requestMatchers(HttpMethod.GET, "/site/**")
                 .permitAll()
-                .antMatchers(HttpMethod.POST, "/api/v1/users", "/api/v1/user/verify", "/api/v1/user/reset")
+                .requestMatchers(HttpMethod.POST, "/api/v1/users", "/api/v1/user/verify", "/api/v1/user/reset")
                 .permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/user/verify", "/api/v1/user/reset")
+                .requestMatchers(HttpMethod.GET, "/api/v1/user/verify", "/api/v1/user/reset")
                 .permitAll()
-                .antMatchers(HttpMethod.POST, "/api/v1/auth/token", "/api/v1/auth/refresh")
+                .requestMatchers(HttpMethod.POST, "/api/v1/auth/token", "/api/v1/auth/refresh")
                 .permitAll()
-                .antMatchers(HttpMethod.POST, "/api/v1/shortcuts")
+                .requestMatchers(HttpMethod.POST, "/api/v1/shortcuts")
                 .permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/shortcuts/*")
+                .requestMatchers(HttpMethod.GET, "/api/v1/shortcuts/*")
                 .permitAll()
-                .antMatchers(HttpMethod.POST, "/api/v1/shortcuts/*/reports")
+                .requestMatchers(HttpMethod.POST, "/api/v1/shortcuts/*/reports")
                 .permitAll()
                 .anyRequest()
                 .authenticated();
