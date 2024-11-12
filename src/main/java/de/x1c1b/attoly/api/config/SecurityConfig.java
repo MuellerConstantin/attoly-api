@@ -192,7 +192,7 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/shortcuts/*")
                 .permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/v1/shortcuts/*/reports")
+                .requestMatchers(HttpMethod.POST, "/api/v1/shortcuts/*/complaints")
                 .permitAll()
                 .anyRequest()
                 .authenticated());
