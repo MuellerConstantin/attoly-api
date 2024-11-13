@@ -1073,6 +1073,9 @@ components:
     ErrorDto:
       type: object
       properties:
+        error:
+          type: string
+          description: The API specific error code/name.
         message:
           type: string
           description: The human-readable error message.

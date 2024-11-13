@@ -16,6 +16,7 @@ import java.util.List;
 @Builder
 public class ErrorDto {
 
+    private String error;
     private String message;
     private int status;
     private OffsetDateTime timestamp;

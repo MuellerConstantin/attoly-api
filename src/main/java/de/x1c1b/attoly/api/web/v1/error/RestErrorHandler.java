@@ -67,6 +67,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                 .collect(Collectors.toList());
 
         ErrorDto dto = ErrorDto.builder()
+                .error("ValidationError")
                 .message(getMessage("ValidationError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
@@ -85,6 +86,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
             WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("MissingQueryParameterError")
                 .message(getMessage("MissingQueryParameterError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -103,6 +105,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                                WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("MissingPathVariableError")
                 .message(getMessage("MissingPathVariableError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -122,6 +125,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
             WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("HttpRequestMethodNotSupportedError")
                 .message(getMessage("HttpRequestMethodNotSupportedError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.METHOD_NOT_ALLOWED.value())
@@ -141,6 +145,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
             WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("HttpMediaTypeNotSupportedError")
                 .message(getMessage("HttpMediaTypeNotSupportedError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.NOT_ACCEPTABLE.value())
@@ -159,6 +164,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                                       WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("HttpMediaTypeNotSupportedError")
                 .message(getMessage("HttpMediaTypeNotSupportedError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.NOT_ACCEPTABLE.value())
@@ -177,6 +183,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                         WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("TypeMismatchError")
                 .message(getMessage("TypeMismatchError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
@@ -195,6 +202,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                                   WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("InvalidPayloadFormatError")
                 .message(getMessage("InvalidPayloadFormatError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -211,6 +219,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                                   WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("InternalError")
                 .message(getMessage("InternalError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
@@ -229,6 +238,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                                           WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("InternalError")
                 .message(getMessage("InternalError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
@@ -245,6 +255,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                                    WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("TypeMismatchError")
                 .message(getMessage("TypeMismatchError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -261,6 +272,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                           WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("ValidationError")
                 .message(getMessage("ValidationError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
@@ -277,6 +289,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                        WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("NotFoundError")
                 .message(getMessage("NotFoundError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.NOT_FOUND.value())
@@ -291,6 +304,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                             WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("MustBeAdministrableError")
                 .message(getMessage("MustBeAdministrableError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.CONFLICT.value())
@@ -305,6 +319,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                                  WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("InvalidVerificationTokenError")
                 .message(getMessage("InvalidVerificationTokenError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.GONE.value())
@@ -319,6 +334,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                           WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("InvalidResetTokenError")
                 .message(getMessage("InvalidResetTokenError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.GONE.value())
@@ -333,6 +349,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                          WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("InvalidCredentialsError")
                 .message(getMessage("InvalidCredentialsError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.UNAUTHORIZED.value())
@@ -347,6 +364,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                          WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("AccountDisabledError")
                 .message(getMessage("AccountDisabledError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.UNAUTHORIZED.value())
@@ -361,6 +379,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                          WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("AccountLockedError")
                 .message(getMessage("AccountLockedError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.UNAUTHORIZED.value())
@@ -375,6 +394,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                        WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("InvalidCredentialsError")
                 .message(getMessage("InvalidCredentialsError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.UNAUTHORIZED.value())
@@ -389,6 +409,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                        WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("AuthenticationError")
                 .message(getMessage("AuthenticationError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.UNAUTHORIZED.value())
@@ -403,6 +424,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                                                      WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("InsufficientPermissionsError")
                 .message(getMessage("InsufficientPermissionsError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.FORBIDDEN.value())
@@ -416,6 +438,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleDefault(Exception exc, WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
+                .error("InternalError")
                 .message(getMessage("InternalError.message", null))
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
