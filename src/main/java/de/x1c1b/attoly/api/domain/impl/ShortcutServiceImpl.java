@@ -69,7 +69,7 @@ public class ShortcutServiceImpl implements ShortcutService {
         byte[] secret = new byte[6];
 
         secureRandom.nextBytes(secret);
-        String tag = Base64.getEncoder().encodeToString(secret);
+        String tag = Base64.getUrlEncoder().withoutPadding().encodeToString(secret);
 
         Shortcut shortcut = Shortcut.builder()
                 .tag(tag)
