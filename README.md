@@ -4,10 +4,10 @@
 
 ![Logo](docs/img/banner.svg)
 
-![](https://img.shields.io/badge/dynamic/xml?color=red&label=Java&query=%2F%2A%5Blocal-name%28%29%3D%27project%27%5D%2F%2A%5Blocal-name%28%29%3D%27properties%27%5D%2F%2A%5Blocal-name%28%29%3D%27java.version%27%5D&url=https%3A%2F%2Fraw.githubusercontent.com%2FMuellerConstantin%2Ftaskcare-service%2Fmaster%2Fpom.xml&logo=openjdk)
-![](https://img.shields.io/badge/dynamic/xml?color=green&label=Spring%20Boot&query=%2F%2A%5Blocal-name%28%29%3D%27project%27%5D%2F%2A%5Blocal-name%28%29%3D%27parent%27%5D%2F%2A%5Blocal-name%28%29%3D%27version%27%5D&url=https%3A%2F%2Fraw.githubusercontent.com%2FMuellerConstantin%2Ftaskcare-service%2Fmaster%2Fpom.xml&logo=spring-boot)
+![](https://img.shields.io/badge/dynamic/xml?color=red&label=Java&query=%2F%2A%5Blocal-name%28%29%3D%27project%27%5D%2F%2A%5Blocal-name%28%29%3D%27properties%27%5D%2F%2A%5Blocal-name%28%29%3D%27java.version%27%5D&url=https%3A%2F%2Fraw.githubusercontent.com%2FMuellerConstantin%2Fattoly-api%2Fmaster%2Fpom.xml&logo=openjdk)
+![](https://img.shields.io/badge/dynamic/xml?color=green&label=Spring%20Boot&query=%2F%2A%5Blocal-name%28%29%3D%27project%27%5D%2F%2A%5Blocal-name%28%29%3D%27parent%27%5D%2F%2A%5Blocal-name%28%29%3D%27version%27%5D&url=https%3A%2F%2Fraw.githubusercontent.com%2FMuellerConstantin%2Fattoly-api%2Fmaster%2Fpom.xml&logo=spring-boot)
 ![](https://img.shields.io/badge/ORM-Hibernate-blue?logo=hibernate)
-![](https://img.shields.io/badge/Database-MySQL-blue?logo=mysql)
+![](https://img.shields.io/badge/Database-PostgreSQL-blue?logo=postgresql)
 ![](https://img.shields.io/badge/Database-Redis-red?logo=redis)
 ![](https://img.shields.io/badge/OpenAPI-3.0.1-green?logo=openapi-initiative)
 
@@ -43,7 +43,7 @@ objects (DAO).
 ![Architecture](docs/img/architecture.svg)
 
 The Attoly API also uses various third-party services, including but not limited to databases. Attoly uses a
-relational database, by default a MySQL database, for storing entities and a NoSQL Redis database for storing
+relational database, by default a PostgreSQL database, for storing entities and a NoSQL Redis database for storing
 temporary information like tokens. For individual processes, such as verifying user accounts, it is necessary
 to send e-mails. An SMTP server must be configured for this, which Attoly uses for this purpose.
 
