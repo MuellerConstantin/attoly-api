@@ -9,7 +9,7 @@
 		<relativePath/>
 	</parent>
 
-	<groupId>de.x1c1b.attoly</groupId>
+	<groupId>de.mueller_constantin.attoly</groupId>
 	<artifactId>attoly-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 

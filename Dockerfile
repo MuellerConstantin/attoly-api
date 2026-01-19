@@ -24,4 +24,4 @@ COPY --from=build /usr/local/src/attoly/api/target/dependency/BOOT-INF/lib ./lib
 COPY --from=build /usr/local/src/attoly/api/target/dependency/META-INF ./META-INF
 COPY --from=build /usr/local/src/attoly/api/target/dependency/BOOT-INF/classes ./
 
-ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-cp", "./:./lib/*", "de.x1c1b.attoly.api.AttolyApiApplication"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-cp", "./:./lib/*", "de.mueller_constantin.attoly.api.AttolyApiApplication"]

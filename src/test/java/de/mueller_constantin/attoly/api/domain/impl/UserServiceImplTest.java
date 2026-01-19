@@ -1,0 +1,73 @@
+package de.mueller_constantin.attoly.api.domain.impl;
+
+import de.mueller_constantin.attoly.api.domain.model.User;
+import de.mueller_constantin.attoly.api.repository.RoleRepository;
+import de.mueller_constantin.attoly.api.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class UserServiceImplTest {
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private RoleRepository roleRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @InjectMocks
+    private UserServiceImpl userService;
+
+    private User sampleUser;
+
+    @BeforeEach
+    void setUp() {
+        this.sampleUser = User.builder()
+                .id(UUID.randomUUID())
+                .createdAt(Instant.now())
+                .lastModifiedAt(Instant.now())
+                .version(0)
+                .deleted(false)
+                .email("john.doe@localhost.com")
+                .password("Abc123")
+                .build();
+    }
+
+    @Test
+    void findById() {
+        when(userRepository.findById(eq(sampleUser.getId()))).thenReturn(Optional.of(sampleUser));
+
+        User user = userService.findById(sampleUser.getId());
+
+        verify(userRepository, times(1)).findById(eq(sampleUser.getId()));
+
+        assertEquals(sampleUser.getId(), user.getId());
+    }
+
+    @Test
+    void findByEmail() {
+        when(userRepository.findByEmail(eq(sampleUser.getEmail()))).thenReturn(Optional.of(sampleUser));
+
+        User user = userService.findByEmail(sampleUser.getEmail());
+
+        verify(userRepository, times(1)).findByEmail(eq(sampleUser.getEmail()));
+
+        assertEquals(sampleUser.getEmail(), user.getEmail());
+    }
+}

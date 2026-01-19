@@ -110,8 +110,8 @@ info:
     name: MIT
     url: https://opensource.org/licenses/MIT
   contact:
-    name: "0x1C1B"
-    url: https://github.com/0x1C1B
+    name: "Constantin Müller"
+    url: https://github.com/MuellerConstantin
 servers:
   - url: http://localhost:8080/api/v1
     description: Development Server
