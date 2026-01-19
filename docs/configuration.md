@@ -42,7 +42,7 @@ for details.
 | attoly.web.reset-password-uri                                  | The URL of the 1st party client's password reset page. This URL enables a single click forwarding from the e-mail.         | true     |
 
 <small>¹In principle, any JPA/Hibernate capable relational database can be used. For this, however, the application must
-also have the corresponding drivers as a dependency in the Java Classpath. By default, only the MySQL drivers are
+also have the corresponding drivers as a dependency in the Java Classpath. By default, only the PostgreSQL drivers are
 included
 with the application.</small>
 

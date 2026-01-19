@@ -40,7 +40,7 @@ business logic in the form of services. The third and last layer is the data acc
 responsible for data storage and event sourcing. The databases are accessed via repositories or data access
 objects (DAO).
 
-![Architecture](docs/img/architecture.png)
+![Architecture](docs/img/architecture.svg)
 
 The Attoly API also uses various third-party services, including but not limited to databases. Attoly uses a
 relational database, by default a MySQL database, for storing entities and a NoSQL Redis database for storing

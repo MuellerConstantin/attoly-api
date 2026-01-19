@@ -11,12 +11,12 @@ necessary to make these services available and to make them known accordingly. A
 configured
 using the properties described under [configuration](./configuration.md).
 
-- MySQL Database Server
+- PostgreSQL Database Server
 - Redis Database Server
 - SMTP Email Server
 
 The Attoly API uses JPA/Hibernate based on a relational database to store system and business information. In principle,
-any database supported by JPA/Hibernate can be used for this. By default, however, only the database drivers for a MySQL
+any database supported by JPA/Hibernate can be used for this. By default, however, only the database drivers for a PostgreSQL
 database are included with the application. For all other databases, the drivers must be added to the classpath later. A
 corresponding table [schema](./scripts/schema.sql) is also expected in the configured database¹. In addition to the
 relational database, Attoly uses a faster in-memory key-value database, currently only Redis is supported. Redis is
