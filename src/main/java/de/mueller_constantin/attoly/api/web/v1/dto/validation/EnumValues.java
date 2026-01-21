@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 public @interface EnumValues {
 
-    String message() default "{de.mueller_constantin.taskcare.service.core.common.application.validation.EnumValues.message}";
+    String message() default "{de.mueller_constantin.attoly.api.web.v1.dto.validation.EnumValues.message}";
 
     Class<?>[] groups() default {};
 

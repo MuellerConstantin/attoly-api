@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 public @interface NullOrNotEmpty {
 
-    String message() default "{validation.dto.v1.web.de.mueller_constantin.attoly.api.NullOrNotEmpty.message}";
+    String message() default "{de.mueller_constantin.attoly.api.web.v1.dto.validation.NullOrNotEmpty.message}";
 
     Class<?>[] groups() default {};
 
