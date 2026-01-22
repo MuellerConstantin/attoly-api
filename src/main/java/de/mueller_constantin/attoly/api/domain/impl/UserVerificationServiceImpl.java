@@ -55,6 +55,10 @@ public class UserVerificationServiceImpl implements UserVerificationService {
 
     @SneakyThrows({IOException.class, MessagingException.class, TemplateException.class})
     protected void sendVerificationMessage(User user) {
+        if(user.isEmailVerified()) {
+            return;
+        }
+
         SecureRandom secureRandom = new SecureRandom();
         byte[] secret = new byte[6];
 
