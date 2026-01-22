@@ -76,7 +76,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         emailService.sendTemplateMessage(user.getEmail(),
                 "noreply@attoly.com",
                 "Attoly Password Reset",
-                "password-reset.ftlh",
+                "password-reset.ftl",
                 Map.of("resetToken", newResetToken, "resetWebUri", resetPasswordWebUri));
     }
 

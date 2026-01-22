@@ -71,7 +71,7 @@ public class UserVerificationServiceImpl implements UserVerificationService {
         emailService.sendTemplateMessage(user.getEmail(),
                 "noreply@attoly.com",
                 "Attoly Account Verification",
-                "user-verification.ftlh",
+                "user-verification.ftl",
                 Map.of("verificationToken", newVerificationToken, "verificationWebUri", verifyUserWebUri));
     }
 
