@@ -268,8 +268,8 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
     }
 
-    @ExceptionHandler(EmailAlreadyInUseException.class)
-    public ResponseEntity<Object> handleEmailAlreadyInUse(EmailAlreadyInUseException exc,
+    @ExceptionHandler({EmailAlreadyInUseException.class, EmailNotAllowedException.class})
+    public ResponseEntity<Object> handleInvalidEmail(RuntimeException exc,
                                                           WebRequest request) {
 
         ErrorDto dto = ErrorDto.builder()
@@ -279,7 +279,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                 .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
                 .detail(new ValidationErrorDetails("email",
-                        getMessage("de.mueller_constantin.attoly.api.web.v1.dto.validation.UniqueEmail.message", null)))
+                        getMessage("de.mueller_constantin.attoly.api.web.v1.dto.validation.InvalidEmail.message", null)))
                 .build();
 
         return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));

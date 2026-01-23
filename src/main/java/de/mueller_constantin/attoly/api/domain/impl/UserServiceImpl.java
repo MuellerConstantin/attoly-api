@@ -1,8 +1,10 @@
 package de.mueller_constantin.attoly.api.domain.impl;
 
+import de.mueller_constantin.attoly.api.domain.DisposableEmailDomainService;
 import de.mueller_constantin.attoly.api.domain.UserService;
 import de.mueller_constantin.attoly.api.domain.UserVerificationService;
 import de.mueller_constantin.attoly.api.domain.exception.EmailAlreadyInUseException;
+import de.mueller_constantin.attoly.api.domain.exception.EmailNotAllowedException;
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
 import de.mueller_constantin.attoly.api.domain.exception.MustBeAdministrableException;
 import de.mueller_constantin.attoly.api.domain.model.Role;
@@ -33,16 +35,19 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserVerificationService userVerificationService;
+    private final DisposableEmailDomainService disposableEmailDomainService;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            RoleRepository roleRepository,
                            PasswordEncoder passwordEncoder,
-                           UserVerificationService userVerificationService) {
+                           UserVerificationService userVerificationService,
+                           DisposableEmailDomainService disposableEmailDomainService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.userVerificationService = userVerificationService;
+        this.disposableEmailDomainService = disposableEmailDomainService;
     }
 
     @Override
@@ -91,6 +96,10 @@ public class UserServiceImpl implements UserService {
     public User create(UserCreationPayload payload) throws EmailAlreadyInUseException {
         if (userRepository.existsAnyByEmail(payload.getEmail())) {
             throw new EmailAlreadyInUseException(payload.getEmail());
+        }
+
+        if (disposableEmailDomainService.isDisposable(payload.getEmail())) {
+            throw new EmailNotAllowedException(payload.getEmail());
         }
 
         User user = User.builder()
