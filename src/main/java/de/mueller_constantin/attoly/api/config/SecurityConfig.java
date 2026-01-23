@@ -34,7 +34,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
@@ -100,21 +100,29 @@ public class SecurityConfig {
         authenticateRequests(httpSecurity);
         authorizeRequests(httpSecurity);
 
-        httpSecurity.apply(new AjaxAuthenticationProcessingFilterConfigurer())
-                .requestMatcher(new AntPathRequestMatcher("/api/v1/auth/token", HttpMethod.POST.name()))
-                .authenticationFailureHandler(authenticationFailureHandler)
-                .authenticationSuccessHandler(authenticationSuccessHandler)
-                .usernameField("email")
-                .passwordField("password")
-                .objectMapper(objectMapper)
-                .and()
-                .apply(new RefreshTokenAuthenticationProcessingFilterConfigurer())
-                .requestMatcher(new AntPathRequestMatcher("/api/v1/auth/refresh", HttpMethod.POST.name()))
-                .authenticationFailureHandler(authenticationFailureHandler)
-                .authenticationSuccessHandler(authenticationSuccessHandler)
-                .objectMapper(objectMapper)
-                .and()
-                .apply(new AccessTokenAuthenticationFilterConfigurer());
+        httpSecurity.with(new AjaxAuthenticationProcessingFilterConfigurer(), config -> {
+            config
+                    .requestMatcher(PathPatternRequestMatcher
+                            .withDefaults()
+                            .matcher(HttpMethod.POST, "/api/v1/auth/token"))
+                    .authenticationFailureHandler(authenticationFailureHandler)
+                    .authenticationSuccessHandler(authenticationSuccessHandler)
+                    .usernameField("email")
+                    .passwordField("password")
+                    .objectMapper(objectMapper);
+        });
+
+        httpSecurity.with(new RefreshTokenAuthenticationProcessingFilterConfigurer(), config -> {
+            config
+                    .requestMatcher(PathPatternRequestMatcher
+                            .withDefaults()
+                            .matcher(HttpMethod.POST, "/api/v1/auth/refresh"))
+                    .authenticationFailureHandler(authenticationFailureHandler)
+                    .authenticationSuccessHandler(authenticationSuccessHandler)
+                    .objectMapper(objectMapper);
+        });
+
+        httpSecurity.with(new AccessTokenAuthenticationFilterConfigurer(), config -> {});
 
         return httpSecurity.build();
     }
