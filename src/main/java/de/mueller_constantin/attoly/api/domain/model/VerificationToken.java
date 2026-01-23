@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-@RedisHash(value = "VerificationToken", timeToLive = 300)
+@RedisHash(value = "attoly:verification-token", timeToLive = 300)
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

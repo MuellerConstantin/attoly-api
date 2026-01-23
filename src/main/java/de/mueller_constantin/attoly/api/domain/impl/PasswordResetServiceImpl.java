@@ -89,6 +89,8 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         User user = userRepository.findByEmail(resetToken.getPrincipal())
                 .orElseThrow(InvalidVerificationTokenException::new);
 
+        resetTokenRepository.delete(resetToken);
+
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
     }

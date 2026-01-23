@@ -88,6 +88,8 @@ public class UserVerificationServiceImpl implements UserVerificationService {
         User user = userRepository.findByEmail(verificationToken.getPrincipal())
                 .orElseThrow(InvalidVerificationTokenException::new);
 
+        verificationTokenRepository.delete(verificationToken);
+
         user.setEmailVerified(true);
         userRepository.save(user);
     }
