@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Attoly Passwort zurücksetzen</title>
+  <title>${i18n.getMessage("ResetMail.title")}</title>
   <style>
     /* Mobile responsive adjustments */
     @media only screen and (max-width:600px) {
@@ -20,7 +20,7 @@
 <body style="margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, Helvetica, sans-serif; -webkit-font-smoothing:antialiased;">
   <!-- Preheader: visible in inbox preview but hidden in the email body -->
   <span style="display:none; font-size:1px; color:#f4f6f8; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden;">
-    Passwort zurücksetzen für dein Konto bei Attoly — Link zum Zurücksetzen
+    ${i18n.getMessage("ResetMail.preheader")}
   </span>
 
   <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
@@ -77,9 +77,8 @@
             <td class="content" style="padding:0px 32px 32px 32px; background:#ffffff;">
               <h1 class="hero" style="margin:0 0 16px 0; font-size:24px; line-height:1.25; color:#111827;">Passwort zurücksetzen</h1>
               <p style="margin:0 0 20px 0; color:#6b7280; font-size:15px; line-height:1.5;">
-                Hallo {{name}},<br>
-                wir haben eine Anfrage erhalten, dein Passwort für Attoly zurückzusetzen.
-                Klicke auf den Button unten, um ein neues Passwort zu wählen.
+                ${i18n.getMessage("ResetMail.greeting")}<br>
+                ${i18n.getMessage("ResetMail.intro")}
               </p>
               <table cellpadding="0" cellspacing="0" role="presentation" style="width:100%; margin:20px 0;">
                 <tr>
@@ -88,15 +87,15 @@
                        class="button"
                        style="background:#f97316; color:#ffffff; text-decoration:none; padding:12px 20px; border-radius:6px; font-weight:600; display:inline-block;"
                        target="_blank" rel="noopener noreferrer"
-                       aria-label="Passwort zurücksetzen">
-                      Passwort zurücksetzen
+                       aria-label="${i18n.getMessage("ResetMail.resetPassword")}">
+                      ${i18n.getMessage("ResetMail.resetPassword")}
                     </a>
                   </td>
                 </tr>
               </table>
 
               <p style="margin:0 0 16px 0; color:#6b7280; font-size:13px; line-height:1.4;">
-                Alternativ kannst du diesen Link kopieren und in deinen Browser einfügen:
+                ${i18n.getMessage("ResetMail.copyLinkNotice")}
               </p>
 
               <p style="word-break:break-all; font-size:13px; color:#374151; margin:0 0 24px 0;">
@@ -106,14 +105,14 @@
               <hr style="border:none; border-top:1px solid #e6e9ee; margin:16px 0;">
 
               <p style="margin:0; color:#9ca3af; font-size:13px; line-height:1.4;">
-                Falls du diese Anfrage nicht gestellt hast, kannst du diese E-Mail ignorieren — dein Passwort bleibt unverändert.
+                ${i18n.getMessage("ResetMail.wrongReceiver")}
               </p>
             </td>
           </tr>
 
           <tr>
             <td style="padding:16px 24px; background:#f9fafb; text-align:center; color:#9ca3af; font-size:12px;">
-              © <span id="year">2025</span> Constantin Müller — Alle Rechte vorbehalten
+              © <span id="year">2025</span> Constantin Müller — ${i18n.getMessage("ResetMail.rightsReserved")}
             </td>
           </tr>
 

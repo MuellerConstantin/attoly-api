@@ -3,6 +3,7 @@ package de.mueller_constantin.attoly.api.domain;
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
 import de.mueller_constantin.attoly.api.domain.exception.InvalidResetTokenException;
 
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -14,17 +15,19 @@ public interface PasswordResetService {
      * Generates and sends a reset token to reset a password.
      *
      * @param id The identifier of the user for which a token should be sent.
+     * @param locale The locale to use when sending the email.
      * @throws EntityNotFoundException Thrown if the user cannot be found.
      */
-    void sendResetMessageById(UUID id) throws EntityNotFoundException;
+    void sendResetMessageById(UUID id, Locale locale) throws EntityNotFoundException;
 
     /**
      * Generates and sends a reset token to reset a password.
      *
      * @param email The email of the user for which a token should be sent.
+     * @param locale The locale to use when sending the email.
      * @throws EntityNotFoundException Thrown if the user cannot be found.
      */
-    void sendResetMessageByEmail(String email) throws EntityNotFoundException;
+    void sendResetMessageByEmail(String email, Locale locale) throws EntityNotFoundException;
 
     /**
      * Resets a user's password using a token. This step is necessary, for example, if a user can no

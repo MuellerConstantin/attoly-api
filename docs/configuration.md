@@ -40,6 +40,7 @@ for details.
 | attoly.security.token.refresh.expiresIn                        | The duration in milliseconds after which the refresh token expires.                                                        | false    |
 | attoly.web.verify-user-uri                                     | The URL of the user verification page of the 1st party client. This URL enables a single click forwarding from the e-mail. | true     |
 | attoly.web.reset-password-uri                                  | The URL of the 1st party client's password reset page. This URL enables a single click forwarding from the e-mail.         | true     |
+| attoly.mail.sender                                             | The sender of the technical emails. Specification in RFC 5322 format, e.g. "Display Name <E-Mail>".                        |          |
 
 <small>¹In principle, any JPA/Hibernate capable relational database can be used. For this, however, the application must
 also have the corresponding drivers as a dependency in the Java Classpath. By default, only the PostgreSQL drivers are

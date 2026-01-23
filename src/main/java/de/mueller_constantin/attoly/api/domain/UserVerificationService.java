@@ -3,6 +3,7 @@ package de.mueller_constantin.attoly.api.domain;
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
 import de.mueller_constantin.attoly.api.domain.exception.InvalidVerificationTokenException;
 
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -14,17 +15,19 @@ public interface UserVerificationService {
      * Generates and sends a verification token. Verification tokens are used to verify a user's account and email.
      *
      * @param id The identifier of the user for which a token should be sent.
+     * @param locale The locale to use when sending the verification message.
      * @throws EntityNotFoundException Thrown if the user cannot be found.
      */
-    void sendVerificationMessageById(UUID id) throws EntityNotFoundException;
+    void sendVerificationMessageById(UUID id, Locale locale) throws EntityNotFoundException;
 
     /**
      * Generates and sends a verification token. Verification tokens are used to verify a user's account and email.
      *
      * @param email The email of the user for which a token should be sent.
+     * @param locale The locale to use when sending the verification message.
      * @throws EntityNotFoundException Thrown if the user cannot be found.
      */
-    void sendVerificationMessageByEmail(String email) throws EntityNotFoundException;
+    void sendVerificationMessageByEmail(String email, Locale locale) throws EntityNotFoundException;
 
     /**
      * Verifies and activates a user account using a verification token that was previously generated and sent.

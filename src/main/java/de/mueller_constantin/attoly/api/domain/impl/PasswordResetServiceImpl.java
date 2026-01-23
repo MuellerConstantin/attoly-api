@@ -13,6 +13,7 @@ import freemarker.template.TemplateException;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import jakarta.mail.MessagingException;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -32,34 +34,40 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final String resetPasswordWebUri;
+    private final String mailSender;
+    private final MessageSource messageSource;
 
     @Autowired
     public PasswordResetServiceImpl(ResetTokenRepository resetTokenRepository,
                                     UserRepository userRepository,
                                     PasswordEncoder passwordEncoder,
                                     EmailService emailService,
-                                    @Value("${attoly.web.reset-password-uri}") String resetPasswordWebUri) {
+                                    @Value("${attoly.web.reset-password-uri}") String resetPasswordWebUri,
+                                    @Value("${attoly.mail.sender}") String mailSender,
+                                    MessageSource messageSource) {
         this.resetTokenRepository = resetTokenRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.resetPasswordWebUri = resetPasswordWebUri;
+        this.mailSender = mailSender;
+        this.messageSource = messageSource;
     }
 
     @Override
     @Transactional
-    public void sendResetMessageById(UUID id) throws EntityNotFoundException {
-        sendResetMessage(userRepository.findById(id).orElseThrow(EntityNotFoundException::new));
+    public void sendResetMessageById(UUID id, Locale locale) throws EntityNotFoundException {
+        sendResetMessage(userRepository.findById(id).orElseThrow(EntityNotFoundException::new), locale);
     }
 
     @Override
     @Transactional
-    public void sendResetMessageByEmail(String email) throws EntityNotFoundException {
-        sendResetMessage(userRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new));
+    public void sendResetMessageByEmail(String email, Locale locale) throws EntityNotFoundException {
+        sendResetMessage(userRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new), locale);
     }
 
     @SneakyThrows({IOException.class, MessagingException.class, TemplateException.class})
-    protected void sendResetMessage(User user) {
+    protected void sendResetMessage(User user, Locale locale) {
         SecureRandom secureRandom = new SecureRandom();
         byte[] secret = new byte[6];
 
@@ -74,10 +82,11 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         ResetToken newResetToken = resetTokenRepository.save(resetToken);
 
         emailService.sendTemplateMessage(user.getEmail(),
-                "noreply@attoly.com",
-                "Attoly Password Reset",
+                this.mailSender,
+                this.messageSource.getMessage("ResetMail.subject", null, locale),
                 "password-reset.ftl",
-                Map.of("resetToken", newResetToken, "resetWebUri", resetPasswordWebUri));
+                Map.of("resetToken", newResetToken, "resetWebUri", resetPasswordWebUri),
+                locale);
     }
 
     @Override

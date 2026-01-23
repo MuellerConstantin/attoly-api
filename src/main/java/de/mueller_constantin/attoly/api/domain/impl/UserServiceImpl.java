@@ -13,6 +13,7 @@ import de.mueller_constantin.attoly.api.domain.payload.UserUpdatePayload;
 import de.mueller_constantin.attoly.api.repository.RoleRepository;
 import de.mueller_constantin.attoly.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -97,8 +99,10 @@ public class UserServiceImpl implements UserService {
                 .roles(Set.of(roleRepository.findByName(RoleName.ROLE_USER).orElseThrow()))
                 .build();
 
+        Locale locale = LocaleContextHolder.getLocale();
+
         User newUser = userRepository.save(user);
-        userVerificationService.sendVerificationMessageById(newUser.getId());
+        userVerificationService.sendVerificationMessageById(newUser.getId(), locale);
 
         return newUser;
     }

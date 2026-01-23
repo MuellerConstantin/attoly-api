@@ -10,7 +10,7 @@ spring:
               - user:email
               - read:user
   messages:
-    basename: messages/validation, messages/error
+    basename: messages/validation, messages/error, messages/mail
     encoding: UTF-8
     fallback-to-system-locale: false
 attoly:

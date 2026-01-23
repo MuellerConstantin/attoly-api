@@ -25,6 +25,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
+import java.util.Locale;
 import java.util.UUID;
 
 @RestController
@@ -124,8 +126,8 @@ public class UserController {
 
     @GetMapping("/user/verify")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void sendUserVerificationMessage(@RequestParam(name = "email") String email) {
-        userVerificationService.sendVerificationMessageByEmail(email);
+    void sendUserVerificationMessage(@RequestParam(name = "email") String email, Locale locale) {
+        userVerificationService.sendVerificationMessageByEmail(email, locale);
     }
 
     @PostMapping("/user/reset")
@@ -136,7 +138,7 @@ public class UserController {
 
     @GetMapping("/user/reset")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void sendPasswordResetMessage(@RequestParam(name = "email") String email) {
-        passwordResetService.sendResetMessageByEmail(email);
+    void sendPasswordResetMessage(@RequestParam(name = "email") String email, Locale locale) {
+        passwordResetService.sendResetMessageByEmail(email, locale);
     }
 }
