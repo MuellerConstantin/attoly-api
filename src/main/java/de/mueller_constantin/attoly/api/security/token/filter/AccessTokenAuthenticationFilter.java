@@ -4,6 +4,7 @@ import de.mueller_constantin.attoly.api.security.token.auth.AccessTokenAuthentic
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -27,9 +28,12 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
         String jwt = parseToken(request);
 
         if (null != jwt) {
-
-            Authentication authentication = authenticationManager.authenticate(new AccessTokenAuthenticationToken(jwt));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            try {
+                Authentication authentication = authenticationManager.authenticate(new AccessTokenAuthenticationToken(jwt));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (AuthenticationException exc) {
+                SecurityContextHolder.clearContext();
+            }
         }
 
         filterChain.doFilter(request, response);
