@@ -1,6 +1,7 @@
 package de.mueller_constantin.attoly.api.security.token;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.mueller_constantin.attoly.api.security.token.auth.RefreshTokenAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
@@ -21,12 +22,12 @@ public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessH
 
     private final ObjectMapper objectMapper;
     private final TokenProvider<AccessToken> accessTokenTokenProvider;
-    private final TokenProvider<RefreshToken> refreshTokenTokenProvider;
+    private final OneTimeTokenProvider<RefreshToken> refreshTokenTokenProvider;
 
     @Autowired
     public TokenAuthenticationSuccessHandler(ObjectMapper objectMapper,
                                              TokenProvider<AccessToken> accessTokenTokenProvider,
-                                             TokenProvider<RefreshToken> refreshTokenTokenProvider) {
+                                             OneTimeTokenProvider<RefreshToken> refreshTokenTokenProvider) {
         this.objectMapper = objectMapper;
         this.accessTokenTokenProvider = accessTokenTokenProvider;
         this.refreshTokenTokenProvider = refreshTokenTokenProvider;
@@ -35,13 +36,23 @@ public class TokenAuthenticationSuccessHandler implements AuthenticationSuccessH
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         AccessToken accessToken = accessTokenTokenProvider.generateToken(authentication);
-        RefreshToken refreshToken = refreshTokenTokenProvider.generateToken(authentication);
+        RefreshToken refreshToken = null;
+
+        if (authentication instanceof RefreshTokenAuthenticationToken) {
+            String oldRefreshToken = (String) authentication.getCredentials();
+            refreshToken = refreshTokenTokenProvider.exchange(oldRefreshToken);
+        } else {
+            refreshToken = refreshTokenTokenProvider.generateToken(authentication);
+        }
 
         Map<String, Object> token = new HashMap<>();
         token.put("type", "Bearer");
         token.put("principal", accessToken.getPrincipal());
         token.put("accessToken", accessToken.getRawToken());
         token.put("accessExpiresIn", accessToken.getExpiresIn());
+
+        assert refreshToken != null;
+
         token.put("refreshToken", refreshToken.getRawToken());
         token.put("refreshExpiresIn", refreshToken.getExpiresIn());
 
