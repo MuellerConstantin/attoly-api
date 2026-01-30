@@ -1,0 +1,588 @@
+openapi: "3.0.1"
+info:
+  title: Attoly Web API
+  version: v1
+  x-logo:
+    url: /site/images/logo.svg
+    altText: Attoly Logo
+  description: |
+    This is the backend of the Attoly URL shortener platform, responsible for
+    data storage and exchange. Attoly allows creating short links as aliases
+    for long URLs, which are easier to embed in websites, chats and documents.
+    
+    # Introduction
+    This is the official documentation of the Attoly Web RESTful API. Based on
+    simple REST principles, the Attoly RESTful API endpoints return JSON
+    metadata about created and managed short link URL mappings aka shortcuts.
+    This API also provides access to user related data, like account information
+    and your personal shortcut library.
+    
+    The Web API provides routes for everyday operations by end users. For
+    administrative operations, use the AMC API of the platform.
+    
+    # Overview
+    The following settings and techniques apply to the entire Attoly RESTful API.
+    
+    ## HTTP Verbs
+    There are a couple of possible HTTP verbs used for the RESTful API. The following
+    table clearly clarifies their use and meaning within the API.
+    
+    | Verb         | Description                                                       |
+    |--------------|-------------------------------------------------------------------|
+    | HEAD         | Can be ran against any resource to get just the HTTP header info. |
+    | GET          | Used for retrieving resources.                                    |
+    | POST         | Used for creating resources.                                      |
+    | PATCH        | Used for updating resources partially.                            |
+    | PUT          | Used for replacing resources or collections.                      |
+    | DELETE       | Used for deleting resources.                                      |
+    
+    ## Timestamps
+    Timestamps are returned in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+    format with the time zone offset of the server: `YYYY-MM-DDTHH:mm:ss.sss`.
+    The time stamp is always specified with the offset addition in the server's
+    time zone. Despite the specification of the fractions of the second, inaccuracies
+    can occur with the timestamps in the millisecond range.
+    
+    ## Pagination
+    Some of the queries read from a larger subset of the data set. In these cases,
+    pagination is used to avoid performance problems. In general, the pagination
+    behaviour is controlled by the query parameters `page` and `perPage`. You can
+    specify the page offset with the `page` parameter. For some resources, its is
+    also possible set a custom page size with the `perPage` parameter.
+    
+    ---
+    **NOTE**
+
+    The offset numbering is zero-based. Omitting the offset parameter sets the
+    requested page to zero by default and returns the first X elements of a
+    collection. Requests that return multiple items will be paginated to 25
+    items by default.
+    ---
+    
+    In addition to pagination, all endpoints that support pagination also support
+    sorting. The sorting is implemented via the query parameter `sort`. The sorting
+    should be specified in the following format: `property,property(,ASC|DESC)(,IgnoreCase)`.
+    The default sort direction is case-sensitive ascending.
+    
+    ```
+    ?page=0&perPage=30&sort=firstname&sort=lastname,desc&sort=city,ignorecase
+    ```
+    
+    ## Filtering
+    Some endpoints, usually the same ones that support pagination, also support
+    result filtering. Result filtering can be used to determine which results
+    are to be displayed on the basis of RSQL/FIQL. The filtering is implemented
+    via the query parameter `filter`. See
+    [FIQL: The Feed Item Query Language](https://datatracker.ietf.org/doc/html/draft-nottingham-atompub-fiql-00)
+    for syntax details.
+    
+    ## Internationalization
+    In principle, this API supports internationalization, but to a limited extent.
+    Currently internationalization is supported for error messages and validation
+    as well as server-generated responses. By default, the server responds in
+    English. If another language is desired, this can be controlled via the
+    `Accept-Language` header.
+    
+    ```
+    Accept-Language: en
+    ```
+    
+    At the moment the following languages are supported on the server side:
+    - English (en)
+    - German (de)
+    
+    ## Authentication
+    Some of the endpoints require authentication to function properly. This applies
+    in principle but not exclusively to all user account-related operations.
+    Authentication is achieved by a stateless token based authentication mechanism
+    that is using the *HTTP Bearer Authentication* scheme.
+    
+    ```
+    Authorization: Bearer <ACCESS TOKEN>
+    ```
+    
+    So-called JWT access tokens are used, which can be requested once in exchange
+    for credentials and are now used for authentication instead of email and
+    password. There are also opaque refresh tokens that can be used to generate
+    new access tokens without having to resend the credentials. This is necessary
+    to stay logged in for a longer period of time, as the access tokens have a
+    relatively short lifespan.
+    
+    <SecurityDefinitions />
+  license:
+    name: GNU Affero General Public License v3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.en.html
+  contact:
+    name: "Constantin Müller"
+    url: https://github.com/MuellerConstantin
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Development Server
+tags:
+  - name: User
+    description: Everything about user and account management.
+  - name: Role
+    description: Manage roles and user permissions.
+  - name: Auth
+    description: Allows the client to authenticate themselves.
+  - name: Shortcut
+    description: Allows shortcuts to be managed.
+  - name: Complaint
+    description: Manages complaints of shortcuts, i.e. all complaints about potentially unwanted shortcuts.
+paths:
+  /users:
+    post:
+      tags: [ User ]
+      summary: Creates a new user.
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrationDto"
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+          description: Successfully created a new user.
+        '422':
+          $ref: "#/components/responses/422"
+  /user/me:
+    get:
+      tags: [ User ]
+      summary: Retrieves the currently authenticated user.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+          description: The successfully retrieved user.
+        '401':
+          $ref: "#/components/responses/401"
+    patch:
+      tags: [ User ]
+      summary: Updates your own user account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdateDto"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+          description: Successfully updated your user account.
+        '401':
+          $ref: "#/components/responses/401"
+        '422':
+          $ref: "#/components/responses/422"
+    delete:
+      tags: [ User ]
+      summary: Deletes your own user account.
+      responses:
+        '204':
+          description: Successfully deleted your user account.
+  /user/verify:
+    post:
+      tags: [ User ]
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserVerificationDto"
+      responses:
+        '204':
+          description: Successfully verified the user.
+        '401':
+          $ref: "#/components/responses/401"
+  /user/reset:
+    post:
+      tags: [ User ]
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserResetDto"
+      responses:
+        '204':
+          description: Successfully reset the user's password.
+        '401':
+          $ref: "#/components/responses/401"
+  /auth/token:
+    post:
+      tags: [ Auth ]
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CredentialsDto"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenDto"
+          description: The issued tokens.
+        '401':
+          $ref: "#/components/responses/401"
+  /auth/refresh:
+    post:
+      tags: [ Auth ]
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshSessionDto"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenDto"
+          description: The refreshed tokens.
+        '401':
+          $ref: "#/components/responses/401"
+  /user/me/roles:
+    get:
+      tags: [ Role ]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RolePageDto"
+          description: The roles of the currently authenticated user.
+        '401':
+          $ref: "#/components/responses/401"
+  /shortcuts:
+    post:
+      tags: [ Shortcut ]
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShortcutCreationDto"
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShortcutDto"
+          description: Successfully created a new shortcut.
+        '422':
+          $ref: "#/components/responses/422"
+  /shortcuts/{tag}:
+    get:
+      tags: [ Shortcut ]
+      security: [ ]
+      parameters:
+        - name: tag
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShortcutDto"
+          description: The successfully retrieved shortcut.
+        '404':
+          $ref: "#/components/responses/404"
+    delete:
+      tags: [ Shortcut ]
+      parameters:
+        - name: tag
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully deleted the shortcut.
+        '401':
+          $ref: "#/components/responses/401"
+        '404':
+          $ref: "#/components/responses/404"
+  /user/me/shortcuts:
+    get:
+      tags: [ Shortcut ]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShortcutPageDto"
+          description: The successfully retrieved page of shortcuts.
+        '401':
+          $ref: "#/components/responses/401"
+  /shortcuts/{tag}/complaints:
+    post:
+      tags: [ Complaint ]
+      parameters:
+        - name: tag
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComplaintCreationDto"
+      responses:
+        '204':
+          description: Successfully complained the shortcut.
+        '422':
+          $ref: "#/components/responses/422"
+components:
+  schemas:
+    ErrorDto:
+      type: object
+      properties:
+        error:
+          type: string
+          description: The type of error.
+        timestamp:
+          type: string
+          format: date-time
+          description: The time the error occurred.
+        message:
+          type: string
+          description: Human-readable description of the error.
+        path:
+          type: string
+          description: The endpoint path on which the error occurred.
+        status:
+          type: integer
+          description: The HTTP status code associated with the error.
+        details:
+          description: Further information on the error or its cause.
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      required:
+        - code
+        - message
+        - timestamp
+        - path
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        createdAt:
+          type: string
+          format: date-time
+      required: [ id, email, createdAt ]
+    RegistrationDto:
+      type: object
+      required: [ email, password ]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    UserUpdateDto:
+      type: object
+      properties:
+        password:
+          type: string
+    UserVerificationDto:
+      type: object
+      required: [ verificationToken ]
+      properties:
+        verificationToken:
+          type: string
+    UserResetDto:
+      type: object
+      required: [ resetToken, password ]
+      properties:
+        resetToken:
+          type: string
+        password:
+          type: string
+    RoleDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of shortcut.
+        name:
+          type: string
+          description: Unique name of the role.
+    RolePageDto:
+      allOf:
+        - $ref: "#/components/schemas/PageDto"
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/RoleDto"
+          required:
+            - content
+    CredentialsDto:
+      type: object
+      required: [ email, password ]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    RefreshSessionDto:
+      type: object
+      required: [ refreshToken ]
+      properties:
+        refreshToken:
+          type: string
+    TokenDto:
+      type: object
+      required:
+        - type
+        - principal
+        - accessToken
+        - refreshToken
+        - accessExpiresIn
+        - refreshExpiresIn
+      properties:
+        type:
+          type: string
+        principal:
+          type: string
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        accessExpiresIn:
+          type: integer
+        refreshExpiresIn:
+          type: integer
+    ShortcutDto:
+      type: object
+      required: [ id, tag, url, createdAt ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        tag:
+          type: string
+        url:
+          type: string
+          format: url
+        createdAt:
+          type: string
+          format: date-time
+    ShortcutPageDto:
+      allOf:
+        - $ref: "#/components/schemas/PageDto"
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/ShortcutDto"
+    ShortcutCreationDto:
+      type: object
+      required: [ url ]
+      properties:
+        url:
+          type: string
+          format: url
+    ComplaintCreationDto:
+      type: object
+      required: [ reason, comment ]
+      properties:
+        reason:
+          type: string
+          enum: [ SPAM, MALWARE, PHISHING, DEFACEMENT ]
+        comment:
+          type: string
+    PageDto:
+      type: object
+      required: [ page, perPage, totalElements, totalPages ]
+      properties:
+        page:
+          type: integer
+        perPage:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+  responses:
+    '500':
+      description: An internal error has occurred on the server side.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDto'
+    '400':
+      description: The request was incorrectly configured.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDto'
+    '401':
+      description: Authentication failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDto'
+    '422':
+      description: The request payload validation failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDto'
+    '404':
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDto'
+    '429':
+      description: Too many requests.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDto'
+    '403':
+      description: Forbidden.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDto'
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: jwt
+security:
+  - jwt: [ ]

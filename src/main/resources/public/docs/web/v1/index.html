@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-    <title>Attoly API Documentation (v1)</title>
+    <title>Attoly Web API Documentation (v1)</title>
 
     <link rel="icon" href="/site/favicon.svg" type="image/svg+xml">
 
@@ -19,8 +19,13 @@
 <div id="redoc"></div>
 <script src="/site/js/redoc.standalone.js"></script>
 <script>
-    Redoc.init('/site/docs/v1/openapi.yml', {
+    Redoc.init('/site/docs/web/v1/openapi.yml', {
         theme: {
+            logo: {
+                maxWidth: "64px",
+                maxHeight: "64px",
+                gutter: "10px"
+            },
             colors: {
                 primary: {
                     main: "#0ea5e9",

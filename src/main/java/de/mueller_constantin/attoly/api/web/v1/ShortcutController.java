@@ -1,12 +1,8 @@
 package de.mueller_constantin.attoly.api.web.v1;
 
-import cz.jirutka.rsql.parser.RSQLParser;
-import cz.jirutka.rsql.parser.ast.Node;
 import de.mueller_constantin.attoly.api.domain.ShortcutService;
 import de.mueller_constantin.attoly.api.domain.model.Shortcut;
 import de.mueller_constantin.attoly.api.domain.payload.ShortcutCreationPayload;
-import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLOperator;
-import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLVisitor;
 import de.mueller_constantin.attoly.api.security.CurrentPrincipal;
 import de.mueller_constantin.attoly.api.security.Principal;
 import de.mueller_constantin.attoly.api.web.v1.dto.PageDto;
@@ -16,7 +12,6 @@ import de.mueller_constantin.attoly.api.web.v1.dto.mapper.ShortcutMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +22,6 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/v1")
 public class ShortcutController {
-
     private final ShortcutService shortcutService;
     private final ShortcutMapper shortcutMapper;
 
@@ -35,21 +29,6 @@ public class ShortcutController {
     public ShortcutController(ShortcutService shortcutService, ShortcutMapper shortcutMapper) {
         this.shortcutService = shortcutService;
         this.shortcutMapper = shortcutMapper;
-    }
-
-    @GetMapping("/shortcuts")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
-    PageDto<ShortcutDto> findAll(@PageableDefault Pageable pageable,
-                                 @RequestParam(value = "filter", required = false) String filter) {
-        if (filter != null && !filter.isEmpty()) {
-            Node rootNode = new RSQLParser(JpaRSQLOperator.getOperators()).parse(filter);
-            Specification<Shortcut> specification = rootNode.accept(new JpaRSQLVisitor<>());
-            Page<Shortcut> shortcuts = shortcutService.findAll(specification, pageable);
-            return shortcutMapper.mapToDto(shortcuts);
-        } else {
-            Page<Shortcut> shortcuts = shortcutService.findAll(pageable);
-            return shortcutMapper.mapToDto(shortcuts);
-        }
     }
 
     @PostMapping("/shortcuts")
@@ -63,7 +42,7 @@ public class ShortcutController {
 
     @DeleteMapping("/shortcuts/{tag}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR') || @domainMethodSecurityEvaluator.isShortcutOwnerOf(#tag)")
+    @PreAuthorize("@domainMethodSecurityEvaluator.isShortcutOwnerOf(#tag)")
     void deleteById(@PathVariable("tag") String tag) {
         shortcutService.deleteByTag(tag);
     }

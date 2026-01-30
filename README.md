@@ -34,7 +34,7 @@ of the platform. It is a monolithic 3-layer architecture which is geared towards
 of the service. The application is divided into the layers of presentation, business logic and data
 management. The presentation layer essentially consists of an HTTP RESTful interface for machine-to-machine
 interaction with the outsourced frontend. This interface is documented in OpenAPI format and stored
-[here](src/main/resources/public/docs/v1/openapi.yml). Alternatively, the documentation can also be viewed
+[here](src/main/resources/public/docs/web/v1/openapi.yml). Alternatively, the documentation can also be viewed
 as a webpage via the self-service. The middle layer is the business layer, which essentially contains the
 business logic in the form of services. The third and last layer is the data access layer, which is
 responsible for data storage and event sourcing. The databases are accessed via repositories or data access

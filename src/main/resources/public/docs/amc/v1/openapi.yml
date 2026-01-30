@@ -1,6 +1,6 @@
 openapi: "3.0.1"
 info:
-  title: Attoly
+  title: Attoly AMC API
   version: v1
   x-logo:
     url: /site/images/logo.svg
@@ -11,11 +11,14 @@ info:
     for long URLs, which are easier to embed in websites, chats and documents.
     
     # Introduction
-    This is the official documentation of the Attoly RESTful API. Based on
+    This is the official documentation of the Attoly AMC RESTful API. Based on
     simple REST principles, the Attoly RESTful API endpoints return JSON
     metadata about created and managed short link URL mappings aka shortcuts.
     This API also provides access to user related data, like account information
     and your personal shortcut library.
+    
+    This is the AMC (Attoly Management Console) API. It provides access to privileged
+    operations and allows platform management.
     
     # Overview
     The following settings and techniques apply to the entire Attoly RESTful API.
@@ -113,7 +116,7 @@ info:
     name: "Constantin Müller"
     url: https://github.com/MuellerConstantin
 servers:
-  - url: http://localhost:8080/api/v1
+  - url: http://localhost:8080/api/v1/amc
     description: Development Server
 tags:
   - name: User
@@ -128,42 +131,12 @@ tags:
     description: Manages complaints of shortcuts, i.e. all complaints about potentially unwanted shortcuts.
 paths:
   /users:
-    post:
-      tags:
-        - User
-      summary: Creates a new user.
-      description: >
-        Creates a new user account. The user account is irretrievably linked
-        to the stored email and must first be activated by verifying the email.
-      security: [ ]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RegistrationDto"
-            example:
-              email: m.mustermann@localhost.com
-              password: Abc123
-      responses:
-        201:
-          description: Successfully created the new user.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserDto"
-              example:
-                id: 3377cf8f-da29-4aa7-9036-91951b8fce87
-                email: m.mustermann@localhost.com
-                createdAt: 2022-06-27T15:18:16.706776+02:00
-        422:
-          $ref: "#/components/responses/UnprocessableEntity"
     get:
       tags:
         - User
       summary: Returns all user details.
       description: >
-        Returns all user details. This endpoint is only available to administrators.
+        Returns all user details.
       parameters:
         - name: page
           in: query
@@ -194,7 +167,7 @@ paths:
             type: string
             example: name=like=test
       responses:
-        200:
+        '200':
           description: Successfully fetched all available shortcuts.
           content:
             application/json:
@@ -216,7 +189,7 @@ paths:
         - User
       summary: Gets a user by its identifier.
       description: >
-        Gets a user's details by its identifier. You'll need administrative privileges to retrieve a user's details.
+        Gets a user's details by its identifier.
       parameters:
         - name: id
           in: path
@@ -226,7 +199,7 @@ paths:
             type: string
             format: uuid
       responses:
-        200:
+        '200':
           description: Successfully retrieved the user's details.
           content:
             application/json:
@@ -237,19 +210,18 @@ paths:
                 email: m.mustermann@localhost.com
                 createdAt: 2022-06-27T15:18:16.706776+02:00
                 emailVerified: true
-        403:
-          $ref: "#/components/responses/AccessDenied"
-        404:
-          $ref: "#/components/responses/NotFound"
-        401:
-          $ref: "#/components/responses/Unauthenticated"
+        '403':
+          $ref: "#/components/responses/401"
+        '404':
+          $ref: "#/components/responses/404"
+        '401':
+          $ref: "#/components/responses/401"
     patch:
       tags:
         - User
       summary: Updates the details of a single user.
       description: >
-        Updates a user's details. Without higher rights, only your own user can be updated. Therefore, this endpoint
-        is only available for administrators.
+        Updates a user's details.
       parameters:
         - name: id
           in: path
@@ -268,7 +240,7 @@ paths:
             example:
               password: Def456
       responses:
-        200:
+        '200':
           description: Successfully updated the selected user.
           content:
             application/json:
@@ -279,24 +251,21 @@ paths:
                 email: m.mustermann@localhost.com
                 createdAt: 2022-06-27T15:18:16.706776+02:00
                 emailVerified: true
-        422:
-          $ref: "#/components/responses/UnprocessableEntity"
-        403:
-          $ref: "#/components/responses/AccessDenied"
-        404:
-          $ref: "#/components/responses/NotFound"
-        401:
-          $ref: "#/components/responses/Unauthenticated"
+        '422':
+          $ref: "#/components/responses/422"
+        '403':
+          $ref: "#/components/responses/403"
+        '404':
+          $ref: "#/components/responses/404"
+        '401':
+          $ref: "#/components/responses/401"
     delete:
       tags:
         - User
       summary: Deletes a single user.
       description: >
-        Allows deleting a user account. Even if the path is generic, it is
-        only possible to delete your own user without higher rights due to
-        the security policy. Warning, the deletion is immediate executed
-        and irreversible. To delete other user accounts, you have to be
-        an administrator.
+        Allows deleting a user account. Warning, the deletion is
+        immediate executed and irreversible.
       parameters:
         - name: id
           in: path
@@ -307,182 +276,14 @@ paths:
             format: uuid
             example: 3377cf8f-da29-4aa7-9036-91951b8fce87
       responses:
-        204:
+        '204':
           description: Successfully deleted the selected user.
-        403:
-          $ref: "#/components/responses/AccessDenied"
-        404:
-          $ref: "#/components/responses/NotFound"
-        401:
-          $ref: "#/components/responses/Unauthenticated"
-  /user/me:
-    get:
-      tags:
-        - User
-      summary: Retrieves the currently authenticated user.
-      description: >
-        Returns the account details of the currently authenticated user.
-        Only the account information of your own authenticated account can be queried.
-      responses:
-        200:
-          description: Successfully fetched the authenticated user.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserDto"
-              example:
-                id: 3377cf8f-da29-4aa7-9036-91951b8fce87
-                email: m.mustermann@localhost.com
-                createdAt: 2022-06-27T15:18:16.706776+02:00
-        401:
-          $ref: "#/components/responses/Unauthenticated"
-    patch:
-      tags:
-        - User
-      summary: Updates your own user account.
-      description: >
-        Updates the account of the currently authenticated user.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UserUpdateDto"
-            example:
-              password: Def456
-      responses:
-        200:
-          description: Successfully updated your user account.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserDto"
-              example:
-                id: 3377cf8f-da29-4aa7-9036-91951b8fce87
-                email: m.mustermann@localhost.com
-                createdAt: 2022-06-27T15:18:16.706776+02:00
-        422:
-          $ref: "#/components/responses/UnprocessableEntity"
-        403:
-          $ref: "#/components/responses/AccessDenied"
-        404:
-          $ref: "#/components/responses/NotFound"
-        401:
-          $ref: "#/components/responses/Unauthenticated"
-    delete:
-      tags:
-        - User
-      summary: Deletes a your own user account.
-      description: >
-        Allows deleting a user account. Warning, the deletion is immediate
-        executed and irreversible. To delete other user accounts, you have
-        to be an administrator.
-      responses:
-        204:
-          description: Successfully deleted your user account.
-        403:
-          $ref: "#/components/responses/AccessDenied"
-        404:
-          $ref: "#/components/responses/NotFound"
-        401:
-          $ref: "#/components/responses/Unauthenticated"
-  /user/verify:
-    post:
-      tags:
-        - User
-      summary: Activates a user by verifying email.
-      description: >
-        Activates a user by verifying email. Without this verification, the user
-        cannot be logged in and the account cannot be used. The verification is
-        carried out by sending a verification token to the user via email
-        beforehand and the user must include this in the request.
-      security: [ ]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UserVerificationDto"
-            example:
-              verificationToken: vT6Nafaz
-      responses:
-        204:
-          description: Successfully verified and enabled the user account.
-        422:
-          $ref: "#/components/responses/UnprocessableEntity"
-        410:
-          $ref: "#/components/responses/Gone"
-    get:
-      tags:
-        - User
-      summary: Requests a verification token via email.
-      description: >
-        Causes a verification token to be sent via email. This token is
-        used to verify the email and activate the account.
-      security: [ ]
-      parameters:
-        - name: email
-          in: query
-          description: Email of the user for whom a verification token should be sent.
-          required: true
-          schema:
-            type: string
-            format: email
-            example: m.mustermann@localhost.com
-      responses:
-        204:
-          description: Successfully sent a verification token.
-        404:
-          $ref: "#/components/responses/NotFound"
-  /user/reset:
-    post:
-      tags:
-        - User
-      summary: Resets a user's password.
-      description: >
-        Resets a user's password using a reset token. This variant can be
-        used to recover an account for which the password has been forgotten.
-        A reset token is sent to the user via email and must be included in
-        the request along with the new password.
-      security: [ ]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UserResetDto"
-            example:
-              resetToken: WlDXlr/b
-              password: Def456
-      responses:
-        204:
-          description: Successfully reset the user's password.
-        422:
-          $ref: "#/components/responses/UnprocessableEntity"
-        410:
-          $ref: "#/components/responses/Gone"
-    get:
-      tags:
-        - User
-      summary: Requests a reset token via email.
-      description: >
-        Causes a reset token to be sent to the user via email. This
-        sent token can be used to reset the password.
-      security: [ ]
-      parameters:
-        - name: email
-          in: query
-          description: Email of the user for whom a reset token should be sent.
-          required: true
-          schema:
-            type: string
-            format: email
-            example: m.mustermann@localhost.com
-      responses:
-        204:
-          description: Successfully sent a reset token.
-        404:
-          $ref: "#/components/responses/NotFound"
+        '403':
+          $ref: "#/components/responses/403"
+        '404':
+          $ref: "#/components/responses/404"
+        '401':
+          $ref: "#/components/responses/401"
   /auth/token:
     post:
       tags:
@@ -503,7 +304,7 @@ paths:
               email: m.mustermann@localhost.com
               password: Abc123
       responses:
-        200:
+        '200':
           description: Successfully signed in the user.
           content:
             application/json:
@@ -518,8 +319,8 @@ paths:
                   J4Dqme3fPAkqtsf0jsksPr6Y-0pZe3hPYUdWz18eKius8fmijsQFf-5lxVM4kQLKBI4tmBQ3Dw
                 accessExpiresIn: 300000
                 refreshExpiresIn: 7200000
-        401:
-          $ref: "#/components/responses/Unauthenticated"
+        '401':
+          $ref: "#/components/responses/401"
   /auth/refresh:
     post:
       tags:
@@ -540,7 +341,7 @@ paths:
             example:
               refreshToken: /QwSXxYuhkPmdwqSZQ4wjQ==
       responses:
-        200:
+        '200':
           description: Successfully renewed the user's session.
           content:
             application/json:
@@ -555,17 +356,17 @@ paths:
                   J4Dqme3fPAkqtsf0jsksPr6Y-0pZe3hPYUdWz18eKius8fmijsQFf-5lxVM4kQLKBI4tmBQ3Dw
                 accessExpiresIn: 300000
                 refreshExpiresIn: 7200000
-        401:
-          $ref: "#/components/responses/Unauthenticated"
+        '401':
+          $ref: "#/components/responses/401"
   /roles:
     get:
       tags:
         - Role
       summary: Lists all available security roles.
       description: >
-        Lists all available security roles. Only administrators can retrieve all available roles.
+        Lists all available security roles.
       responses:
-        200:
+        '200':
           description: Successfully fetched all available roles.
           content:
             application/json:
@@ -576,17 +377,17 @@ paths:
               example:
                 - id: 97aeee91-1fd4-4228-9c76-33564188e6fd
                   name: ROLE_ADMIN
-        401:
-          $ref: "#/components/responses/Unauthenticated"
-        403:
-          $ref: "#/components/responses/AccessDenied"
+        '401':
+          $ref: "#/components/responses/401"
+        '403':
+          $ref: "#/components/responses/403"
   /roles/{id}:
     get:
       tags:
         - Role
       summary: Gets a role by its identifier.
       description: >
-        Gets a role by its identifier. You'll need administrative privileges to retrieve a role.
+        Gets a role by its identifier.
       parameters:
         - name: id
           in: path
@@ -596,7 +397,7 @@ paths:
             type: string
             format: uuid
       responses:
-        200:
+        '200':
           description: Successfully retrieved the role.
           content:
             application/json:
@@ -605,19 +406,19 @@ paths:
               example:
                 id: 97aeee91-1fd4-4228-9c76-33564188e6fd
                 name: ROLE_ADMIN
-        403:
-          $ref: "#/components/responses/AccessDenied"
-        404:
-          $ref: "#/components/responses/NotFound"
-        401:
-          $ref: "#/components/responses/Unauthenticated"
+        '403':
+          $ref: "#/components/responses/403"
+        '404':
+          $ref: "#/components/responses/404"
+        '401':
+          $ref: "#/components/responses/401"
   /users/{userId}/roles:
     get:
       tags:
         - Role
       summary: Lists all security roles of a user.
       description: >
-        Lists all security roles of a user. Only administrators can see a user's roles.
+        Lists all security roles of a user.
       parameters:
         - name: userId
           in: path
@@ -627,7 +428,7 @@ paths:
             type: string
             format: uuid
       responses:
-        200:
+        '200':
           description: Successfully fetched all roles.
           content:
             application/json:
@@ -638,40 +439,19 @@ paths:
               example:
                 - id: 97aeee91-1fd4-4228-9c76-33564188e6fd
                   name: ROLE_ADMIN
-        401:
-          $ref: "#/components/responses/Unauthenticated"
-        403:
-          $ref: "#/components/responses/AccessDenied"
-        404:
-          $ref: "#/components/responses/NotFound"
-  /user/me/roles:
-    get:
-      tags:
-        - Role
-      summary: Lists all security roles of the current user.
-      description: >
-        Lists all security roles of the current user.
-      responses:
-        200:
-          description: Successfully fetched all roles.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/RoleDto"
-              example:
-                - id: 97aeee91-1fd4-4228-9c76-33564188e6fd
-                  name: ROLE_USER
-        401:
-          $ref: "#/components/responses/Unauthenticated"
+        '401':
+          $ref: "#/components/responses/401"
+        '403':
+          $ref: "#/components/responses/403"
+        '404':
+          $ref: "#/components/responses/404"
   /users/{userId}/roles/{roleId}:
     post:
       tags:
         - Role
       summary: Adds a role to a user.
       description: >
-        Adds a role to a user. You need administrative privileges to grant permissions/roles.
+        Adds a role to a user.
       parameters:
         - name: userId
           in: path
@@ -688,20 +468,20 @@ paths:
             type: string
             format: uuid
       responses:
-        204:
+        '204':
           description: Successfully added the role.
-        403:
-          $ref: "#/components/responses/AccessDenied"
-        404:
-          $ref: "#/components/responses/NotFound"
-        401:
-          $ref: "#/components/responses/Unauthenticated"
+        '403':
+          $ref: "#/components/responses/403"
+        '404':
+          $ref: "#/components/responses/404"
+        '401':
+          $ref: "#/components/responses/401"
     delete:
       tags:
         - Role
       summary: Removes a role from a user.
       description: >
-        Removes a role from a user. You'll need administrative privileges to revoke permissions/roles.
+        Removes a role from a user.
       parameters:
         - name: userId
           in: path
@@ -718,58 +498,21 @@ paths:
             type: string
             format: uuid
       responses:
-        204:
+        '204':
           description: Successfully revoked the role.
-        403:
-          $ref: "#/components/responses/AccessDenied"
-        404:
-          $ref: "#/components/responses/NotFound"
-        401:
-          $ref: "#/components/responses/Unauthenticated"
+        '403':
+          $ref: "#/components/responses/403"
+        '404':
+          $ref: "#/components/responses/404"
+        '401':
+          $ref: "#/components/responses/401"
   /shortcuts:
-    post:
-      tags:
-        - Shortcut
-      summary: Creates a new shortcut.
-      description: >
-        Creates a new shortcut for a URL to be abbreviated. Access can be
-        authenticated, in which case the shortcut is assigned to the user,
-        or unauthenticated, in which case an anonymous shortcut is created.
-        While user shortcuts are permanently available, anonymous shortcuts
-        are deleted after some time.
-      security:
-        - { }
-        - jwt: [ ]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ShortcutCreationDto"
-            example:
-              url: http://localhost:8080
-      responses:
-        201:
-          description: Successfully created the new shortcut.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ShortcutDto"
-              example:
-                id: 97aeee91-1fd4-4228-9c76-33564188e6fd
-                tag: hluEinvI
-                url: http://localhost:8080
-                createdAt: 2022-06-27T15:18:16.706776+02:00
-        422:
-          $ref: "#/components/responses/UnprocessableEntity"
-        401:
-          $ref: "#/components/responses/Unauthenticated"
     get:
       tags:
         - Shortcut
       summary: Lists all shortcuts.
       description: >
-        Lists all available shortcuts. Only administrators can retrieve all available shortcuts.
+        Lists all available shortcuts.
       parameters:
         - name: page
           in: query
@@ -800,7 +543,7 @@ paths:
             type: string
             example: name=like=test
       responses:
-        200:
+        '200':
           description: Successfully fetched all available shortcuts.
           content:
             application/json:
@@ -816,40 +559,11 @@ paths:
                     tag: hluEinvI
                     url: http://localhost:8080
                     createdAt: 2022-06-27T15:18:16.706776+02:00
-        401:
-          $ref: "#/components/responses/Unauthenticated"
-        403:
-          $ref: "#/components/responses/AccessDenied"
+        '401':
+          $ref: "#/components/responses/401"
+        '403':
+          $ref: "#/components/responses/403"
   /shortcuts/{tag}:
-    get:
-      tags:
-        - Shortcut
-      summary: Resolves a shortcut.
-      description: >
-        Resolves a shortcut based on its short link or tag.
-      security: [ ]
-      parameters:
-        - name: tag
-          in: path
-          description: Unique tag of the shortcut.
-          required: true
-          schema:
-            type: string
-            example: hluEinvI
-      responses:
-        200:
-          description: Successfully resolved the shortcut.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ShortcutDto"
-              example:
-                id: 97aeee91-1fd4-4228-9c76-33564188e6fd
-                tag: hluEinvI
-                url: http://localhost:8080
-                createdAt: 2022-06-27T15:18:16.706776+02:00
-        404:
-          $ref: "#/components/responses/NotFound"
     delete:
       tags:
         - Shortcut
@@ -867,98 +581,14 @@ paths:
             type: string
             example: hluEinvI
       responses:
-        204:
+        '204':
           description: Successfully deleted the selected shortcut.
-        403:
-          $ref: "#/components/responses/AccessDenied"
-        404:
-          $ref: "#/components/responses/NotFound"
-        401:
-          $ref: "#/components/responses/Unauthenticated"
-  /user/me/shortcuts:
-    get:
-      tags:
-        - Shortcut
-      summary: Retrieves all shortcuts of current user.
-      description: >
-        Loads the list of all personal shortcuts of the currently authenticated
-        user. The result is returned in pages because of the possible size.
-      parameters:
-        - name: page
-          in: query
-          description: Zero based index of page to load.
-          required: false
-          schema:
-            type: integer
-            example: 0
-        - name: perPage
-          in: query
-          description: Number of elements per page.
-          required: false
-          schema:
-            type: integer
-            example: 25
-        - name: sort
-          in: query
-          description: Sort criteria.
-          required: false
-          schema:
-            type: string
-            example: createdAt,desc
-      responses:
-        200:
-          description: Successfully fetched all available shortcuts.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ShortcutPageDto"
-              example:
-                page: 0
-                perPage: 25
-                totalElements: 1
-                totalPages: 1
-                content:
-                  - id: 97aeee91-1fd4-4228-9c76-33564188e6fd
-                    tag: hluEinvI
-                    url: http://localhost:8080
-                    createdAt: 2022-06-27T15:18:16.706776+02:00
-        401:
-          $ref: "#/components/responses/Unauthenticated"
-  /shortcuts/{tag}/complaints:
-    post:
-      tags:
-        - Complaint
-      summary: Complaints a shortcut.
-      description: >
-        Complains a shortcut based on its tag. The complaint is sent to the
-        administrator of the service. The administrator can then decide
-        whether to delete the shortcut or not.
-      parameters:
-        - name: tag
-          in: path
-          description: Unique tag of the shortcut.
-          required: true
-          schema:
-            type: string
-            example: hluEinvI
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ComplaintCreationDto"
-            example:
-              reason: SPAM
-              comment: Contains offensive content.
-      responses:
-        204:
-          description: Successfully complained the shortcut.
-        404:
-          $ref: "#/components/responses/NotFound"
-        401:
-          $ref: "#/components/responses/Unauthenticated"
-        403:
-          $ref: "#/components/responses/AccessDenied"
+        '403':
+          $ref: "#/components/responses/403"
+        '404':
+          $ref: "#/components/responses/404"
+        '401':
+          $ref: "#/components/responses/401"
   /complaints:
     get:
       tags:
@@ -966,8 +596,7 @@ paths:
       summary: Retrieves all complaints.
       description: >
         Loads the list of all complaints. The result is returned in pages
-        because of the possible size. Only administrators are able to
-        retrieve complaints.
+        because of the possible size.
       parameters:
         - name: page
           in: query
@@ -991,7 +620,7 @@ paths:
             type: string
             example: createdAt,desc
       responses:
-        200:
+        '200':
           description: Successfully fetched all available complaints.
           content:
             application/json:
@@ -1007,10 +636,10 @@ paths:
                     reason: SPAM
                     comment: Contains offensive content.
                     createdAt: 2022-06-27T15:18:16.706776+02:00
-        401:
-          $ref: "#/components/responses/Unauthenticated"
-        403:
-          $ref: "#/components/responses/AccessDenied"
+        '401':
+          $ref: "#/components/responses/401"
+        '403':
+          $ref: "#/components/responses/403"
   /complaints/{id}:
     get:
       tags:
@@ -1027,7 +656,7 @@ paths:
             type: string
             example: 97aeee91-1fd4-4228-9c76-33564188e6fd
       responses:
-        200:
+        '200':
           description: Successfully fetched the selected complaint.
           content:
             application/json:
@@ -1038,19 +667,18 @@ paths:
                 reason: SPAM
                 comment: Contains offensive content.
                 createdAt: 2022-06-27T15:18:16.706776+02:00
-        404:
-          $ref: "#/components/responses/NotFound"
-        401:
-          $ref: "#/components/responses/Unauthenticated"
-        403:
-          $ref: "#/components/responses/AccessDenied"
+        '404':
+          $ref: "#/components/responses/404"
+        '401':
+          $ref: "#/components/responses/401"
+        '403':
+          $ref: "#/components/responses/403"
     delete:
       tags:
         - Complaint
       summary: Deletes a single complaint.
       description: >
-        Deletes a single complaint based on its unique identifier. Only
-        administrators can delete complaints.
+        Deletes a single complaint based on its unique identifier.
       parameters:
         - name: id
           in: path
@@ -1060,14 +688,14 @@ paths:
             type: string
             example: 97aeee91-1fd4-4228-9c76-33564188e6fd
       responses:
-        204:
+        '204':
           description: Successfully deleted the selected complaint.
-        403:
-          $ref: "#/components/responses/AccessDenied"
-        404:
-          $ref: "#/components/responses/NotFound"
-        401:
-          $ref: "#/components/responses/Unauthenticated"
+        '403':
+          $ref: "#/components/responses/403"
+        '404':
+          $ref: "#/components/responses/404"
+        '401':
+          $ref: "#/components/responses/401"
 components:
   schemas:
     ErrorDto:
@@ -1119,25 +747,6 @@ components:
         - perPage
         - totalElements
         - totalPages
-    UserDto:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier of user.
-        email:
-          type: string
-          format: email
-          description: Unique email to contact.
-        createdAt:
-          type: string
-          format: date-time
-          description: Time of creation of the user account.
-      required:
-        - id
-        - email
-        - createdAt
     PrincipalDto:
       type: object
       properties:
@@ -1164,17 +773,6 @@ components:
         - email
         - createdAt
         - emailVerified
-    UserPageDto:
-      allOf:
-        - $ref: "#/components/schemas/PageDto"
-        - type: object
-          properties:
-            content:
-              type: array
-              items:
-                $ref: "#/components/schemas/UserDto"
-          required:
-            - content
     PrincipalPageDto:
       allOf:
         - $ref: "#/components/schemas/PageDto"
@@ -1186,30 +784,6 @@ components:
                 $ref: "#/components/schemas/PrincipalDto"
           required:
             - content
-    RegistrationDto:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-          description: Unique email to contact.
-          maxLength: 1024
-        password:
-          type: string
-          description: The user's password.
-          maxLength: 256
-          pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,100}$
-      required:
-        - email
-        - password
-    UserUpdateDto:
-      type: object
-      properties:
-        password:
-          type: string
-          description: The user's password.
-          maxLength: 256
-          pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$
     PrincipalUpdateDto:
       type: object
       properties:
@@ -1221,28 +795,6 @@ components:
         locked:
           type: boolean
           description: Indicates if a user account is locked.
-    UserVerificationDto:
-      type: object
-      properties:
-        verificationToken:
-          type: string
-          description: A valid verification token.
-      required:
-        - verificationToken
-    UserResetDto:
-      type: object
-      properties:
-        resetToken:
-          type: string
-          description: A valid reset token.
-        password:
-          type: string
-          description: The user's password.
-          maxLength: 256
-          pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$
-      required:
-        - resetToken
-        - password
     CredentialsDto:
       type: object
       properties:
@@ -1303,17 +855,6 @@ components:
         name:
           type: string
           description: Unique name of the role.
-    RolePageDto:
-      allOf:
-        - $ref: "#/components/schemas/PageDto"
-        - type: object
-          properties:
-            content:
-              type: array
-              items:
-                $ref: "#/components/schemas/RoleDto"
-          required:
-            - content
     ShortcutDto:
       type: object
       properties:
@@ -1351,31 +892,6 @@ components:
                 $ref: "#/components/schemas/ShortcutDto"
           required:
             - content
-    ShortcutCreationDto:
-      type: object
-      properties:
-        url:
-          type: string
-          format: url
-          description: The actual URL to resolve.
-      required:
-        - tag
-        - url
-    ComplaintCreationDto:
-      type: object
-      properties:
-        reason:
-          type: string
-          enum: [ SPAM, MALWARE, PHISHING, DEFACEMENT ]
-          description: The reason for complaining about the shortcut
-        comment:
-          type: string
-          description: A comment explaining the reason in more detail.
-          maxLength: 2000
-          minLength: 1
-      required:
-        - reason
-        - comment
     ComplaintDto:
       type: object
       properties:
@@ -1416,48 +932,48 @@ components:
           required:
             - content
   responses:
-    InternalError:
+    '500':
       description: An internal error has occurred on the server side.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorDto"
-    NotFound:
-      description: The specified resource was not found.
+            $ref: '#/components/schemas/ErrorDto'
+    '400':
+      description: The request was incorrectly configured.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorDto"
-    UnprocessableEntity:
-      description: User input validation failed.
+            $ref: '#/components/schemas/ErrorDto'
+    '401':
+      description: Authentication failed.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorDto"
-    AccessDenied:
-      description: Access was denied due to insufficient rights.
+            $ref: '#/components/schemas/ErrorDto'
+    '422':
+      description: The request payload validation failed.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorDto"
-    Unauthenticated:
-      description: The access must be authenticated.
+            $ref: '#/components/schemas/ErrorDto'
+    '404':
+      description: The requested resource was not found.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorDto"
-    Conflict:
-      description: There was a resource conflict.
+            $ref: '#/components/schemas/ErrorDto'
+    '429':
+      description: Too many requests.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorDto"
-    Gone:
-      description: The original resource was moved.
+            $ref: '#/components/schemas/ErrorDto'
+    '403':
+      description: Forbidden.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorDto"
+            $ref: '#/components/schemas/ErrorDto'
   securitySchemes:
     jwt:
       type: http
