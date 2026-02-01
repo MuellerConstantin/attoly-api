@@ -128,11 +128,17 @@ public class UserServiceImpl implements UserService {
         return update(findByEmail(email), payload);
     }
 
-    protected User update(User user, UserUpdatePayload payload) {
-        if (payload.getPassword().isPresent()) {
-            user.setPassword(passwordEncoder.encode(payload.getPassword().get()));
-        }
+    @Override
+    public User changePasswordById(UUID id, String currentPassword, String newPassword) throws EntityNotFoundException {
+        return changePassword(findById(id), currentPassword, newPassword);
+    }
 
+    @Override
+    public User changePasswordByEmail(String email, String currentPassword, String newPassword) throws EntityNotFoundException {
+        return changePassword(findByEmail(email), currentPassword, newPassword);
+    }
+
+    protected User update(User user, UserUpdatePayload payload) {
         if (payload.getLocked().isPresent()) {
             boolean isAdministrator = user.getRoles().stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_ADMIN));
 
@@ -143,6 +149,19 @@ public class UserServiceImpl implements UserService {
             user.setLocked(payload.getLocked().get());
         }
 
+        return userRepository.save(user);
+    }
+
+    protected User changePassword(User user, String currentPassword, String newPassword) {
+        if(user.getIdentityProvider() != null) {
+            throw new IllegalArgumentException("Cannot change password for users with an identity provider");
+        }
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Old password does not match");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
         return userRepository.save(user);
     }
 

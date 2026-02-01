@@ -9,7 +9,6 @@ import de.mueller_constantin.attoly.api.domain.payload.UserUpdatePayload;
 import de.mueller_constantin.attoly.api.security.CurrentPrincipal;
 import de.mueller_constantin.attoly.api.security.Principal;
 import de.mueller_constantin.attoly.api.web.v1.dto.*;
-import de.mueller_constantin.attoly.api.web.v1.dto.*;
 import de.mueller_constantin.attoly.api.web.v1.dto.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 import java.util.Locale;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -61,10 +59,9 @@ public class UserController {
         userService.deleteByEmail(principal.getEmail());
     }
 
-    @PatchMapping("/user/me")
-    UserDto updateCurrentUser(@CurrentPrincipal Principal principal, @RequestBody @Valid UserUpdateDto dto) {
-        UserUpdatePayload payload = userMapper.mapToPayload(dto);
-        User user = userService.updateByEmail(principal.getEmail(), payload);
+    @PatchMapping("/user/me/password")
+    UserDto changeCurrentUserPassword(@CurrentPrincipal Principal principal, @RequestBody @Valid ChangePasswordDto dto) {
+        User user = userService.changePasswordByEmail(principal.getEmail(), dto.getCurrentPassword(), dto.getNewPassword());
 
         return userMapper.mapToDto(user);
     }

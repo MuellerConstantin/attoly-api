@@ -111,6 +111,10 @@ public interface UserService {
      */
     User updateByEmail(String email, UserUpdatePayload payload) throws EntityNotFoundException;
 
+    User changePasswordById(UUID id, String currentPassword, String newPassword) throws EntityNotFoundException;
+
+    User changePasswordByEmail(String email, String currentPassword, String newPassword) throws EntityNotFoundException;
+
     void assignRoleById(UUID userId, UUID roleId) throws EntityNotFoundException;
 
     void assignRoleByEmail(String email, UUID roleId) throws EntityNotFoundException;

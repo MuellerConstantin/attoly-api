@@ -216,49 +216,6 @@ paths:
           $ref: "#/components/responses/404"
         '401':
           $ref: "#/components/responses/401"
-    patch:
-      tags:
-        - User
-      summary: Updates the details of a single user.
-      description: >
-        Updates a user's details.
-      parameters:
-        - name: id
-          in: path
-          description: Unique identifier of the user.
-          required: true
-          schema:
-            type: string
-            format: uuid
-            example: 3377cf8f-da29-4aa7-9036-91951b8fce87
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PrincipalUpdateDto"
-            example:
-              password: Def456
-      responses:
-        '200':
-          description: Successfully updated the selected user.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PrincipalDto"
-              example:
-                id: 3377cf8f-da29-4aa7-9036-91951b8fce87
-                email: m.mustermann@localhost.com
-                createdAt: 2022-06-27T15:18:16.706776+02:00
-                emailVerified: true
-        '422':
-          $ref: "#/components/responses/422"
-        '403':
-          $ref: "#/components/responses/403"
-        '404':
-          $ref: "#/components/responses/404"
-        '401':
-          $ref: "#/components/responses/401"
     delete:
       tags:
         - User
@@ -784,17 +741,6 @@ components:
                 $ref: "#/components/schemas/PrincipalDto"
           required:
             - content
-    PrincipalUpdateDto:
-      type: object
-      properties:
-        password:
-          type: string
-          description: The user's password.
-          maxLength: 256
-          pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$
-        locked:
-          type: boolean
-          description: Indicates if a user account is locked.
     CredentialsDto:
       type: object
       properties:

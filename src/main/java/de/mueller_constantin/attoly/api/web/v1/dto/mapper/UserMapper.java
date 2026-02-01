@@ -4,7 +4,6 @@ import de.mueller_constantin.attoly.api.domain.model.User;
 import de.mueller_constantin.attoly.api.domain.payload.UserCreationPayload;
 import de.mueller_constantin.attoly.api.domain.payload.UserUpdatePayload;
 import de.mueller_constantin.attoly.api.web.v1.dto.*;
-import de.mueller_constantin.attoly.api.web.v1.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
@@ -19,7 +18,7 @@ public interface UserMapper {
 
     UserCreationPayload mapToPayload(RegistrationDto dto);
 
-    UserUpdatePayload mapToPayload(UserUpdateDto dto);
+    UserUpdatePayload mapToPayload(ChangePasswordDto dto);
 
     UserUpdatePayload mapToPayload(PrincipalUpdateDto dto);
 

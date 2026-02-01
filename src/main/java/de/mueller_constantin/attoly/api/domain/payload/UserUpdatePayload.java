@@ -12,13 +12,7 @@ import java.util.Optional;
 @Data
 @Builder
 public class UserUpdatePayload {
-
-    private String password;
     private Boolean locked;
-
-    public Optional<String> getPassword() {
-        return Optional.ofNullable(password);
-    }
 
     public Optional<Boolean> getLocked() {
         return Optional.ofNullable(locked);

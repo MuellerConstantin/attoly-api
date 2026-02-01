@@ -163,32 +163,33 @@ paths:
           description: The successfully retrieved user.
         '401':
           $ref: "#/components/responses/401"
-    patch:
-      tags: [ User ]
-      summary: Updates your own user account.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UserUpdateDto"
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserDto"
-          description: Successfully updated your user account.
-        '401':
-          $ref: "#/components/responses/401"
-        '422':
-          $ref: "#/components/responses/422"
     delete:
       tags: [ User ]
       summary: Deletes your own user account.
       responses:
         '204':
           description: Successfully deleted your user account.
+  /user/me/password:
+    patch:
+      tags: [ User ]
+      summary: Updates your own user account's password.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordDto"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+          description: Successfully updated your user account's password.
+        '401':
+          $ref: "#/components/responses/401"
+        '422':
+          $ref: "#/components/responses/422"
   /user/verify:
     post:
       tags: [ User ]
@@ -408,11 +409,14 @@ components:
           format: email
         password:
           type: string
-    UserUpdateDto:
+    ChangePasswordDto:
       type: object
       properties:
-        password:
+        currentPassword:
           type: string
+        newPassword:
+          type: string
+      required: [ currentPassword, newPassword ]
     UserVerificationDto:
       type: object
       required: [ verificationToken ]

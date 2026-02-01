@@ -2,6 +2,7 @@ package de.mueller_constantin.attoly.api.web.v1.dto;
 
 import de.mueller_constantin.attoly.api.web.v1.dto.validation.NullOrNotEmpty;
 import de.mueller_constantin.attoly.api.web.v1.dto.validation.Password;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,11 +14,11 @@ import java.util.Optional;
 @NoArgsConstructor
 @Data
 @Builder
-public class UserUpdateDto {
+public class ChangePasswordDto {
+    @NotEmpty
+    private String currentPassword;
 
-    private String password;
-
-    public Optional<@NullOrNotEmpty @Password String> getPassword() {
-        return Optional.ofNullable(this.password);
-    }
+    @NotEmpty
+    @Password
+    private String newPassword;
 }

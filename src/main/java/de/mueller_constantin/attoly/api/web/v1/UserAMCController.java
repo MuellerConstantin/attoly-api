@@ -4,14 +4,10 @@ import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
 import de.mueller_constantin.attoly.api.domain.UserService;
 import de.mueller_constantin.attoly.api.domain.model.User;
-import de.mueller_constantin.attoly.api.domain.payload.UserUpdatePayload;
 import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLOperator;
 import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLVisitor;
-import de.mueller_constantin.attoly.api.security.CurrentPrincipal;
-import de.mueller_constantin.attoly.api.security.Principal;
 import de.mueller_constantin.attoly.api.web.v1.dto.*;
 import de.mueller_constantin.attoly.api.web.v1.dto.mapper.UserMapper;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,15 +51,6 @@ public class UserAMCController {
     @PreAuthorize("hasRole('ADMIN')")
     PrincipalDto findById(@PathVariable("id") UUID id) {
         User user = userService.findById(id);
-
-        return userMapper.mapToPrincipalDto(user);
-    }
-
-    @PatchMapping("/users/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    PrincipalDto updateById(@PathVariable("id") UUID id, @RequestBody @Valid PrincipalUpdateDto dto) {
-        UserUpdatePayload payload = userMapper.mapToPayload(dto);
-        User user = userService.updateById(id, payload);
 
         return userMapper.mapToPrincipalDto(user);
     }
