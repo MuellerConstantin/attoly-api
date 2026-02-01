@@ -74,11 +74,4 @@ public class UserAMCController {
     void deleteById(@PathVariable("id") UUID id) {
         userService.deleteById(id);
     }
-
-    @GetMapping("/user/me")
-    UserDto findCurrentUser(@CurrentPrincipal Principal principal) {
-        User user = userService.findByEmail(principal.getEmail());
-
-        return userMapper.mapToDto(user);
-    }
 }

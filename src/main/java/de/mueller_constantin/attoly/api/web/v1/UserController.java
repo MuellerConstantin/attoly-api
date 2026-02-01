@@ -48,6 +48,13 @@ public class UserController {
         return userMapper.mapToDto(user);
     }
 
+    @GetMapping("/user/me")
+    UserDto findCurrentUser(@CurrentPrincipal Principal principal) {
+        User user = userService.findByEmail(principal.getEmail());
+
+        return userMapper.mapToDto(user);
+    }
+
     @DeleteMapping("/user/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteCurrentUser(@CurrentPrincipal Principal principal) {
