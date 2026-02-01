@@ -285,6 +285,23 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
     }
 
+    @ExceptionHandler(PasswordChangeRejectedException.class)
+    public ResponseEntity<Object> handlePasswordChangeRejected(PasswordChangeRejectedException exc,
+                                                                WebRequest request) {
+
+        ErrorDto dto = ErrorDto.builder()
+                .error("ValidationError")
+                .message(getMessage("ValidationError.message", null))
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .detail(new ValidationErrorDetails("currentPassword",
+                        getMessage("de.mueller_constantin.attoly.api.web.v1.dto.validation.InvalidCurrentPassword.message", null)))
+                .build();
+
+        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException exc,
                                                        WebRequest request) {

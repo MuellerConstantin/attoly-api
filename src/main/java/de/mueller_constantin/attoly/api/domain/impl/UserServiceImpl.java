@@ -3,10 +3,7 @@ package de.mueller_constantin.attoly.api.domain.impl;
 import de.mueller_constantin.attoly.api.domain.DisposableEmailDomainService;
 import de.mueller_constantin.attoly.api.domain.UserService;
 import de.mueller_constantin.attoly.api.domain.UserVerificationService;
-import de.mueller_constantin.attoly.api.domain.exception.EmailAlreadyInUseException;
-import de.mueller_constantin.attoly.api.domain.exception.EmailNotAllowedException;
-import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
-import de.mueller_constantin.attoly.api.domain.exception.MustBeAdministrableException;
+import de.mueller_constantin.attoly.api.domain.exception.*;
 import de.mueller_constantin.attoly.api.domain.model.Role;
 import de.mueller_constantin.attoly.api.domain.model.RoleName;
 import de.mueller_constantin.attoly.api.domain.model.User;
@@ -154,11 +151,11 @@ public class UserServiceImpl implements UserService {
 
     protected User changePassword(User user, String currentPassword, String newPassword) {
         if(user.getIdentityProvider() != null) {
-            throw new IllegalArgumentException("Cannot change password for users with an identity provider");
+            throw new ExternalUserChangeNotAllowedException();
         }
 
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            throw new IllegalArgumentException("Old password does not match");
+            throw new PasswordChangeRejectedException();
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
