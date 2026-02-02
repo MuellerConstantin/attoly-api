@@ -169,6 +169,8 @@ paths:
       responses:
         '204':
           description: Successfully deleted your user account.
+        '401':
+          $ref: "#/components/responses/401"
   /user/me/password:
     patch:
       tags: [ User ]
@@ -180,12 +182,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ChangePasswordDto"
       responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserDto"
-          description: Successfully updated your user account's password.
+        '204':
+          description: Successfully changed the user's password.
         '401':
           $ref: "#/components/responses/401"
         '422':

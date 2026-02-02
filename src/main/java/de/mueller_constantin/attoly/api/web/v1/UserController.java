@@ -60,10 +60,9 @@ public class UserController {
     }
 
     @PatchMapping("/user/me/password")
-    UserDto changeCurrentUserPassword(@CurrentPrincipal Principal principal, @RequestBody @Valid ChangePasswordDto dto) {
-        User user = userService.changePasswordByEmail(principal.getEmail(), dto.getCurrentPassword(), dto.getNewPassword());
-
-        return userMapper.mapToDto(user);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void changeCurrentUserPassword(@CurrentPrincipal Principal principal, @RequestBody @Valid ChangePasswordDto dto) {
+        userService.changePasswordByEmail(principal.getEmail(), dto.getCurrentPassword(), dto.getNewPassword());
     }
 
     @PostMapping("/user/verify")

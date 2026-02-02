@@ -126,13 +126,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User changePasswordById(UUID id, String currentPassword, String newPassword) throws EntityNotFoundException {
-        return changePassword(findById(id), currentPassword, newPassword);
+    public void changePasswordById(UUID id, String currentPassword, String newPassword) throws EntityNotFoundException {
+        changePassword(findById(id), currentPassword, newPassword);
     }
 
     @Override
-    public User changePasswordByEmail(String email, String currentPassword, String newPassword) throws EntityNotFoundException {
-        return changePassword(findByEmail(email), currentPassword, newPassword);
+    public void changePasswordByEmail(String email, String currentPassword, String newPassword) throws EntityNotFoundException {
+        changePassword(findByEmail(email), currentPassword, newPassword);
     }
 
     protected User update(User user, UserUpdatePayload payload) {
@@ -149,7 +149,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-    protected User changePassword(User user, String currentPassword, String newPassword) {
+    protected void changePassword(User user, String currentPassword, String newPassword) {
         if(user.getIdentityProvider() != null) {
             throw new ExternalUserChangeNotAllowedException();
         }
@@ -159,7 +159,6 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
-        return userRepository.save(user);
     }
 
     @Override
