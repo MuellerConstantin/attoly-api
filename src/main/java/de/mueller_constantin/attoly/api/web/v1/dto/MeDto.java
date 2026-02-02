@@ -12,11 +12,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @Builder
-public class PrincipalDto {
+public class MeDto {
     private UUID id;
     private String email;
     private OffsetDateTime createdAt;
-    private boolean emailVerified;
-    private boolean locked;
     private String identityProvider;
 }

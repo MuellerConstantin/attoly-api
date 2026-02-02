@@ -1,11 +1,13 @@
 package de.mueller_constantin.attoly.api.web.v1.dto.mapper;
 
+import de.mueller_constantin.attoly.api.domain.model.IdentityProvider;
 import de.mueller_constantin.attoly.api.domain.model.User;
 import de.mueller_constantin.attoly.api.domain.payload.UserCreationPayload;
 import de.mueller_constantin.attoly.api.domain.payload.UserUpdatePayload;
 import de.mueller_constantin.attoly.api.web.v1.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
 
 import java.time.Instant;
@@ -24,7 +26,19 @@ public interface UserMapper {
 
     UserDto mapToDto(User entity);
 
+    @Mapping(
+            target = "identityProvider",
+            source = "identityProvider",
+            qualifiedByName = "mapIdentityProvider"
+    )
     PrincipalDto mapToPrincipalDto(User entity);
+
+    @Mapping(
+            target = "identityProvider",
+            source = "identityProvider",
+            qualifiedByName = "mapIdentityProvider"
+    )
+    MeDto mapToMeDto(User entity);
 
     @Mapping(target = "page", source = "number")
     @Mapping(target = "perPage", source = "size")
@@ -41,5 +55,10 @@ public interface UserMapper {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     default <T> T unwrapOptional(Optional<T> optional) {
         return optional.orElse(null);
+    }
+
+    @Named("mapIdentityProvider")
+    default String mapIdentityProvider(IdentityProvider provider) {
+        return provider == null ? "LOCAL" : provider.name();
     }
 }

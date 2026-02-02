@@ -725,11 +725,16 @@ components:
         locked:
           type: boolean
           description: Indicates if a user account is locked.
+        identityProvider:
+          type: string
+          description: The identity provider of the user account.
+          enum: [ LOCAL, GITHUB ]
       required:
         - id
         - email
         - createdAt
         - emailVerified
+        - identityProvider
     PrincipalPageDto:
       allOf:
         - $ref: "#/components/schemas/PageDto"

@@ -39,18 +39,18 @@ public class UserController {
 
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
-    UserDto create(@RequestBody @Valid RegistrationDto dto) {
+    MeDto create(@RequestBody @Valid RegistrationDto dto) {
         UserCreationPayload payload = userMapper.mapToPayload(dto);
         User user = userService.create(payload);
 
-        return userMapper.mapToDto(user);
+        return userMapper.mapToMeDto(user);
     }
 
     @GetMapping("/user/me")
-    UserDto findCurrentUser(@CurrentPrincipal Principal principal) {
+    MeDto findCurrentUser(@CurrentPrincipal Principal principal) {
         User user = userService.findByEmail(principal.getEmail());
 
-        return userMapper.mapToDto(user);
+        return userMapper.mapToMeDto(user);
     }
 
     @DeleteMapping("/user/me")
