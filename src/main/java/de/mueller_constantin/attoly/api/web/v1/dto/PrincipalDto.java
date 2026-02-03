@@ -19,4 +19,5 @@ public class PrincipalDto {
     private boolean emailVerified;
     private boolean locked;
     private String identityProvider;
+    private String plan;
 }

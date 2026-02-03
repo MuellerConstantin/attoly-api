@@ -17,4 +17,5 @@ public class MeDto {
     private String email;
     private OffsetDateTime createdAt;
     private String identityProvider;
+    private String plan;
 }

@@ -35,6 +35,10 @@ public class User extends BaseEntity {
     private boolean locked = false;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "plan", nullable = false)
+    private Plan plan;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "identity_provider")
     private IdentityProvider identityProvider;
 

@@ -729,12 +729,17 @@ components:
           type: string
           description: The identity provider of the user account.
           enum: [ LOCAL, GITHUB ]
+        plan:
+          type: string
+          description: The subscription plan of the user.
+          enum: [ FREE, PRO ]
       required:
         - id
         - email
         - createdAt
         - emailVerified
         - identityProvider
+        - plan
     PrincipalPageDto:
       allOf:
         - $ref: "#/components/schemas/PageDto"
