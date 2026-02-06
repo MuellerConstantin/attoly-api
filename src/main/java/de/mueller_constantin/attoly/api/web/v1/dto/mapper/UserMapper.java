@@ -1,5 +1,6 @@
 package de.mueller_constantin.attoly.api.web.v1.dto.mapper;
 
+import de.mueller_constantin.attoly.api.domain.model.BillingInfo;
 import de.mueller_constantin.attoly.api.domain.model.IdentityProvider;
 import de.mueller_constantin.attoly.api.domain.model.User;
 import de.mueller_constantin.attoly.api.domain.payload.UserCreationPayload;
@@ -31,7 +32,6 @@ public interface UserMapper {
             source = "identityProvider",
             qualifiedByName = "mapIdentityProvider"
     )
-    @Mapping(target = "customerId", source = "billing.customerId")
     PrincipalDto mapToPrincipalDto(User entity);
 
     @Mapping(
@@ -63,4 +63,6 @@ public interface UserMapper {
     default String mapIdentityProvider(IdentityProvider provider) {
         return provider == null ? "LOCAL" : provider.name();
     }
+
+    PrincipalDto.BillingDto mapToBillingDto(BillingInfo billing);
 }

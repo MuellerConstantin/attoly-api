@@ -405,6 +405,9 @@ components:
           type: string
           description: The subscription plan of the user.
           enum: [ FREE, PRO ]
+        customerId:
+          type: string
+          description: The customer ID of the user, if they have a subscription.
       required: [ id, email, createdAt, identityProvider, plan ]
     RegistrationDto:
       type: object
