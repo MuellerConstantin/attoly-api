@@ -23,11 +23,11 @@ public class StripeProperties {
     private String cancelUrl;
     private String portalReturnUrl;
     private String webhookSecret;
-    private Map<Plan, List<String>> plans;
+    private Map<Plan, String> plans;
 
     public Plan resolvePlan(String priceId) {
         return plans.entrySet().stream()
-                .filter(e -> e.getValue().contains(priceId))
+                .filter(entry -> entry.getValue().equals(priceId))
                 .map(Map.Entry::getKey)
                 .findFirst()
                 .orElseThrow();

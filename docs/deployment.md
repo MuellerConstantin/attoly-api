@@ -14,6 +14,7 @@ using the properties described under [configuration](./configuration.md).
 - PostgreSQL Database Server
 - Redis Database Server
 - SMTP Email Server
+- Stripe API
 
 The Attoly API uses JPA/Hibernate based on a relational database to store system and business information. In principle,
 any database supported by JPA/Hibernate can be used for this. By default, however, only the database drivers for a PostgreSQL
@@ -21,7 +22,10 @@ database are included with the application. For all other databases, the drivers
 corresponding table [schema](./scripts/schema.sql) is also expected in the configured database¹. In addition to the
 relational database, Attoly uses a faster in-memory key-value database, currently only Redis is supported. Redis is
 required as a cache for volatile information and for sessions/tokens. Attoly also requires an SMTP mail server to send
-emails. In principle, any email provider and their SMTP server can be used.
+emails. In principle, any email provider and their SMTP server can be used. Finally, the application also uses the
+Stripe API to manage payments and subscriptions. For this, a Stripe account and the corresponding API keys are
+required. The Stripe API is a cloud service and does not require any installation or setup on the target system,
+but the API keys must be configured in the application.
 
 <small>¹Alternatively, Attoly can create the database tables independently if they do not already exist (not recommended
 in production). For this, however, the corresponding DDL rights must be given and the property

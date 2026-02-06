@@ -70,3 +70,14 @@ with the application.</small>
 | attoly.scheduling.jobs.initial-admin-creation.enabled         | Activates/deactivates the job which allows to create the default admin in the database. Alternatively, this must be created manually, since an administrator is required to manage the platform. | false    |
 | attoly.scheduling.jobs.initial-admin-creation.email           | E-mail address of the default admin account to be created.                                                                                                                                       | false    |
 | attoly.scheduling.jobs.initial-admin-creation.password        | Password of the default admin account to be created.                                                                                                                                             | false    |
+
+# Payment Settings
+
+| Property                                | Description                                                                                                                                            | Required |
+|-----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------| -------- |
+| attoly.payment.stripe.api-key           | The API key of the Stripe account. This is required to use the Stripe API for payment processing.                                                      | true     |
+| attoly.payment.stripe.webhook-secret    | The webhook secret of the Stripe account. This is required to verify incoming webhook requests from Stripe.                                            | true     |
+| attoly.payment.stripe.success-url       | The URL of the 1st party client to which the user is redirected after a successful payment. This URL is used in the Stripe Checkout Session.           | true     |
+| attoly.payment.stripe.cancel-url        | The URL of the 1st party client to which the user is redirected after a canceled payment. This URL is used in the Stripe Checkout Session.             | true     |
+| attoly.payment.stripe.portal-return-url | The URL of the 1st party client to which the user is redirected after leaving the Stripe Customer Portal.                                              | true     |
+| attoly.payment.stripe.plans.PRO         | The price ID of the Stripe product and plan for the PRO subscription. This is required to create the Stripe Checkout Session for the PRO subscription. | true     |
