@@ -122,7 +122,8 @@ public class SecurityConfig {
                     .objectMapper(objectMapper);
         });
 
-        httpSecurity.with(new AccessTokenAuthenticationFilterConfigurer(), config -> {});
+        httpSecurity.with(new AccessTokenAuthenticationFilterConfigurer(), config -> {
+        });
 
         return httpSecurity.build();
     }
@@ -201,6 +202,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/v1/shortcuts/*")
                 .permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/shortcuts/*/complaints")
+                .permitAll()
+                .requestMatchers( "/api/v1/payment/webhook")
                 .permitAll()
                 .anyRequest()
                 .authenticated());

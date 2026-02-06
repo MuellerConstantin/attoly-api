@@ -93,7 +93,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
                 .detail(new InvalidParameterErrorDetails(exc.getParameterName(),
-                        getMessage("javax.validation.constraints.NotNull.message", null)))
+                        getMessage("jakarta.validation.constraints.NotNull.message", null)))
                 .build();
 
         return handleExceptionInternal(exc, dto, headers, HttpStatus.valueOf(dto.getStatus()), request);
@@ -112,7 +112,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
                 .detail(new InvalidParameterErrorDetails(exc.getVariableName(),
-                        getMessage("javax.validation.constraints.NotNull.message", null)))
+                        getMessage("jakarta.validation.constraints.NotNull.message", null)))
                 .build();
 
         return handleExceptionInternal(exc, dto, headers, HttpStatus.valueOf(dto.getStatus()), request);

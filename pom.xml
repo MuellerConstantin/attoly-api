@@ -21,6 +21,7 @@
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <jjwt.version>0.12.6</jjwt.version>
         <rsql.version>2.1.0</rsql.version>
+        <stripe.version>31.3.0</stripe.version>
 	</properties>
 
 	<dependencies>
@@ -108,6 +109,12 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.stripe</groupId>
+            <artifactId>stripe-java</artifactId>
+            <version>${stripe.version}</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>

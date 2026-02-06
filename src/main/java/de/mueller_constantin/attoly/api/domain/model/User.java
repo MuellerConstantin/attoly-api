@@ -36,7 +36,12 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "plan", nullable = false)
-    private Plan plan;
+    @Builder.Default
+    private Plan plan = Plan.FREE;
+
+    @Embedded
+    @Builder.Default
+    private BillingInfo billing = new BillingInfo();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "identity_provider")
@@ -60,4 +65,13 @@ public class User extends BaseEntity {
     @ToString.Exclude
     @Builder.Default
     private List<Shortcut> shortcuts = new ArrayList<>();
+
+    @PostLoad
+    @PostPersist
+    @PostUpdate
+    private void ensureBilling() {
+        if (billing == null) {
+            billing = new BillingInfo();
+        }
+    }
 }

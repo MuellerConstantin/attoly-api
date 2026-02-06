@@ -31,6 +31,7 @@ public interface UserMapper {
             source = "identityProvider",
             qualifiedByName = "mapIdentityProvider"
     )
+    @Mapping(target = "customerId", source = "billing.customerId")
     PrincipalDto mapToPrincipalDto(User entity);
 
     @Mapping(
@@ -38,6 +39,7 @@ public interface UserMapper {
             source = "identityProvider",
             qualifiedByName = "mapIdentityProvider"
     )
+    @Mapping(target = "customerId", source = "billing.customerId")
     MeDto mapToMeDto(User entity);
 
     @Mapping(target = "page", source = "number")

@@ -44,4 +44,18 @@ public interface UserRepository extends BaseRepository<User, UUID> {
 
     @Query("SELECT COUNT(u) >= 1 FROM User u INNER JOIN u.roles r WHERE u.deleted = false AND r.name = ?1 AND u.email <> ?2")
     boolean existsAnyWithRoleExceptEmail(RoleName role, String email);
+
+    @Query("""
+        SELECT u FROM User u
+        WHERE u.deleted = false
+          AND u.billing.customerId = ?1
+    """)
+    Optional<User> findByBillingCustomerId(String customerId);
+
+    @Query("""
+        SELECT u FROM User u
+        WHERE u.deleted = false
+          AND u.billing.subscriptionId = ?1
+    """)
+    Optional<User> findByBillingSubscriptionId(String subscriptionId);
 }

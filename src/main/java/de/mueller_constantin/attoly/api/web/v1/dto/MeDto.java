@@ -15,6 +15,7 @@ import java.util.UUID;
 public class MeDto {
     private UUID id;
     private String email;
+    private String customerId;
     private OffsetDateTime createdAt;
     private String identityProvider;
     private String plan;

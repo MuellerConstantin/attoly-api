@@ -15,6 +15,7 @@ import java.util.UUID;
 public class PrincipalDto {
     private UUID id;
     private String email;
+    private String customerId;
     private OffsetDateTime createdAt;
     private boolean emailVerified;
     private boolean locked;
