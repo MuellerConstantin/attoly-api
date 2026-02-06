@@ -17,7 +17,7 @@ public class PrincipalDto {
     @NoArgsConstructor
     @Data
     @Builder
-    public static class BillingDto {
+    public static class BillingInfoDto {
         private String customerId;
         private String subscriptionId;
         private String status;
@@ -32,5 +32,5 @@ public class PrincipalDto {
     private boolean locked;
     private String identityProvider;
     private String plan;
-    private BillingDto billing;
+    private BillingInfoDto billing;
 }

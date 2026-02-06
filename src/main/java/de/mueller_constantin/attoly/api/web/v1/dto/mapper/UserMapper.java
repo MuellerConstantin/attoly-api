@@ -64,5 +64,5 @@ public interface UserMapper {
         return provider == null ? "LOCAL" : provider.name();
     }
 
-    PrincipalDto.BillingDto mapToBillingDto(BillingInfo billing);
+    PrincipalDto.BillingInfoDto mapToBillingInfoDto(BillingInfo billing);
 }
