@@ -452,6 +452,35 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
     }
 
+    @ExceptionHandler(AlreadySubscribedException.class)
+    public ResponseEntity<Object> handleAlreadySubscribed(AlreadySubscribedException exc,
+                                                          WebRequest request) {
+
+        ErrorDto dto = ErrorDto.builder()
+                .error("AlreadySubscribedError")
+                .message(getMessage("AlreadySubscribedError.message", null))
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.CONFLICT.value())
+                .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .build();
+
+        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
+    }
+
+    @ExceptionHandler(NoCustomerYetException.class)
+    public ResponseEntity<Object> handleNoCustomerYet(NoCustomerYetException exc,
+                                                          WebRequest request) {
+        ErrorDto dto = ErrorDto.builder()
+                .error("NoCustomerYetError")
+                .message(getMessage("NoCustomerYetError.message", null))
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.CONFLICT.value())
+                .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .build();
+
+        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleDefault(Exception exc, WebRequest request) {
 
