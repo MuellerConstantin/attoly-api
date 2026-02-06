@@ -2,6 +2,10 @@ spring:
   jpa:
     properties:
       hibernate.show_sql: true
+    hibernate:
+      ddl-auto: create-drop
+  flyway:
+    enabled: false
   security:
     oauth2:
       client:
@@ -17,14 +21,14 @@ attoly:
     token:
       access:
         secret: sgisn6oukoyf0gl91nvphvclfw2hore6
+  mail:
+    sender: "Attoly Support <noreply@attoly.com>"
   scheduling:
     jobs:
       anonymous-shortcut-clean-up:
         enabled: true
         cron: "@daily"
         expires-in: 2419200000
-      role-seeding:
-        enabled: true
   web:
     verify-user-uri: http://localhost:3000/verify-user
     reset-password-uri: http://localhost:3000/reset-password
