@@ -509,6 +509,20 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
     }
 
+    @ExceptionHandler(ExpirableShortcutLimitExceededException.class)
+    public ResponseEntity<Object> handleExpirableShortcutLimitExceeded(ExpirableShortcutLimitExceededException exc,
+                                                                       WebRequest request) {
+        ErrorDto dto = ErrorDto.builder()
+                .error("ExpirableShortcutLimitExceededError")
+                .message(getMessage("ExpirableShortcutLimitExceededError.message", null))
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.FORBIDDEN.value())
+                .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .build();
+
+        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleDefault(Exception exc, WebRequest request) {
 

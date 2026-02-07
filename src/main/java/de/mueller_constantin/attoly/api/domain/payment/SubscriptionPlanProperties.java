@@ -19,6 +19,7 @@ public class SubscriptionPlanProperties {
     @Builder
     public static class SubscriptionPlanConfig {
         private Long maxPermanentShortcuts;
+        private Long maxExpirableShortcuts;
     }
 
     private Long maxAgeTemporaryShortcuts;

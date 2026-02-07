@@ -4,4 +4,6 @@ import java.util.UUID;
 
 public interface SubscriptionEntitlementService {
     void checkCanCreatePermanentShortcut(UUID ownerId);
+
+    void checkCanCreateExpirableShortcut(UUID ownerId);
 }

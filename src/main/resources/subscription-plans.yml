@@ -3,5 +3,7 @@ attoly:
   plans:
     FREE:
       maxPermanentShortcuts: 10
+      maxExpirableShortcuts: 0
     PRO:
       maxPermanentShortcuts: 100
+      maxExpirableShortcuts: 2

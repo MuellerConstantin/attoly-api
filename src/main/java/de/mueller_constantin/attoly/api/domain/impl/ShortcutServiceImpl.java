@@ -77,6 +77,10 @@ public class ShortcutServiceImpl implements ShortcutService {
             subscriptionEntitlementService.checkCanCreatePermanentShortcut(ownerId);
         }
 
+        if(payload.getExpiresAt().isPresent()) {
+            subscriptionEntitlementService.checkCanCreateExpirableShortcut(ownerId);
+        }
+
         SecureRandom secureRandom = new SecureRandom();
         byte[] secret = new byte[6];
 

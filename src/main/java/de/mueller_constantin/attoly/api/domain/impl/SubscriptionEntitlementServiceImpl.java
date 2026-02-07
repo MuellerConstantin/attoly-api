@@ -1,6 +1,7 @@
 package de.mueller_constantin.attoly.api.domain.impl;
 
 import de.mueller_constantin.attoly.api.domain.SubscriptionEntitlementService;
+import de.mueller_constantin.attoly.api.domain.exception.ExpirableShortcutLimitExceededException;
 import de.mueller_constantin.attoly.api.domain.exception.FeatureNotAvailableException;
 import de.mueller_constantin.attoly.api.domain.exception.PermanentShortcutLimitExceededException;
 import de.mueller_constantin.attoly.api.domain.model.SubscriptionPlan;
@@ -52,6 +53,32 @@ public class SubscriptionEntitlementServiceImpl implements SubscriptionEntitleme
 
         if (currentPermanentShortcutCount >= maxAllowedPermanentShortcutCount) {
             throw new PermanentShortcutLimitExceededException();
+        }
+    }
+
+    @Override
+    @Transactional
+    public void checkCanCreateExpirableShortcut(UUID ownerId) {
+        if(ownerId == null) {
+            throw new FeatureNotAvailableException();
+        }
+
+        User user = userRepository.findById(ownerId)
+                .orElseThrow();
+
+        SubscriptionPlan plan = user.getPlan();
+        SubscriptionPlanProperties.SubscriptionPlanConfig config =
+                subscriptionPlanProperties.getConfigForPlan(plan);
+
+        if (config == null || config.getMaxPermanentShortcuts() == null) {
+            return;
+        }
+
+        Long currentExpirableShortcutCount = shortcutRepository.countExpirableShortcutsByCreatorId(ownerId);
+        Long maxAllowedExpirableShortcutCount = config.getMaxExpirableShortcuts();
+
+        if (currentExpirableShortcutCount >= maxAllowedExpirableShortcutCount) {
+            throw new ExpirableShortcutLimitExceededException();
         }
     }
 }
