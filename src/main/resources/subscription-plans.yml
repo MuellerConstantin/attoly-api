@@ -6,4 +6,4 @@ attoly:
       maxExpirableShortcuts: 0
     PRO:
       maxPermanentShortcuts: 100
-      maxExpirableShortcuts: 2
+      maxExpirableShortcuts: 50
