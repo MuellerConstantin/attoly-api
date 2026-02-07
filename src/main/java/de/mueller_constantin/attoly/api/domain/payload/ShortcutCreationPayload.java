@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class ShortcutCreationPayload {
-
     private String url;
+    private boolean permanent;
 }

@@ -74,6 +74,7 @@ public class ShortcutServiceImpl implements ShortcutService {
         Shortcut shortcut = Shortcut.builder()
                 .tag(tag)
                 .url(payload.getUrl())
+                .permanent(payload.isPermanent())
                 .build();
 
         return shortcutRepository.save(shortcut);

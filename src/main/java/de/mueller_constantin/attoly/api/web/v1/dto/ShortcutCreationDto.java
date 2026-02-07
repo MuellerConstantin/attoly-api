@@ -16,4 +16,6 @@ public class ShortcutCreationDto {
     @NotNull
     @URL
     private String url;
+
+    private boolean permanent;
 }
