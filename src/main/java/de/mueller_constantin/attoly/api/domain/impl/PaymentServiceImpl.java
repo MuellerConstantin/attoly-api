@@ -1,5 +1,6 @@
 package de.mueller_constantin.attoly.api.domain.impl;
 
+import com.stripe.model.Invoice;
 import com.stripe.model.Subscription;
 import com.stripe.model.SubscriptionItem;
 import de.mueller_constantin.attoly.api.domain.PaymentService;
@@ -83,7 +84,8 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public void markPaymentSucceeded(String customerId, Instant periodStart, Instant periodEnd, String eventId) {
+    public void markPaymentSucceeded(Invoice invoice, String eventId) {
+        String customerId = invoice.getCustomer();
         User user = userRepository
                 .findByBillingCustomerId(customerId)
                 .orElseThrow(EntityNotFoundException::new);
@@ -91,6 +93,9 @@ public class PaymentServiceImpl implements PaymentService {
         if (eventId != null && eventId.equals(user.getBilling().getLastEventId())) {
             return;
         }
+
+        Instant periodStart = Instant.ofEpochSecond(invoice.getPeriodStart());
+        Instant periodEnd = Instant.ofEpochSecond(invoice.getPeriodEnd());
 
         user.getBilling().setStatus(SubscriptionStatus.ACTIVE);
         user.getBilling().setCurrentPeriodStart(periodStart);
@@ -101,7 +106,8 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public void markPaymentFailed(String customerId, String eventId) {
+    public void markPaymentFailed(Invoice invoice, String eventId) {
+        String customerId = invoice.getCustomer();
         User user = userRepository
                 .findByBillingCustomerId(customerId)
                 .orElseThrow(EntityNotFoundException::new);

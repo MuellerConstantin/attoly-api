@@ -134,15 +134,9 @@ public class PaymentController {
                         .getObject()
                         .orElseThrow();
 
-                String customerId = invoice.getCustomer();
                 String eventId = event.getId();
 
-                paymentService.markPaymentSucceeded(
-                        customerId,
-                        Instant.ofEpochSecond(invoice.getPeriodStart()),
-                        Instant.ofEpochSecond(invoice.getPeriodEnd()),
-                        eventId
-                );
+                paymentService.markPaymentSucceeded(invoice, eventId);
             }
             case "invoice.payment_failed" -> {
                 Invoice invoice = (Invoice) event
@@ -150,13 +144,9 @@ public class PaymentController {
                         .getObject()
                         .orElseThrow();
 
-                String customerId = invoice.getCustomer();
                 String eventId = event.getId();
 
-                paymentService.markPaymentFailed(
-                        invoice.getCustomer(),
-                        event.getId()
-                );
+                paymentService.markPaymentFailed(invoice, eventId);
             }
         }
     }

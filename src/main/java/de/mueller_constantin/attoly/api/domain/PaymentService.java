@@ -1,5 +1,6 @@
 package de.mueller_constantin.attoly.api.domain;
 
+import com.stripe.model.Invoice;
 import com.stripe.model.Subscription;
 import de.mueller_constantin.attoly.api.domain.model.Plan;
 
@@ -11,7 +12,7 @@ public interface PaymentService {
 
     void deactivateSubscription(Subscription subscription, String eventId);
 
-    void markPaymentSucceeded(String customerId, Instant periodStart, Instant periodEnd, String eventId);
+    void markPaymentSucceeded(Invoice invoice, String eventId);
 
-    void markPaymentFailed(String customerId, String eventId);
+    void markPaymentFailed(Invoice invoice, String eventId);
 }
