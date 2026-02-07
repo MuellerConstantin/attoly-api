@@ -505,7 +505,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ShortcutPageDto"
+                $ref: "#/components/schemas/ShortcutDetailsPageDto"
               example:
                 page: 0
                 perPage: 25
@@ -834,7 +834,7 @@ components:
         name:
           type: string
           description: Unique name of the role.
-    ShortcutDto:
+    ShortcutDetailsDto:
       type: object
       properties:
         id:
@@ -852,15 +852,21 @@ components:
           type: string
           format: date-time
           description: Time at which the shortcut was created.
-        anonymous:
+        updatedAt:
+          type: string
+          format: date-time
+          description: Time at which the shortcut was updated.
+        permanent:
           type: boolean
-          description: Indicates if the shortcut was created anonymously.
+          description: Indicates if the shortcut was created permanently.
       required:
         - id
         - tag
         - url
         - createdAt
-    ShortcutPageDto:
+        - updatedAt
+        - permanent
+    ShortcutDetailsPageDto:
       allOf:
         - $ref: "#/components/schemas/PageDto"
         - type: object
@@ -868,7 +874,7 @@ components:
             content:
               type: array
               items:
-                $ref: "#/components/schemas/ShortcutDto"
+                $ref: "#/components/schemas/ShortcutDetailsDto"
           required:
             - content
     ComplaintDto:

@@ -5,6 +5,7 @@ import de.mueller_constantin.attoly.api.domain.model.User;
 import de.mueller_constantin.attoly.api.domain.payload.ShortcutCreationPayload;
 import de.mueller_constantin.attoly.api.web.v1.dto.PageDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutCreationDto;
+import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutDetailsDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,9 +24,11 @@ public interface ShortcutMapper {
     @Mapping(target = "anonymous", source = "createdBy", qualifiedByName = "mapToAnonymousFlag")
     ShortcutDto mapToDto(Shortcut shortcut);
 
+    ShortcutDetailsDto mapToDetailsDto(Shortcut shortcut);
+
     @Mapping(target = "page", source = "number")
     @Mapping(target = "perPage", source = "size")
-    PageDto<ShortcutDto> mapToDto(Page<Shortcut> shortcuts);
+    PageDto<ShortcutDetailsDto> mapToDetailsDto(Page<Shortcut> shortcuts);
 
     default OffsetDateTime mapInstantToOffsetDateTime(Instant instant) {
         return instant.atZone(ZoneId.systemDefault()).toOffsetDateTime();

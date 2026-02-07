@@ -4,16 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.URL;
 
-import jakarta.validation.constraints.NotNull;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class ShortcutCreationDto {
-    @NotNull
-    @URL
+public class ShortcutDetailsDto {
+    private UUID id;
+    private String tag;
     private String url;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
+    private boolean permanent;
 }

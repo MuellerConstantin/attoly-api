@@ -7,6 +7,7 @@ import de.mueller_constantin.attoly.api.security.CurrentPrincipal;
 import de.mueller_constantin.attoly.api.security.Principal;
 import de.mueller_constantin.attoly.api.web.v1.dto.PageDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutCreationDto;
+import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutDetailsDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.mapper.ShortcutMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +55,10 @@ public class ShortcutController {
     }
 
     @GetMapping("/user/me/shortcuts")
-    PageDto<ShortcutDto> findCurrentUser(@CurrentPrincipal Principal principal,
-                                         @PageableDefault Pageable pageable) {
+    PageDto<ShortcutDetailsDto> findCurrentUserShortcuts(@CurrentPrincipal Principal principal,
+                                                @PageableDefault Pageable pageable) {
         Page<Shortcut> page = shortcutService.findAllByOwnership(principal.getEmail(), pageable);
 
-        return shortcutMapper.mapToDto(page);
+        return shortcutMapper.mapToDetailsDto(page);
     }
 }

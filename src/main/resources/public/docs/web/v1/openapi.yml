@@ -329,7 +329,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ShortcutPageDto"
+                $ref: "#/components/schemas/ShortcutDetailsPageDto"
           description: The successfully retrieved page of shortcuts.
         '401':
           $ref: "#/components/responses/401"
@@ -518,7 +518,7 @@ components:
           type: integer
     ShortcutDto:
       type: object
-      required: [ id, tag, url, createdAt ]
+      required: [ id, tag, url, createdAt, permanent, anonymous ]
       properties:
         id:
           type: string
@@ -531,7 +531,45 @@ components:
         createdAt:
           type: string
           format: date-time
-    ShortcutPageDto:
+        permanent:
+          type: boolean
+          description: Indicates if the shortcut was created permanently.
+        anonymous:
+          type: boolean
+          description: Indicates if the shortcut was created anonymously.
+    ShortcutDetailsDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of shortcut.
+        tag:
+          type: string
+          description: Unique tag which is used as a short link.
+        url:
+          type: string
+          format: url
+          description: The actual URL to resolve.
+        createdAt:
+          type: string
+          format: date-time
+          description: Time at which the shortcut was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Time at which the shortcut was updated.
+        permanent:
+          type: boolean
+          description: Indicates if the shortcut was created permanently.
+      required:
+        - id
+        - tag
+        - url
+        - createdAt
+        - updatedAt
+        - permanent
+    ShortcutDetailsPageDto:
       allOf:
         - $ref: "#/components/schemas/PageDto"
         - type: object
@@ -539,7 +577,7 @@ components:
             content:
               type: array
               items:
-                $ref: "#/components/schemas/ShortcutDto"
+                $ref: "#/components/schemas/ShortcutDetailsDto"
     ShortcutCreationDto:
       type: object
       required: [ url ]

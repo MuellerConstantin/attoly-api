@@ -7,7 +7,7 @@ import de.mueller_constantin.attoly.api.domain.model.Shortcut;
 import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLOperator;
 import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLVisitor;
 import de.mueller_constantin.attoly.api.web.v1.dto.PageDto;
-import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutDto;
+import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutDetailsDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.mapper.ShortcutMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,16 +32,16 @@ public class ShortcutAMCController {
 
     @GetMapping("/shortcuts")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
-    PageDto<ShortcutDto> findAll(@PageableDefault Pageable pageable,
-                                 @RequestParam(value = "filter", required = false) String filter) {
+    PageDto<ShortcutDetailsDto> findAll(@PageableDefault Pageable pageable,
+                                            @RequestParam(value = "filter", required = false) String filter) {
         if (filter != null && !filter.isEmpty()) {
             Node rootNode = new RSQLParser(JpaRSQLOperator.getOperators()).parse(filter);
             Specification<Shortcut> specification = rootNode.accept(new JpaRSQLVisitor<>());
             Page<Shortcut> shortcuts = shortcutService.findAll(specification, pageable);
-            return shortcutMapper.mapToDto(shortcuts);
+            return shortcutMapper.mapToDetailsDto(shortcuts);
         } else {
             Page<Shortcut> shortcuts = shortcutService.findAll(pageable);
-            return shortcutMapper.mapToDto(shortcuts);
+            return shortcutMapper.mapToDetailsDto(shortcuts);
         }
     }
 
