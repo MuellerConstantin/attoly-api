@@ -21,6 +21,7 @@ public class SubscriptionPlanProperties {
         private Long maxPermanentShortcuts;
     }
 
+    private Long maxAgeTemporaryShortcuts;
     private Map<String, SubscriptionPlanConfig> plans;
 
     public SubscriptionPlanConfig getConfigForPlan(SubscriptionPlan plan) {

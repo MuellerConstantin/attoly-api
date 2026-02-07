@@ -1,10 +1,10 @@
 package de.mueller_constantin.attoly.api.domain.scheduling;
 
 import de.mueller_constantin.attoly.api.domain.ShortcutService;
+import de.mueller_constantin.attoly.api.domain.payment.SubscriptionPlanProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -19,22 +19,21 @@ import java.time.OffsetDateTime;
 @Component
 @ConditionalOnProperty(prefix = "attoly.scheduling.jobs.temporary-shortcut-clean-up", name = "enabled", matchIfMissing = true, havingValue = "true")
 public class TemporaryShortcutCleanUpJob {
-
     private final Logger logger = LoggerFactory.getLogger(TemporaryShortcutCleanUpJob.class);
 
     private final ShortcutService shortcutService;
-    private final long temporaryShortcutExpiresIn;
+    private final SubscriptionPlanProperties subscriptionPlanProperties;
 
     @Autowired
     public TemporaryShortcutCleanUpJob(ShortcutService shortcutService,
-                                       @Value("${attoly.scheduling.jobs.temporary-shortcut-clean-up.expires-in:2419200000}") long temporaryShortcutExpiresIn) {
+                                       SubscriptionPlanProperties subscriptionPlanProperties) {
         this.shortcutService = shortcutService;
-        this.temporaryShortcutExpiresIn = temporaryShortcutExpiresIn;
+        this.subscriptionPlanProperties = subscriptionPlanProperties;
     }
 
     @Scheduled(cron = "${attoly.scheduling.jobs.temporary-shortcut-clean-up.cron:@daily}")
     protected void run() {
         logger.info("Deletion job for temporary expired shortcuts is running");
-        shortcutService.deleteAllTemporaryCreatedBefore(OffsetDateTime.now().minusSeconds(temporaryShortcutExpiresIn / 60));
+        shortcutService.deleteAllTemporaryCreatedBefore(OffsetDateTime.now().minusSeconds(subscriptionPlanProperties.getMaxAgeTemporaryShortcuts() / 1000L));
     }
 }

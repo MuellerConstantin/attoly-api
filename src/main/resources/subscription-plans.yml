@@ -1,4 +1,5 @@
 attoly:
+  maxAgeTemporaryShortcuts: 2592000000
   plans:
     FREE:
       maxPermanentShortcuts: 10
