@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.Optional;
 
 @Mapper(componentModel = "spring")
 public interface ShortcutMapper {
@@ -37,5 +38,10 @@ public interface ShortcutMapper {
     @Named("mapToAnonymousFlag")
     default boolean mapToAnonymousFlag(User createdBy) {
         return createdBy == null;
+    }
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    default <T> T unwrapOptional(Optional<T> optional) {
+        return optional.orElse(null);
     }
 }

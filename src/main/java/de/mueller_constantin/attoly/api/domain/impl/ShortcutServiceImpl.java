@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.Base64;
 import java.util.List;
@@ -78,10 +79,14 @@ public class ShortcutServiceImpl implements ShortcutService {
         secureRandom.nextBytes(secret);
         String tag = Base64.getUrlEncoder().withoutPadding().encodeToString(secret);
 
+        Instant expiresAt = payload.isPermanent() ?
+                null : payload.getExpiresAt().map(OffsetDateTime::toInstant).orElse(null);
+
         Shortcut shortcut = Shortcut.builder()
                 .tag(tag)
                 .url(payload.getUrl())
                 .permanent(payload.isPermanent())
+                .expiresAt(expiresAt)
                 .build();
 
         return shortcutRepository.save(shortcut);

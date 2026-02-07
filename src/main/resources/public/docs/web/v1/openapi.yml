@@ -585,6 +585,13 @@ components:
         url:
           type: string
           format: url
+        permanent:
+          type: boolean
+          description: Indicates if the shortcut should be created permanently.
+        expiresAt:
+          type: string
+          format: date-time
+          description: The time at which the shortcut should expire. Ignored if `permanent` is set to true.
     ComplaintCreationDto:
       type: object
       required: [ reason, comment ]

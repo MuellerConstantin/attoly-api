@@ -5,6 +5,8 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedBy;
 
 import jakarta.persistence.*;
+
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,9 @@ public class Shortcut extends BaseEntity {
     @Column(name = "permanent", nullable = false)
     @Builder.Default
     private boolean permanent = false;
+
+    @Column(name = "expires_at")
+    private Instant expiresAt;
 
     @CreatedBy
     @ManyToOne
