@@ -37,7 +37,7 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "plan", nullable = false)
     @Builder.Default
-    private Plan plan = Plan.FREE;
+    private SubscriptionPlan plan = SubscriptionPlan.FREE;
 
     @Embedded
     @Builder.Default

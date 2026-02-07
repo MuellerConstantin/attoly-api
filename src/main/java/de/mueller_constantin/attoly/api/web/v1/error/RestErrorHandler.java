@@ -481,6 +481,34 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
     }
 
+    @ExceptionHandler(FeatureNotAvailableException.class)
+    public ResponseEntity<Object> handleFeatureNotAvailable(FeatureNotAvailableException exc,
+                                                          WebRequest request) {
+        ErrorDto dto = ErrorDto.builder()
+                .error("FeatureNotAvailableError")
+                .message(getMessage("FeatureNotAvailableError.message", null))
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.FORBIDDEN.value())
+                .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .build();
+
+        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
+    }
+
+    @ExceptionHandler(PermanentShortcutLimitExceededException.class)
+    public ResponseEntity<Object> handlePermanentShortcutLimitExceeded(PermanentShortcutLimitExceededException exc,
+                                                          WebRequest request) {
+        ErrorDto dto = ErrorDto.builder()
+                .error("PermanentShortcutLimitExceededError")
+                .message(getMessage("PermanentShortcutLimitExceededError.message", null))
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.FORBIDDEN.value())
+                .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .build();
+
+        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleDefault(Exception exc, WebRequest request) {
 

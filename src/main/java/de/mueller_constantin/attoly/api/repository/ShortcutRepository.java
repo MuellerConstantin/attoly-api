@@ -34,4 +34,7 @@ public interface ShortcutRepository extends BaseRepository<Shortcut, UUID> {
     @Modifying
     @Query("DELETE FROM Shortcut s WHERE s.createdBy IS NULL AND s.createdAt < ?1 AND s.permanent = false")
     void deleteAllTemporaryCreatedBefore(Instant dateTime);
+
+    @Query("SELECT COUNT(s) FROM Shortcut s WHERE s.deleted = false AND s.createdBy.id = ?1 AND s.permanent = true")
+    Long countPermanentShortcutsByCreatorId(UUID creatorId);
 }

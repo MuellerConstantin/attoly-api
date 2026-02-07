@@ -82,7 +82,7 @@ public interface ShortcutService {
      * @param payload The payload data from which the shortcut is created.
      * @return The newly created shortcut.
      */
-    Shortcut create(ShortcutCreationPayload payload);
+    Shortcut create(ShortcutCreationPayload payload, UUID ownerId);
 
     /**
      * Deletes a shortcut using the identifier.

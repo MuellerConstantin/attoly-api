@@ -1,6 +1,7 @@
 package de.mueller_constantin.attoly.api.domain.impl;
 
 import de.mueller_constantin.attoly.api.domain.ShortcutService;
+import de.mueller_constantin.attoly.api.domain.SubscriptionEntitlementService;
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
 import de.mueller_constantin.attoly.api.domain.model.Shortcut;
 import de.mueller_constantin.attoly.api.domain.payload.ShortcutCreationPayload;
@@ -21,10 +22,12 @@ import java.util.UUID;
 @Service
 public class ShortcutServiceImpl implements ShortcutService {
     private final ShortcutRepository shortcutRepository;
+    private final SubscriptionEntitlementService subscriptionEntitlementService;
 
     @Autowired
-    public ShortcutServiceImpl(ShortcutRepository shortcutRepository) {
+    public ShortcutServiceImpl(ShortcutRepository shortcutRepository, SubscriptionEntitlementService subscriptionEntitlementService) {
         this.shortcutRepository = shortcutRepository;
+        this.subscriptionEntitlementService = subscriptionEntitlementService;
     }
 
     @Override
@@ -64,7 +67,11 @@ public class ShortcutServiceImpl implements ShortcutService {
     }
 
     @Override
-    public Shortcut create(ShortcutCreationPayload payload) {
+    public Shortcut create(ShortcutCreationPayload payload, UUID ownerId) {
+        if(payload.isPermanent()) {
+            subscriptionEntitlementService.checkCanCreatePermanentShortcut(ownerId);
+        }
+
         SecureRandom secureRandom = new SecureRandom();
         byte[] secret = new byte[6];
 

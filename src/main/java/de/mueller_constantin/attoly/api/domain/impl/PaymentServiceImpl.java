@@ -5,7 +5,7 @@ import com.stripe.model.Subscription;
 import com.stripe.model.SubscriptionItem;
 import de.mueller_constantin.attoly.api.domain.PaymentService;
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
-import de.mueller_constantin.attoly.api.domain.model.Plan;
+import de.mueller_constantin.attoly.api.domain.model.SubscriptionPlan;
 import de.mueller_constantin.attoly.api.domain.model.SubscriptionStatus;
 import de.mueller_constantin.attoly.api.domain.model.User;
 import de.mueller_constantin.attoly.api.domain.payment.StripeProperties;
@@ -47,7 +47,7 @@ public class PaymentServiceImpl implements PaymentService {
         Instant currentPeriodEnd = Instant.ofEpochSecond(item.getCurrentPeriodEnd());
 
         String priceId = item.getPrice().getId();
-        Plan plan = stripeProperties.resolvePlan(priceId);
+        SubscriptionPlan plan = stripeProperties.resolvePlan(priceId);
 
         user.getBilling().setCustomerId(customerId);
         user.getBilling().setSubscriptionId(subscriptionId);
@@ -63,7 +63,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public void deactivateSubscription(Subscription subscription, String eventId) {
-        User user = userRepository.findByBillingSubscriptionId(subscription.getId()).orElseThrow(EntityNotFoundException::new);
+        User user = userRepository.findByBillingSubscriptionId(subscription.getId()).orElseThrow();
 
         if(eventId != null && eventId.equals(user.getBilling().getLastEventId())) {
             return;
@@ -78,7 +78,7 @@ public class PaymentServiceImpl implements PaymentService {
         user.getBilling().setSubscriptionId(null);
         user.getBilling().setCurrentPeriodStart(null);
         user.getBilling().setCurrentPeriodEnd(null);
-        user.setPlan(Plan.FREE);
+        user.setPlan(SubscriptionPlan.FREE);
 
         userRepository.save(user);
     }
@@ -88,7 +88,7 @@ public class PaymentServiceImpl implements PaymentService {
         String customerId = invoice.getCustomer();
         User user = userRepository
                 .findByBillingCustomerId(customerId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow();
 
         if (eventId != null && eventId.equals(user.getBilling().getLastEventId())) {
             return;
@@ -110,7 +110,7 @@ public class PaymentServiceImpl implements PaymentService {
         String customerId = invoice.getCustomer();
         User user = userRepository
                 .findByBillingCustomerId(customerId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow();
 
         if (eventId != null && eventId.equals(user.getBilling().getLastEventId())) {
             return;

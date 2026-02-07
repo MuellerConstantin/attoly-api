@@ -1,6 +1,6 @@
 package de.mueller_constantin.attoly.api.domain.payment;
 
-import de.mueller_constantin.attoly.api.domain.model.Plan;
+import de.mueller_constantin.attoly.api.domain.model.SubscriptionPlan;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
 
 @Component
@@ -23,9 +22,9 @@ public class StripeProperties {
     private String cancelUrl;
     private String portalReturnUrl;
     private String webhookSecret;
-    private Map<Plan, String> plans;
+    private Map<SubscriptionPlan, String> plans;
 
-    public Plan resolvePlan(String priceId) {
+    public SubscriptionPlan resolvePlan(String priceId) {
         return plans.entrySet().stream()
                 .filter(entry -> entry.getValue().equals(priceId))
                 .map(Map.Entry::getKey)

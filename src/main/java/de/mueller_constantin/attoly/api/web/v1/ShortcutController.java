@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1")
 public class ShortcutController {
@@ -34,9 +36,10 @@ public class ShortcutController {
 
     @PostMapping("/shortcuts")
     @ResponseStatus(HttpStatus.CREATED)
-    ShortcutDto create(@RequestBody @Valid ShortcutCreationDto dto) {
+    ShortcutDto create(@RequestBody @Valid ShortcutCreationDto dto, @CurrentPrincipal Principal principal) {
         ShortcutCreationPayload payload = shortcutMapper.mapToPayload(dto);
-        Shortcut shortcut = shortcutService.create(payload);
+        UUID ownerId = principal != null ? principal.getUser().getId() : null;
+        Shortcut shortcut = shortcutService.create(payload, ownerId);
 
         return shortcutMapper.mapToDto(shortcut);
     }

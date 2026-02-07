@@ -1,0 +1,6 @@
+attoly:
+  plans:
+    FREE:
+      maxPermanentShortcuts: 10
+    PRO:
+      maxPermanentShortcuts: 100
