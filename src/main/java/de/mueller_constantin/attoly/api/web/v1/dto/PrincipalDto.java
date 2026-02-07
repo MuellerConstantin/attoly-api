@@ -13,18 +13,6 @@ import java.util.UUID;
 @Data
 @Builder
 public class PrincipalDto {
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    @Builder
-    public static class BillingInfoDto {
-        private String customerId;
-        private String subscriptionId;
-        private String status;
-        private OffsetDateTime currentPeriodStart;
-        private OffsetDateTime currentPeriodEnd;
-    }
-
     private UUID id;
     private String email;
     private boolean emailVerified;

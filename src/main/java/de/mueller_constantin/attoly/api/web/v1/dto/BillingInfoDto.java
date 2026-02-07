@@ -6,18 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class MeDto {
-    private UUID id;
-    private String email;
+public class BillingInfoDto {
     private String customerId;
-    private OffsetDateTime createdAt;
-    private String identityProvider;
-    private String plan;
-    private BillingInfoDto billing;
+    private String subscriptionId;
+    private String status;
+    private OffsetDateTime currentPeriodStart;
+    private OffsetDateTime currentPeriodEnd;
 }
