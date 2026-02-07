@@ -25,6 +25,10 @@ public class Shortcut extends BaseEntity {
     @Column(name = "url", length = 2000, nullable = false)
     private String url;
 
+    @Column(name = "permanent", nullable = false)
+    @Builder.Default
+    private boolean permanent = false;
+
     @CreatedBy
     @ManyToOne
     @JoinColumn(name = "created_by")

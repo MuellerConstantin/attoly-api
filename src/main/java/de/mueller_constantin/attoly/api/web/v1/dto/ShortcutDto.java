@@ -13,10 +13,10 @@ import java.util.UUID;
 @Data
 @Builder
 public class ShortcutDto {
-
     private UUID id;
     private String tag;
     private String url;
     private OffsetDateTime createdAt;
     private boolean anonymous;
+    private boolean permanent;
 }

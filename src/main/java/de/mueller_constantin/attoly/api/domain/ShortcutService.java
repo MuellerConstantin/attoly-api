@@ -105,5 +105,5 @@ public interface ShortcutService {
      *
      * @param date The offset date.
      */
-    void deleteAllAnonymousCreatedBefore(OffsetDateTime date);
+    void deleteAllTemporaryCreatedBefore(OffsetDateTime date);
 }

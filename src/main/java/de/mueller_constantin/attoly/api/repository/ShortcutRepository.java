@@ -28,10 +28,10 @@ public interface ShortcutRepository extends BaseRepository<Shortcut, UUID> {
     Page<Shortcut> findByOwnership(String email, Pageable pageable);
 
     @Modifying
-    @Query("UPDATE Shortcut s SET s.deleted = true WHERE s.createdBy IS NULL AND s.createdAt < ?1")
-    void deleteAllAnonymousSoftCreatedBefore(Instant dateTime);
+    @Query("UPDATE Shortcut s SET s.deleted = true WHERE s.createdBy IS NULL AND s.createdAt < ?1 AND s.permanent = false")
+    void deleteAllTemporarySoftCreatedBefore(Instant dateTime);
 
     @Modifying
-    @Query("DELETE FROM Shortcut s WHERE s.createdBy IS NULL AND s.createdAt < ?1")
-    void deleteAllAnonymousCreatedBefore(Instant dateTime);
+    @Query("DELETE FROM Shortcut s WHERE s.createdBy IS NULL AND s.createdAt < ?1 AND s.permanent = false")
+    void deleteAllTemporaryCreatedBefore(Instant dateTime);
 }

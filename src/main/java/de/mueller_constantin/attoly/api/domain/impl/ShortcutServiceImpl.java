@@ -96,7 +96,7 @@ public class ShortcutServiceImpl implements ShortcutService {
     }
 
     @Override
-    public void deleteAllAnonymousCreatedBefore(OffsetDateTime date) {
-        shortcutRepository.deleteAllAnonymousSoftCreatedBefore(date.toInstant());
+    public void deleteAllTemporaryCreatedBefore(OffsetDateTime date) {
+        shortcutRepository.deleteAllTemporaryCreatedBefore(date.toInstant());
     }
 }

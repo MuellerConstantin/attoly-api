@@ -25,10 +25,8 @@ attoly:
     sender: "Attoly Support <noreply@attoly.com>"
   scheduling:
     jobs:
-      anonymous-shortcut-clean-up:
-        enabled: true
-        cron: "@daily"
-        expires-in: 2419200000
+      temporary-shortcut-clean-up:
+        enabled: false
   web:
     verify-user-uri: http://localhost:3000/verify-user
     reset-password-uri: http://localhost:3000/reset-password
