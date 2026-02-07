@@ -43,7 +43,11 @@ public class ShortcutServiceImpl implements ShortcutService {
 
     @Override
     public Page<Shortcut> findAll(Specification<Shortcut> specification, Pageable pageable) {
-        specification = specification.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleted"), false));
+        specification = specification.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleted"), false))
+                .and((root, query, criteriaBuilder) -> criteriaBuilder.or(
+                        criteriaBuilder.isNull(root.get("expiresAt")),
+                        criteriaBuilder.greaterThan(root.get("expiresAt"), Instant.now())
+                ));
         return shortcutRepository.findAll(specification, pageable);
     }
 

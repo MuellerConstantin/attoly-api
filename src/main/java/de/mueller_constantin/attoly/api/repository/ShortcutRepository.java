@@ -14,17 +14,16 @@ import java.util.UUID;
 
 @Repository
 public interface ShortcutRepository extends BaseRepository<Shortcut, UUID> {
-
     @Transactional(readOnly = true)
-    @Query("SELECT s FROM Shortcut s WHERE s.deleted = false AND s.tag = ?1")
+    @Query("SELECT s FROM Shortcut s WHERE s.deleted = false AND (s.expiresAt IS NULL OR s.expiresAt > CURRENT_TIMESTAMP) AND s.tag = ?1")
     Optional<Shortcut> findByTag(String tag);
 
     @Transactional(readOnly = true)
-    @Query("SELECT s FROM Shortcut s WHERE s.deleted = false AND s.createdBy.id = ?1")
+    @Query("SELECT s FROM Shortcut s WHERE s.deleted = false AND (s.expiresAt IS NULL OR s.expiresAt > CURRENT_TIMESTAMP) AND s.createdBy.id = ?1")
     Page<Shortcut> findByOwnership(UUID creatorId, Pageable pageable);
 
     @Transactional(readOnly = true)
-    @Query("SELECT s FROM Shortcut s WHERE s.deleted = false AND s.createdBy.email = ?1")
+    @Query("SELECT s FROM Shortcut s WHERE s.deleted = false AND (s.expiresAt IS NULL OR s.expiresAt > CURRENT_TIMESTAMP) AND s.createdBy.email = ?1")
     Page<Shortcut> findByOwnership(String email, Pageable pageable);
 
     @Modifying

@@ -19,4 +19,5 @@ public class ShortcutDetailsDto {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private boolean permanent;
+    private OffsetDateTime expiresAt;
 }

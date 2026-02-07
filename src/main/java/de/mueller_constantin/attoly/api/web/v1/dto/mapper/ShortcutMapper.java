@@ -32,6 +32,10 @@ public interface ShortcutMapper {
     PageDto<ShortcutDetailsDto> mapToDetailsDto(Page<Shortcut> shortcuts);
 
     default OffsetDateTime mapInstantToOffsetDateTime(Instant instant) {
+        if (instant == null) {
+            return null;
+        }
+
         return instant.atZone(ZoneId.systemDefault()).toOffsetDateTime();
     }
 
