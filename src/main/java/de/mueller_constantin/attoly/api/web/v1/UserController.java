@@ -3,13 +3,15 @@ package de.mueller_constantin.attoly.api.web.v1;
 import de.mueller_constantin.attoly.api.domain.PasswordResetService;
 import de.mueller_constantin.attoly.api.domain.UserService;
 import de.mueller_constantin.attoly.api.domain.UserVerificationService;
+import de.mueller_constantin.attoly.api.domain.SubscriptionEntitlementService;
+import de.mueller_constantin.attoly.api.domain.model.UsageInfo;
 import de.mueller_constantin.attoly.api.domain.model.User;
 import de.mueller_constantin.attoly.api.domain.payload.UserCreationPayload;
-import de.mueller_constantin.attoly.api.domain.payload.UserUpdatePayload;
 import de.mueller_constantin.attoly.api.security.CurrentPrincipal;
 import de.mueller_constantin.attoly.api.security.Principal;
 import de.mueller_constantin.attoly.api.web.v1.dto.*;
 import de.mueller_constantin.attoly.api.web.v1.dto.mapper.UserMapper;
+import de.mueller_constantin.attoly.api.web.v1.dto.mapper.UsageInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -25,16 +27,22 @@ public class UserController {
     private final UserVerificationService userVerificationService;
     private final PasswordResetService passwordResetService;
     private final UserMapper userMapper;
+    private final SubscriptionEntitlementService subscriptionEntitlementService;
+    private final UsageInfoMapper usageInfoMapper;
 
     @Autowired
     public UserController(UserService userService,
                           UserVerificationService userVerificationService,
                           PasswordResetService passwordResetService,
-                          UserMapper userMapper) {
+                          UserMapper userMapper,
+                          SubscriptionEntitlementService subscriptionEntitlementService,
+                          UsageInfoMapper usageInfoMapper) {
         this.userService = userService;
         this.userVerificationService = userVerificationService;
         this.passwordResetService = passwordResetService;
         this.userMapper = userMapper;
+        this.subscriptionEntitlementService = subscriptionEntitlementService;
+        this.usageInfoMapper = usageInfoMapper;
     }
 
     @PostMapping("/users")
@@ -87,5 +95,13 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void sendPasswordResetMessage(@RequestParam(name = "email") String email, Locale locale) {
         passwordResetService.sendResetMessageByEmail(email, locale);
+    }
+
+    @GetMapping("/user/me/usage")
+    public UsageInfoDto getCurrentUsage(@CurrentPrincipal Principal principal) {
+        User user = userService.findByEmail(principal.getEmail());
+        UsageInfo usage = subscriptionEntitlementService.getUsageInfoForUser(user.getId());
+
+        return usageInfoMapper.mapToDto(usage);
     }
 }

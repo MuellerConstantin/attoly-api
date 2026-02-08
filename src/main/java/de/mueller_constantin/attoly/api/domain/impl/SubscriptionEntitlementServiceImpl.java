@@ -1,11 +1,13 @@
 package de.mueller_constantin.attoly.api.domain.impl;
 
 import de.mueller_constantin.attoly.api.domain.SubscriptionEntitlementService;
+import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
 import de.mueller_constantin.attoly.api.domain.exception.ExpirableShortcutLimitExceededException;
 import de.mueller_constantin.attoly.api.domain.exception.FeatureNotAvailableException;
 import de.mueller_constantin.attoly.api.domain.exception.PermanentShortcutLimitExceededException;
 import de.mueller_constantin.attoly.api.domain.model.SubscriptionPlan;
 import de.mueller_constantin.attoly.api.domain.model.User;
+import de.mueller_constantin.attoly.api.domain.model.UsageInfo;
 import de.mueller_constantin.attoly.api.domain.payment.SubscriptionPlanProperties;
 import de.mueller_constantin.attoly.api.repository.ShortcutRepository;
 import de.mueller_constantin.attoly.api.repository.UserRepository;
@@ -13,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -80,5 +84,32 @@ public class SubscriptionEntitlementServiceImpl implements SubscriptionEntitleme
         if (currentExpirableShortcutCount >= maxAllowedExpirableShortcutCount) {
             throw new ExpirableShortcutLimitExceededException();
         }
+    }
+
+    @Override
+    @Transactional
+    public UsageInfo getUsageInfoForUser(UUID ownerId) {
+        if (ownerId == null) {
+            throw new EntityNotFoundException();
+        }
+
+        User user = userRepository.findById(ownerId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        SubscriptionPlan plan = user.getPlan();
+        SubscriptionPlanProperties.SubscriptionPlanConfig config =
+                subscriptionPlanProperties.getConfigForPlan(plan);
+
+        Long currentPermanent = shortcutRepository.countPermanentShortcutsByCreatorId(ownerId);
+        Long currentExpirable = shortcutRepository.countExpirableShortcutsByCreatorId(ownerId);
+
+        Long maxPermanent = config.getMaxPermanentShortcuts();
+        Long maxExpirable = config.getMaxExpirableShortcuts();
+
+        return UsageInfo.builder()
+                .plan(plan.name())
+                .usageLimits(new UsageInfo.UsageLimits(maxPermanent, maxExpirable))
+                .currentUsage(new UsageInfo.CurrentUsage(currentPermanent, currentExpirable))
+                .build();
     }
 }

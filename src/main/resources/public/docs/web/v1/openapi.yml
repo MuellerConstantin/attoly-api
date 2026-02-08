@@ -268,6 +268,18 @@ paths:
           description: The roles of the currently authenticated user.
         '401':
           $ref: "#/components/responses/401"
+  /user/me/usage:
+    get:
+      tags: [ User ]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsageInfoDto"
+          description: The subscription usage information of the currently authenticated user.
+        '401':
+          $ref: "#/components/responses/401"
   /shortcuts:
     post:
       tags: [ Shortcut ]
@@ -613,6 +625,40 @@ components:
           type: integer
         totalPages:
           type: integer
+    UsageInfoDto:
+      type: object
+      properties:
+        plan:
+          type: string
+          description: The subscription plan of the user.
+          enum: [ FREE, PRO ]
+        usageLimits:
+          type: object
+          properties:
+            maxPermanentShortcuts:
+              type: integer
+              description: The maximum number of shortcuts allowed.
+            maxExpirableShortcuts:
+              type: integer
+              description: The maximum number of expirable shortcuts allowed.
+          required:
+            - maxPermanentShortcuts
+            - maxExpirableShortcuts
+        currentUsage:
+          type: object
+          properties:
+            currentPermanentShortcuts:
+              type: integer
+              description: The current number of permanent shortcuts.
+            currentExpirableShortcuts:
+              type: integer
+              description: The current number of expirable shortcuts.
+          required:
+            - currentPermanentShortcuts
+            - currentExpirableShortcuts
+      required:
+        - usageLimits
+        - currentUsage
   responses:
     '500':
       description: An internal error has occurred on the server side.
