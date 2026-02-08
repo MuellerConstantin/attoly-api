@@ -62,6 +62,7 @@ CREATE TABLE public.shortcuts
     url              varchar(2000) NOT NULL,
     created_by       uuid,
     permanent        bool          NOT NULL,
+    expires_at       timestamptz(6) NULL,
 
     CONSTRAINT pk_shortcuts PRIMARY KEY (id),
     CONSTRAINT uq_shortcuts_tag UNIQUE (tag),
