@@ -318,6 +318,7 @@ paths:
           description: The successfully retrieved shortcut.
         '404':
           $ref: "#/components/responses/404"
+  /user/me/shortcuts/{tag}:
     delete:
       tags: [ Shortcut ]
       parameters:

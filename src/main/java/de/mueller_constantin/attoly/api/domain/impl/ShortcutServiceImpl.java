@@ -72,6 +72,11 @@ public class ShortcutServiceImpl implements ShortcutService {
     }
 
     @Override
+    public Shortcut findValidByTag(String tag) throws EntityNotFoundException {
+        return shortcutRepository.findValidByTag(tag).orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Override
     public Shortcut create(ShortcutCreationPayload payload, UUID ownerId) {
         if(payload.isPermanent()) {
             subscriptionEntitlementService.checkCanCreatePermanentShortcut(ownerId);

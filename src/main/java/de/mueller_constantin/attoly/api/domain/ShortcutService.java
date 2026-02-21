@@ -68,6 +68,15 @@ public interface ShortcutService {
     Shortcut findById(UUID id) throws EntityNotFoundException;
 
     /**
+     * Loads a shortcut by its tag. Only shortcuts that are still valid, i.e. not deleted and not expired, are returned.
+     *
+     * @param tag The shortcut's unique tag.
+     * @return The loaded shortcut.
+     * @throws EntityNotFoundException Thrown if the shortcut cannot be found.
+     */
+    Shortcut findValidByTag(String tag) throws EntityNotFoundException;
+
+    /**
      * Loads a shortcut by its tag.
      *
      * @param tag The shortcut's unique tag.

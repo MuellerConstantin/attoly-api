@@ -14,16 +14,33 @@ import java.util.UUID;
 
 @Repository
 public interface ShortcutRepository extends BaseRepository<Shortcut, UUID> {
+    /**
+     * Resolves a shortcut by its tag. Only shortcuts that are not expired are returned.
+     *
+     * @param tag The tag of the shortcut to resolve.
+     * @return An optional containing the resolved shortcut, or an empty optional if no such shortcut exists or if it is deleted or expired.
+     */
     @Transactional(readOnly = true)
     @Query("SELECT s FROM Shortcut s WHERE s.deleted = false AND (s.expiresAt IS NULL OR s.expiresAt > CURRENT_TIMESTAMP) AND s.tag = ?1")
+    Optional<Shortcut> findValidByTag(String tag);
+
+    /**
+     * Resolves a shortcut by its tag. Independent of whether it is expired.
+     * This method is used for administrative purposes, e.g. for deleting shortcuts.
+     *
+     * @param tag The tag of the shortcut to resolve.
+     * @return An optional containing the resolved shortcut, or an empty optional if no such shortcut exists or if it is deleted or expired.
+     */
+    @Transactional(readOnly = true)
+    @Query("SELECT s FROM Shortcut s WHERE s.deleted = false AND s.tag = ?1")
     Optional<Shortcut> findByTag(String tag);
 
     @Transactional(readOnly = true)
-    @Query("SELECT s FROM Shortcut s WHERE s.deleted = false AND (s.expiresAt IS NULL OR s.expiresAt > CURRENT_TIMESTAMP) AND s.createdBy.id = ?1")
+    @Query("SELECT s FROM Shortcut s WHERE s.deleted = false AND s.createdBy.id = ?1")
     Page<Shortcut> findByOwnership(UUID creatorId, Pageable pageable);
 
     @Transactional(readOnly = true)
-    @Query("SELECT s FROM Shortcut s WHERE s.deleted = false AND (s.expiresAt IS NULL OR s.expiresAt > CURRENT_TIMESTAMP) AND s.createdBy.email = ?1")
+    @Query("SELECT s FROM Shortcut s WHERE s.deleted = false AND s.createdBy.email = ?1")
     Page<Shortcut> findByOwnership(String email, Pageable pageable);
 
     @Modifying

@@ -44,7 +44,7 @@ public class ShortcutController {
         return shortcutMapper.mapToDto(shortcut);
     }
 
-    @DeleteMapping("/shortcuts/{tag}")
+    @DeleteMapping("/user/me/shortcuts/{tag}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("@domainMethodSecurityEvaluator.isShortcutOwnerOf(#tag)")
     void deleteById(@PathVariable("tag") String tag) {
@@ -52,8 +52,8 @@ public class ShortcutController {
     }
 
     @GetMapping("/shortcuts/{tag}")
-    ShortcutDto findByTag(@PathVariable("tag") String tag) {
-        Shortcut shortcut = shortcutService.findByTag(tag);
+    ShortcutDto findValidByTag(@PathVariable("tag") String tag) {
+        Shortcut shortcut = shortcutService.findValidByTag(tag);
         return shortcutMapper.mapToDto(shortcut);
     }
 
