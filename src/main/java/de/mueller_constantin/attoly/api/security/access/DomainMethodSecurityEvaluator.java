@@ -60,7 +60,7 @@ public class DomainMethodSecurityEvaluator {
      */
     public boolean isShortcutOwnerOf(String tag) {
         Principal principal = getPrincipal();
-        Optional<Shortcut> optionalShortcut = shortcutRepository.findValidByTag(tag);
+        Optional<Shortcut> optionalShortcut = shortcutRepository.findByTag(tag);
 
         return optionalShortcut.isPresent() && principal.getUser().getId().equals(optionalShortcut.get().getCreatedBy().getId());
     }
