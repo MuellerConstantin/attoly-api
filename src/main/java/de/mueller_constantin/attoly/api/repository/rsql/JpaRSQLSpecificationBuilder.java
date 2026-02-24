@@ -10,6 +10,11 @@ import java.util.List;
 import java.util.Objects;
 
 public class JpaRSQLSpecificationBuilder<T> {
+    private final JpaRSQLFieldMapper<T> fieldMapper;
+
+    public JpaRSQLSpecificationBuilder(JpaRSQLFieldMapper<T> fieldMapper) {
+        this.fieldMapper = fieldMapper;
+    }
 
     public Specification<T> createSpecification(Node node) {
         if (node instanceof LogicalNode) {
@@ -34,20 +39,20 @@ public class JpaRSQLSpecificationBuilder<T> {
 
         if (logicalNode.getOperator() == LogicalOperator.OR) {
             for (Specification<T> specification : specifications) {
-                result = Specification.where(result).or(specification);
+                result = result.or(specification);
             }
         }
 
         if (logicalNode.getOperator() == LogicalOperator.AND) {
             for (Specification<T> specification : specifications) {
-                result = Specification.where(result).and(specification);
+                result = result.and(specification);
             }
         }
 
         return result;
     }
 
-    public Specification<T> createSpecification(final ComparisonNode comparisonNode) {
-        return Specification.where(new JpaRSQLSpecification<>(comparisonNode.getSelector(), comparisonNode.getOperator(), comparisonNode.getArguments()));
+    public Specification<T> createSpecification(ComparisonNode node) {
+        return this.fieldMapper.map(node.getSelector(), node.getOperator(), node.getArguments());
     }
 }

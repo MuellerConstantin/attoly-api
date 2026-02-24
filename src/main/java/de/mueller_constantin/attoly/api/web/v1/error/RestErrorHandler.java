@@ -3,6 +3,8 @@ package de.mueller_constantin.attoly.api.web.v1.error;
 import de.mueller_constantin.attoly.api.domain.exception.*;
 import de.mueller_constantin.attoly.api.domain.exception.*;
 import de.mueller_constantin.attoly.api.web.v1.dto.ErrorDto;
+import de.mueller_constantin.attoly.api.web.v1.dto.rsql.UnsupportedFilterQueryFieldException;
+import de.mueller_constantin.attoly.api.web.v1.dto.rsql.UnsupportedFilterQueryOperatorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
@@ -518,6 +520,38 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                 .timestamp(OffsetDateTime.now())
                 .status(HttpStatus.FORBIDDEN.value())
                 .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .build();
+
+        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
+    }
+
+    @ExceptionHandler(UnsupportedFilterQueryFieldException.class)
+    public ResponseEntity<Object> handleUnsupportedFilterQueryField(UnsupportedFilterQueryFieldException exc,
+                                                                   WebRequest request) {
+        ErrorDto dto = ErrorDto.builder()
+                .error("UnsupportedFilterQueryFieldError")
+                .message(getMessage("UnsupportedFilterQueryFieldError.message", null))
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .detail(new InvalidParameterErrorDetails(exc.getFieldName(),
+                        getMessage("de.mueller_constantin.attoly.api.web.v1.dto.validation.UnsupportedFilterField.message", new Object[]{exc.getFieldName()})))
+                .build();
+
+        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
+    }
+
+    @ExceptionHandler(UnsupportedFilterQueryOperatorException.class)
+    public ResponseEntity<Object> handleUnsupportedFilterQueryOperator(UnsupportedFilterQueryOperatorException exc,
+                                                                      WebRequest request) {
+        ErrorDto dto = ErrorDto.builder()
+                .error("UnsupportedFilterQueryOperatorError")
+                .message(getMessage("UnsupportedFilterQueryOperatorError.message", null))
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .detail(new InvalidParameterErrorDetails(exc.getFieldName(),
+                        getMessage("de.mueller_constantin.attoly.api.web.v1.dto.validation.UnsupportedFilterOperator.message", new Object[]{exc.getOperator(), exc.getFieldName()})))
                 .build();
 
         return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));

@@ -10,8 +10,8 @@ public class JpaRSQLVisitor<T> implements RSQLVisitor<Specification<T>, Void> {
 
     private final JpaRSQLSpecificationBuilder<T> jpaRSQLSpecificationBuilder;
 
-    public JpaRSQLVisitor() {
-        this.jpaRSQLSpecificationBuilder = new JpaRSQLSpecificationBuilder<>();
+    public JpaRSQLVisitor(JpaRSQLFieldMapper<T> fieldMapper) {
+        this.jpaRSQLSpecificationBuilder = new JpaRSQLSpecificationBuilder<>(fieldMapper);
     }
 
     @Override

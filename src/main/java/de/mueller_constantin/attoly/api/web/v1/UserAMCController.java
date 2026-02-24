@@ -8,6 +8,7 @@ import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLOperator;
 import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLVisitor;
 import de.mueller_constantin.attoly.api.web.v1.dto.*;
 import de.mueller_constantin.attoly.api.web.v1.dto.mapper.UserMapper;
+import de.mueller_constantin.attoly.api.web.v1.dto.rsql.UserJpaRSQLFieldMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +39,7 @@ public class UserAMCController {
                                   @RequestParam(value = "filter", required = false) String filter) {
         if (filter != null && !filter.isEmpty()) {
             Node rootNode = new RSQLParser(JpaRSQLOperator.getOperators()).parse(filter);
-            Specification<User> specification = rootNode.accept(new JpaRSQLVisitor<>());
+            Specification<User> specification = rootNode.accept(new JpaRSQLVisitor<>(new UserJpaRSQLFieldMapper()));
             Page<User> users = userService.findAll(specification, pageable);
             return userMapper.mapToPrincipalDto(users);
         } else {

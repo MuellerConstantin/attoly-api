@@ -9,6 +9,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -25,18 +26,14 @@ public class JpaRSQLSpecification<T> implements Specification<T> {
 
         switch (JpaRSQLOperator.fromValue(operator)) {
             case EQUAL -> {
-                if (argument instanceof String) {
-                    return criteriaBuilder.like(root.get(property), argument.toString().replace('*', '%'));
-                } else if (argument == null) {
+                if (argument == null) {
                     return criteriaBuilder.isNull(root.get(property));
                 } else {
                     return criteriaBuilder.equal(root.get(property), argument);
                 }
             }
             case NOT_EQUAL -> {
-                if (argument instanceof String) {
-                    return criteriaBuilder.notLike(root.get(property), argument.toString().replace('*', '%'));
-                } else if (argument == null) {
+                if (argument == null) {
                     return criteriaBuilder.isNotNull(root.get(property));
                 } else {
                     return criteriaBuilder.notEqual(root.get(property), argument);
@@ -78,6 +75,8 @@ public class JpaRSQLSpecification<T> implements Specification<T> {
                 return Integer.parseInt(argument);
             } else if (type.equals(Long.class)) {
                 return Long.parseLong(argument);
+            } else if(type.equals(UUID.class)) {
+                return UUID.fromString(argument);
             } else {
                 return argument;
             }

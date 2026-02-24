@@ -9,6 +9,7 @@ import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLVisitor;
 import de.mueller_constantin.attoly.api.web.v1.dto.ComplaintDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.PageDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.mapper.ComplaintMapper;
+import de.mueller_constantin.attoly.api.web.v1.dto.rsql.ComplaintJpaRSQLFieldMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +39,7 @@ public class ComplaintAMCController {
                                   @RequestParam(value = "filter", required = false) String filter) {
         if (filter != null && !filter.isEmpty()) {
             Node rootNode = new RSQLParser(JpaRSQLOperator.getOperators()).parse(filter);
-            Specification<Complaint> specification = rootNode.accept(new JpaRSQLVisitor<>());
+            Specification<Complaint> specification = rootNode.accept(new JpaRSQLVisitor<>(new ComplaintJpaRSQLFieldMapper()));
             Page<Complaint> reports = complaintService.findAll(specification, pageable);
             return complaintMapper.mapToDto(reports);
         } else {
