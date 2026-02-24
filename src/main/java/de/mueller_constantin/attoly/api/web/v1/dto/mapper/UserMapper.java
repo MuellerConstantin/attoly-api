@@ -50,6 +50,10 @@ public interface UserMapper {
     PageDto<PrincipalDto> mapToPrincipalDto(Page<User> users);
 
     default OffsetDateTime mapInstantToOffsetDateTime(Instant instant) {
+        if (instant == null) {
+            return null;
+        }
+
         return instant.atZone(ZoneId.systemDefault()).toOffsetDateTime();
     }
 

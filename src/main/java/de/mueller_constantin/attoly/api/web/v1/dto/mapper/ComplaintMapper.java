@@ -26,6 +26,10 @@ public interface ComplaintMapper {
     PageDto<ComplaintDto> mapToDto(Page<Complaint> reports);
 
     default OffsetDateTime mapInstantToOffsetDateTime(Instant instant) {
+        if (instant == null) {
+            return null;
+        }
+
         return instant.atZone(ZoneId.systemDefault()).toOffsetDateTime();
     }
 }
