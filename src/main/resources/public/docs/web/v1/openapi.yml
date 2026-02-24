@@ -134,6 +134,12 @@ paths:
     post:
       tags: [ User ]
       summary: Creates a new user.
+      description: >
+        Creates a new user. This endpoint can be used to register a new user account on the
+        platform. The user must provide an email address and a password to create a new user
+        account. After successful registration, the user account is created but not yet verified.
+        To verify the account, the user must use the `POST /user/verify` endpoint with the
+        verification token that is sent to the user's email address after registration.
       security: [ ]
       requestBody:
         required: true
@@ -154,6 +160,9 @@ paths:
     get:
       tags: [ User ]
       summary: Retrieves the currently authenticated user.
+      description: >
+        Retrieves the currently authenticated user. This endpoint can be used to retrieve
+        the details of your own user account, e.g. email, creation time and subscription plan.
       responses:
         '200':
           content:
@@ -166,6 +175,10 @@ paths:
     delete:
       tags: [ User ]
       summary: Deletes your own user account.
+      description: >
+        Deletes your own user account. This endpoint can be used to delete your user account.
+        After deletion, the user account is no longer available and can not be used for
+        authentication. All shortcuts that were created by the user are also deleted.
       responses:
         '204':
           description: Successfully deleted your user account.
@@ -175,6 +188,11 @@ paths:
     patch:
       tags: [ User ]
       summary: Updates your own user account's password.
+      description: >
+        Updates your own user account's password. This endpoint can be used to change the password
+        of your user account. You must provide your current password and the new password. If the
+        current password is correct, the password of your user account is updated to the new
+        password.
       requestBody:
         required: true
         content:
@@ -189,9 +207,36 @@ paths:
         '422':
           $ref: "#/components/responses/422"
   /user/verify:
+    get:
+      tags: [ User ]
+      security: [ ]
+      summary: Resends the verification token for a user.
+      description: >
+        Resends the verification token for a user. This endpoint can be used to resend the
+        verification token for a user in case they did not receive the email with the
+        verification token after registration. The user must provide their email address.
+        If the email address is associated with a user account that is not yet verified, a
+        new verification token is generated and sent to the user's email address.
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully requested a new verification token for the user.
+        '422':
+          $ref: "#/components/responses/422"
     post:
       tags: [ User ]
       security: [ ]
+      summary: Verifies a user account with a verification token.
+      description: >
+        Verifies a user account with a verification token. This endpoint is used to verify a user
+        account after registration. The verification token is usually sent to the user's email
+        address and must be provided in the request body to verify the account. If the provided
+        token is valid, the user account is marked as verified and can be used for authentication.
       requestBody:
         required: true
         content:
@@ -204,9 +249,36 @@ paths:
         '401':
           $ref: "#/components/responses/401"
   /user/reset:
+    get:
+      tags: [ User ]
+      security: [ ]
+      summary: Requests a password reset token for a user.
+      description: >
+        Requests a password reset token for a user. This endpoint can be used to request a password
+        reset token for a user in case they forgot their password. The user must provide their email
+        address. If the email address is associated with a user account, a
+        password reset token is generated and sent to the user's email address. The token can then
+        be used to reset the password of the user account via the `POST /user/reset` endpoint.
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully requested a password reset token for the user.
+        '422':
+          $ref: "#/components/responses/422"
     post:
       tags: [ User ]
       security: [ ]
+      summary: Resets the password of a user.
+      description: >
+        Resets the password of a user. This endpoint can be used to reset the password of
+        a user in case they forgot their password. The user must provide a valid reset token, which
+        is usually sent to the user's email address, and the new password. If the reset token is
+        valid, the user's password is updated to the new password.
       requestBody:
         required: true
         content:
@@ -222,6 +294,11 @@ paths:
     post:
       tags: [ Auth ]
       security: [ ]
+      summary: Issues access and refresh tokens for the provided credentials.
+      description: >
+        Issues access and refresh tokens for the provided credentials. The access token is a JWT
+        that can be used for authentication in subsequent requests. The refresh token is an opaque
+        token that can be used to generate new access tokens without having to resend the credentials.
       requestBody:
         required: true
         content:
@@ -241,6 +318,13 @@ paths:
     post:
       tags: [ Auth ]
       security: [ ]
+      summary: Refreshes the access token using a refresh token.
+      description: >
+        Refreshes the access token using a refresh token. This endpoint can be used to stay logged
+        in for a longer period of time without having to resend the credentials. The refresh token
+        must be sent in the request body and is then used to generate a new access token, which
+        is returned in the response. The refresh token itself is also renewed and returned in the
+        response.
       requestBody:
         required: true
         content:
@@ -259,6 +343,10 @@ paths:
   /user/me/roles:
     get:
       tags: [ Role ]
+      summary: Retrieves the roles of the currently authenticated user.
+      description: >
+        Retrieves the roles of the currently authenticated user. The roles determine the permissions
+        of the user and thus what operations they are allowed to perform on the platform.
       responses:
         '200':
           content:
@@ -271,6 +359,11 @@ paths:
   /user/me/usage:
     get:
       tags: [ User ]
+      summary: Retrieves the subscription usage information of the currently authenticated user.
+      description: >
+        Retrieves the subscription usage information of the currently authenticated user.
+        This includes the current subscription plan, the usage limits and the current
+        usage of the user.
       responses:
         '200':
           content:
@@ -284,6 +377,12 @@ paths:
     post:
       tags: [ Shortcut ]
       security: [ ]
+      summary: Creates a new shortcut.
+      description: >
+        Creates a new shortcut. If the request is made anonymously, the created shortcut will be
+        anonymous as well. This means that the shortcut can not be managed after its creation,
+        e.g. it can not be deleted or updated. Anonymous shortcuts are also automatically
+        deleted after a certain period of time.
       requestBody:
         required: true
         content:
@@ -303,6 +402,11 @@ paths:
     get:
       tags: [ Shortcut ]
       security: [ ]
+      summary: Retrieves a shortcut by its tag.
+      description: >
+        Retrieves the details of a shortcut by its tag. Only active and not expired shortcuts
+        are accessible via this public endpoint. This means a shortcut must be still valid
+        to be retrieved via this endpoint.
       parameters:
         - name: tag
           in: path
@@ -321,6 +425,9 @@ paths:
   /user/me/shortcuts/{tag}:
     delete:
       tags: [ Shortcut ]
+      summary: Deletes a shortcut of the currently authenticated user by its tag.
+      description: >
+        Deletes a shortcut of the currently authenticated user by its tag.
       parameters:
         - name: tag
           in: path
@@ -334,9 +441,36 @@ paths:
           $ref: "#/components/responses/401"
         '404':
           $ref: "#/components/responses/404"
+    get:
+      tags: [ Shortcut ]
+      summary: Retrieves a shortcut of the currently authenticated user by its tag.
+      description: >
+        Retrieves the details of a shortcut of the currently authenticated user by its tag. Using
+        this endpoint, you can also access already expired or disabled shortcuts, which are not
+        accessible via the public endpoint `GET /shortcuts/{tag}`.
+      parameters:
+        - name: tag
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShortcutDetailsDto"
+          description: The successfully retrieved shortcut.
+        '404':
+          $ref: "#/components/responses/404"
   /user/me/shortcuts:
     get:
       tags: [ Shortcut ]
+      summary: Retrieves the shortcuts of the currently authenticated user.
+      description: >
+        Retrieves the shortcuts of the currently authenticated user. Using this endpoint,
+        you can also access already expired or disabled shortcuts, which are not accessible
+        via the public endpoint `GET /shortcuts/{tag}`.
       responses:
         '200':
           content:
@@ -349,6 +483,12 @@ paths:
   /shortcuts/{tag}/complaints:
     post:
       tags: [ Complaint ]
+      security: [ ]
+      summary: Complains about a shortcut by its tag.
+      description: >
+        Complains about a shortcut by its tag. This endpoint can be used to report potentially
+        unwanted shortcuts, e.g. shortcuts that link to spam, malware, phishing or defacement
+        content. Complaints are anonymous and can be made by any user, even without authentication.
       parameters:
         - name: tag
           in: path
