@@ -4,6 +4,8 @@ import de.mueller_constantin.attoly.api.domain.DisposableEmailDomainService;
 import de.mueller_constantin.attoly.api.domain.UserService;
 import de.mueller_constantin.attoly.api.domain.UserVerificationService;
 import de.mueller_constantin.attoly.api.domain.exception.*;
+import de.mueller_constantin.attoly.api.domain.result.UserResult;
+import de.mueller_constantin.attoly.api.domain.result.mapper.UserResultMapper;
 import de.mueller_constantin.attoly.api.repository.model.Role;
 import de.mueller_constantin.attoly.api.repository.model.RoleName;
 import de.mueller_constantin.attoly.api.repository.model.User;
@@ -27,50 +29,57 @@ import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserVerificationService userVerificationService;
     private final DisposableEmailDomainService disposableEmailDomainService;
+    private final UserResultMapper userResultMapper;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            RoleRepository roleRepository,
                            PasswordEncoder passwordEncoder,
                            UserVerificationService userVerificationService,
-                           DisposableEmailDomainService disposableEmailDomainService) {
+                           DisposableEmailDomainService disposableEmailDomainService,
+                           UserResultMapper userResultMapper) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.userVerificationService = userVerificationService;
         this.disposableEmailDomainService = disposableEmailDomainService;
+        this.userResultMapper = userResultMapper;
     }
 
     @Override
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<UserResult> findAll() {
+        var users = userRepository.findAll();
+        return userResultMapper.mapToResult(users);
     }
 
     @Override
-    public Page<User> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable);
+    public Page<UserResult> findAll(Pageable pageable) {
+        var users = userRepository.findAll(pageable);
+        return userResultMapper.mapToResult(users);
     }
 
     @Override
-    public Page<User> findAll(Specification<User> specification, Pageable pageable) {
+    public Page<UserResult> findAll(Specification<User> specification, Pageable pageable) {
         specification = specification.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleted"), false));
-        return userRepository.findAll(specification, pageable);
+        var users = userRepository.findAll(specification, pageable);
+        return userResultMapper.mapToResult(users);
     }
 
     @Override
-    public User findById(UUID id) throws EntityNotFoundException {
-        return userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    public UserResult findById(UUID id) throws EntityNotFoundException {
+        var user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return userResultMapper.mapToResult(user);
     }
 
     @Override
-    public User findByEmail(String email) throws EntityNotFoundException {
-        return userRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+    public UserResult findByEmail(String email) throws EntityNotFoundException {
+        var user = userRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+        return userResultMapper.mapToResult(user);
     }
 
     @Override
@@ -90,7 +99,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User create(UserCreationPayload payload) throws EmailAlreadyInUseException {
+    public UserResult create(UserCreationPayload payload) throws EmailAlreadyInUseException {
         if (userRepository.existsAnyByEmail(payload.getEmail())) {
             throw new EmailAlreadyInUseException(payload.getEmail());
         }
@@ -110,32 +119,38 @@ public class UserServiceImpl implements UserService {
         User newUser = userRepository.save(user);
         userVerificationService.sendVerificationMessageById(newUser.getId(), locale);
 
-        return newUser;
+        return userResultMapper.mapToResult(newUser);
     }
 
     @Override
     @Transactional
-    public User updateById(UUID id, UserUpdatePayload payload) throws EntityNotFoundException {
-        return update(findById(id), payload);
+    public UserResult updateById(UUID id, UserUpdatePayload payload) throws EntityNotFoundException {
+        var user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return update(user, payload);
     }
 
     @Override
     @Transactional
-    public User updateByEmail(String email, UserUpdatePayload payload) throws EntityNotFoundException {
-        return update(findByEmail(email), payload);
+    public UserResult updateByEmail(String email, UserUpdatePayload payload) throws EntityNotFoundException {
+        var user = userRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+        return update(user, payload);
     }
 
     @Override
+    @Transactional
     public void changePasswordById(UUID id, String currentPassword, String newPassword) throws EntityNotFoundException {
-        changePassword(findById(id), currentPassword, newPassword);
+        var user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        changePassword(user, currentPassword, newPassword);
     }
 
     @Override
+    @Transactional
     public void changePasswordByEmail(String email, String currentPassword, String newPassword) throws EntityNotFoundException {
-        changePassword(findByEmail(email), currentPassword, newPassword);
+        var user = userRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+        changePassword(user, currentPassword, newPassword);
     }
 
-    protected User update(User user, UserUpdatePayload payload) {
+    protected UserResult update(User user, UserUpdatePayload payload) {
         if (payload.getLocked().isPresent()) {
             boolean isAdministrator = user.getRoles().stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_ADMIN));
 
@@ -146,7 +161,8 @@ public class UserServiceImpl implements UserService {
             user.setLocked(payload.getLocked().get());
         }
 
-        return userRepository.save(user);
+        var updatedUser = userRepository.save(user);
+        return userResultMapper.mapToResult(updatedUser);
     }
 
     protected void changePassword(User user, String currentPassword, String newPassword) {
@@ -162,13 +178,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void assignRoleById(UUID id, UUID role) throws EntityNotFoundException {
-        assignsRole(findById(id), role);
+        var user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        assignsRole(user, role);
     }
 
     @Override
+    @Transactional
     public void assignRoleByEmail(String email, UUID role) throws EntityNotFoundException {
-        assignsRole(findByEmail(email), role);
+        var user = userRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+        assignsRole(user, role);
     }
 
     @Transactional
@@ -180,13 +200,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void removeRoleById(UUID userId, UUID roleId) throws EntityNotFoundException {
-        removeRole(findById(userId), roleId);
+        var user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        removeRole(user, roleId);
     }
 
     @Override
+    @Transactional
     public void removeRoleByEmail(String email, UUID roleId) throws EntityNotFoundException {
-        removeRole(findByEmail(email), roleId);
+        var user = userRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+        removeRole(user, roleId);
     }
 
     @Transactional
@@ -205,13 +229,15 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteById(UUID id) throws EntityNotFoundException {
-        delete(findById(id));
+        var user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        delete(user);
     }
 
     @Override
     @Transactional
     public void deleteByEmail(String email) throws EntityNotFoundException {
-        delete(findByEmail(email));
+        var user = userRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+        delete(user);
     }
 
     protected void delete(User user) {

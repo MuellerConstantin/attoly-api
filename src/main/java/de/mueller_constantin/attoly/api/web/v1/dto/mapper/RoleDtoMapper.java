@@ -1,6 +1,6 @@
 package de.mueller_constantin.attoly.api.web.v1.dto.mapper;
 
-import de.mueller_constantin.attoly.api.repository.model.Role;
+import de.mueller_constantin.attoly.api.domain.result.RoleResult;
 import de.mueller_constantin.attoly.api.web.v1.dto.PageDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.RoleDto;
 import org.mapstruct.Mapper;
@@ -11,13 +11,12 @@ import java.util.Collection;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public interface RoleMapper {
-
-    RoleDto mapToDto(Role entity);
+public interface RoleDtoMapper {
+    RoleDto mapToDto(RoleResult entity);
 
     @Mapping(target = "page", source = "number")
     @Mapping(target = "perPage", source = "size")
-    PageDto<RoleDto> mapToDto(Page<Role> roles);
+    PageDto<RoleDto> mapToDto(Page<RoleResult> roles);
 
-    List<RoleDto> mapToDto(Collection<Role> roles);
+    List<RoleDto> mapToDto(Collection<RoleResult> roles);
 }

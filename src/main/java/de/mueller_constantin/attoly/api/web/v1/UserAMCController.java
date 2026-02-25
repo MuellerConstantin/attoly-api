@@ -7,10 +7,9 @@ import de.mueller_constantin.attoly.api.repository.model.User;
 import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLOperator;
 import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLVisitor;
 import de.mueller_constantin.attoly.api.web.v1.dto.*;
-import de.mueller_constantin.attoly.api.web.v1.dto.mapper.UserMapper;
+import de.mueller_constantin.attoly.api.web.v1.dto.mapper.UserDtoMapper;
 import de.mueller_constantin.attoly.api.web.v1.dto.rsql.UserJpaRSQLFieldMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
@@ -24,11 +23,11 @@ import java.util.UUID;
 @RequestMapping("/api/v1/amc")
 public class UserAMCController {
     private final UserService userService;
-    private final UserMapper userMapper;
+    private final UserDtoMapper userMapper;
 
     @Autowired
     public UserAMCController(UserService userService,
-                             UserMapper userMapper) {
+                             UserDtoMapper userMapper) {
         this.userService = userService;
         this.userMapper = userMapper;
     }
@@ -40,10 +39,10 @@ public class UserAMCController {
         if (filter != null && !filter.isEmpty()) {
             Node rootNode = new RSQLParser(JpaRSQLOperator.getOperators()).parse(filter);
             Specification<User> specification = rootNode.accept(new JpaRSQLVisitor<>(new UserJpaRSQLFieldMapper()));
-            Page<User> users = userService.findAll(specification, pageable);
+            var users = userService.findAll(specification, pageable);
             return userMapper.mapToPrincipalDto(users);
         } else {
-            Page<User> users = userService.findAll(pageable);
+            var users = userService.findAll(pageable);
             return userMapper.mapToPrincipalDto(users);
         }
     }
@@ -51,7 +50,7 @@ public class UserAMCController {
     @GetMapping("/users/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     PrincipalDto findById(@PathVariable("id") UUID id) {
-        User user = userService.findById(id);
+        var user = userService.findById(id);
 
         return userMapper.mapToPrincipalDto(user);
     }

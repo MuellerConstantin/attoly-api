@@ -1,8 +1,10 @@
 package de.mueller_constantin.attoly.api.domain.impl;
 
 import de.mueller_constantin.attoly.api.domain.ComplaintService;
-import de.mueller_constantin.attoly.api.domain.ShortcutService;
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
+import de.mueller_constantin.attoly.api.domain.result.ComplaintResult;
+import de.mueller_constantin.attoly.api.domain.result.mapper.ComplaintResultMapper;
+import de.mueller_constantin.attoly.api.repository.ShortcutRepository;
 import de.mueller_constantin.attoly.api.repository.model.Complaint;
 import de.mueller_constantin.attoly.api.repository.model.Shortcut;
 import de.mueller_constantin.attoly.api.domain.payload.ComplaintCreationPayload;
@@ -12,66 +14,78 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class ComplaintServiceImpl implements ComplaintService {
-
     private final ComplaintRepository complaintRepository;
-    private final ShortcutService shortcutService;
+    private final ShortcutRepository shortcutRepository;
+    private final ComplaintResultMapper complaintResultMapper;
 
     @Autowired
-    public ComplaintServiceImpl(ComplaintRepository complaintRepository, ShortcutService shortcutService) {
+    public ComplaintServiceImpl(ComplaintRepository complaintRepository,
+                                ShortcutRepository shortcutRepository,
+                                ComplaintResultMapper complaintResultMapper) {
         this.complaintRepository = complaintRepository;
-        this.shortcutService = shortcutService;
+        this.shortcutRepository = shortcutRepository;
+        this.complaintResultMapper = complaintResultMapper;
     }
 
     @Override
-    public List<Complaint> findAll() {
-        return complaintRepository.findAll();
+    public List<ComplaintResult> findAll() {
+        var complaints = complaintRepository.findAll();
+        return complaintResultMapper.mapToResult(complaints);
     }
 
     @Override
-    public Page<Complaint> findAll(Pageable pageable) {
-        return complaintRepository.findAll(pageable);
+    public Page<ComplaintResult> findAll(Pageable pageable) {
+        var complaints = complaintRepository.findAll(pageable);
+        return complaintResultMapper.mapToResult(complaints);
     }
 
     @Override
-    public Page<Complaint> findAll(Specification<Complaint> specification, Pageable pageable) {
+    public Page<ComplaintResult> findAll(Specification<Complaint> specification, Pageable pageable) {
         specification = specification.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleted"), false));
-        return complaintRepository.findAll(specification, pageable);
+        var complaints = complaintRepository.findAll(specification, pageable);
+        return complaintResultMapper.mapToResult(complaints);
     }
 
     @Override
-    public Page<Complaint> findAllByShortcut(String tag, Pageable pageable) {
-        return complaintRepository.findByShortcut(tag, pageable);
+    public Page<ComplaintResult> findAllByShortcut(String tag, Pageable pageable) {
+        var complaints = complaintRepository.findByShortcut(tag, pageable);
+        return complaintResultMapper.mapToResult(complaints);
     }
 
     @Override
-    public Page<Complaint> findAllByShortcut(UUID id, Pageable pageable) {
-        return complaintRepository.findByShortcut(id, pageable);
+    public Page<ComplaintResult> findAllByShortcut(UUID id, Pageable pageable) {
+        var complaints = complaintRepository.findByShortcut(id, pageable);
+        return complaintResultMapper.mapToResult(complaints);
     }
 
     @Override
-    public Complaint findById(UUID id) throws EntityNotFoundException {
-        return complaintRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    public ComplaintResult findById(UUID id) throws EntityNotFoundException {
+        var complaint = complaintRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return complaintResultMapper.mapToResult(complaint);
     }
 
     @Override
-    public void create(String tag, ComplaintCreationPayload payload) throws EntityNotFoundException {
-        Shortcut shortcut = shortcutService.findByTag(tag);
-        create(shortcut, payload);
+    @Transactional
+    public ComplaintResult create(String tag, ComplaintCreationPayload payload) throws EntityNotFoundException {
+        Shortcut shortcut = shortcutRepository.findByTag(tag).orElseThrow(EntityNotFoundException::new);
+        return create(shortcut, payload);
     }
 
     @Override
-    public void create(UUID id, ComplaintCreationPayload payload) throws EntityNotFoundException {
-        Shortcut shortcut = shortcutService.findById(id);
-        create(shortcut, payload);
+    @Transactional
+    public ComplaintResult create(UUID id, ComplaintCreationPayload payload) throws EntityNotFoundException {
+        Shortcut shortcut = shortcutRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return create(shortcut, payload);
     }
 
-    protected void create(Shortcut shortcut, ComplaintCreationPayload payload) {
+    protected ComplaintResult create(Shortcut shortcut, ComplaintCreationPayload payload) {
         Complaint complaint = Complaint.builder()
                 .shortcut(shortcut)
                 .comment(payload.getComment())
@@ -79,11 +93,13 @@ public class ComplaintServiceImpl implements ComplaintService {
                 .build();
 
         complaintRepository.save(complaint);
+        return complaintResultMapper.mapToResult(complaint);
     }
 
     @Override
     public void deleteById(UUID id) throws EntityNotFoundException {
-        delete(findById(id));
+        var complaint = complaintRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        delete(complaint);
     }
 
     protected void delete(Complaint complaint) throws EntityNotFoundException {

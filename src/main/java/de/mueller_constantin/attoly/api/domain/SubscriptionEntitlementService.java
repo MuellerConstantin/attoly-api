@@ -1,6 +1,6 @@
 package de.mueller_constantin.attoly.api.domain;
 
-import de.mueller_constantin.attoly.api.repository.model.UsageInfo;
+import de.mueller_constantin.attoly.api.domain.result.UsageInfoResult;
 
 import java.util.UUID;
 
@@ -9,5 +9,5 @@ public interface SubscriptionEntitlementService {
 
     void checkCanCreateExpirableShortcut(UUID ownerId);
 
-    UsageInfo getUsageInfoForUser(java.util.UUID ownerId);
+    UsageInfoResult getUsageInfoForUser(java.util.UUID ownerId);
 }

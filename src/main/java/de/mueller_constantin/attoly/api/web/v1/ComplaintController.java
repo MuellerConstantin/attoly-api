@@ -2,7 +2,7 @@ package de.mueller_constantin.attoly.api.web.v1;
 
 import de.mueller_constantin.attoly.api.domain.ComplaintService;
 import de.mueller_constantin.attoly.api.web.v1.dto.ComplaintCreationDto;
-import de.mueller_constantin.attoly.api.web.v1.dto.mapper.ComplaintMapper;
+import de.mueller_constantin.attoly.api.web.v1.dto.mapper.ComplaintDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +13,10 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1")
 public class ComplaintController {
     private final ComplaintService complaintService;
-    private final ComplaintMapper complaintMapper;
+    private final ComplaintDtoMapper complaintMapper;
 
     @Autowired
-    public ComplaintController(ComplaintService complaintService, ComplaintMapper complaintMapper) {
+    public ComplaintController(ComplaintService complaintService, ComplaintDtoMapper complaintMapper) {
         this.complaintService = complaintService;
         this.complaintMapper = complaintMapper;
     }

@@ -1,7 +1,7 @@
 package de.mueller_constantin.attoly.api.domain;
 
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
-import de.mueller_constantin.attoly.api.repository.model.Role;
+import de.mueller_constantin.attoly.api.domain.result.RoleResult;
 import de.mueller_constantin.attoly.api.repository.model.RoleName;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +19,7 @@ public interface RoleService {
      *
      * @return The list of all roles.
      */
-    List<Role> findAll();
+    List<RoleResult> findAll();
 
     /**
      * Loads all available roles in individual pages.
@@ -27,7 +27,7 @@ public interface RoleService {
      * @param pageable The pagination settings.
      * @return The requested page of roles.
      */
-    Page<Role> findAll(Pageable pageable);
+    Page<RoleResult> findAll(Pageable pageable);
 
     /**
      * Loads a user by its identifier.
@@ -36,7 +36,7 @@ public interface RoleService {
      * @return The loaded user.
      * @throws EntityNotFoundException Thrown if the role cannot be found.
      */
-    Role findById(UUID id) throws EntityNotFoundException;
+    RoleResult findById(UUID id) throws EntityNotFoundException;
 
     /**
      * Loads a role by its name.
@@ -45,7 +45,7 @@ public interface RoleService {
      * @return The loaded name.
      * @throws EntityNotFoundException Thrown if the role cannot be found.
      */
-    Role findByName(RoleName name) throws EntityNotFoundException;
+    RoleResult findByName(RoleName name) throws EntityNotFoundException;
 
     /**
      * Checks whether a role exists using the identifier.

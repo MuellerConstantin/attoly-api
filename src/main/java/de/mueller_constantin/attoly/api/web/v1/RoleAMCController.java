@@ -5,7 +5,7 @@ import de.mueller_constantin.attoly.api.domain.UserService;
 import de.mueller_constantin.attoly.api.repository.model.Role;
 import de.mueller_constantin.attoly.api.repository.model.User;
 import de.mueller_constantin.attoly.api.web.v1.dto.RoleDto;
-import de.mueller_constantin.attoly.api.web.v1.dto.mapper.RoleMapper;
+import de.mueller_constantin.attoly.api.web.v1.dto.mapper.RoleDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,10 +19,10 @@ import java.util.UUID;
 public class RoleAMCController {
     private final RoleService roleService;
     private final UserService userService;
-    private final RoleMapper roleMapper;
+    private final RoleDtoMapper roleMapper;
 
     @Autowired
-    public RoleAMCController(RoleService roleService, UserService userService, RoleMapper roleMapper) {
+    public RoleAMCController(RoleService roleService, UserService userService, RoleDtoMapper roleMapper) {
         this.roleService = roleService;
         this.userService = userService;
         this.roleMapper = roleMapper;
@@ -31,14 +31,14 @@ public class RoleAMCController {
     @GetMapping("/roles")
     @PreAuthorize("hasRole('ADMIN')")
     List<RoleDto> findAll() {
-        List<Role> roles = roleService.findAll();
+        var roles = roleService.findAll();
         return roleMapper.mapToDto(roles);
     }
 
     @GetMapping("/roles/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     RoleDto findById(@PathVariable("id") UUID id) {
-        Role role = roleService.findById(id);
+        var role = roleService.findById(id);
 
         return roleMapper.mapToDto(role);
     }
@@ -46,7 +46,7 @@ public class RoleAMCController {
     @GetMapping("/users/{userId}/roles")
     @PreAuthorize("hasRole('ADMIN')")
     List<RoleDto> findAllByUser(@PathVariable("userId") UUID userId) {
-        User user = userService.findById(userId);
+        var user = userService.findById(userId);
         return roleMapper.mapToDto(user.getRoles());
     }
 

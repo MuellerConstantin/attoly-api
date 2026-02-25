@@ -1,7 +1,6 @@
 package de.mueller_constantin.attoly.api.web.v1;
 
 import de.mueller_constantin.attoly.api.domain.ShortcutService;
-import de.mueller_constantin.attoly.api.repository.model.Shortcut;
 import de.mueller_constantin.attoly.api.domain.payload.ShortcutCreationPayload;
 import de.mueller_constantin.attoly.api.security.CurrentPrincipal;
 import de.mueller_constantin.attoly.api.security.Principal;
@@ -9,9 +8,8 @@ import de.mueller_constantin.attoly.api.web.v1.dto.PageDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutCreationDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutDetailsDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutDto;
-import de.mueller_constantin.attoly.api.web.v1.dto.mapper.ShortcutMapper;
+import de.mueller_constantin.attoly.api.web.v1.dto.mapper.ShortcutDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -26,10 +24,10 @@ import java.util.UUID;
 @RequestMapping("/api/v1")
 public class ShortcutController {
     private final ShortcutService shortcutService;
-    private final ShortcutMapper shortcutMapper;
+    private final ShortcutDtoMapper shortcutMapper;
 
     @Autowired
-    public ShortcutController(ShortcutService shortcutService, ShortcutMapper shortcutMapper) {
+    public ShortcutController(ShortcutService shortcutService, ShortcutDtoMapper shortcutMapper) {
         this.shortcutService = shortcutService;
         this.shortcutMapper = shortcutMapper;
     }
@@ -39,7 +37,7 @@ public class ShortcutController {
     ShortcutDto create(@RequestBody @Valid ShortcutCreationDto dto, @CurrentPrincipal Principal principal) {
         ShortcutCreationPayload payload = shortcutMapper.mapToPayload(dto);
         UUID ownerId = principal != null ? principal.getUser().getId() : null;
-        Shortcut shortcut = shortcutService.create(payload, ownerId);
+        var shortcut = shortcutService.create(payload, ownerId);
 
         return shortcutMapper.mapToDto(shortcut);
     }
@@ -54,20 +52,20 @@ public class ShortcutController {
     @GetMapping("/user/me/shortcuts/{tag}")
     @PreAuthorize("@domainMethodSecurityEvaluator.isShortcutOwnerOf(#tag)")
     ShortcutDetailsDto findByTag(@PathVariable("tag") String tag) {
-        Shortcut shortcut = shortcutService.findByTag(tag);
+        var shortcut = shortcutService.findByTag(tag);
         return shortcutMapper.mapToDetailsDto(shortcut);
     }
 
     @GetMapping("/shortcuts/{tag}")
     ShortcutDto findValidByTag(@PathVariable("tag") String tag) {
-        Shortcut shortcut = shortcutService.findValidByTag(tag);
+        var shortcut = shortcutService.findValidByTag(tag);
         return shortcutMapper.mapToDto(shortcut);
     }
 
     @GetMapping("/user/me/shortcuts")
     PageDto<ShortcutDetailsDto> findCurrentUserShortcuts(@CurrentPrincipal Principal principal,
                                                 @PageableDefault Pageable pageable) {
-        Page<Shortcut> page = shortcutService.findAllByOwnership(principal.getEmail(), pageable);
+        var page = shortcutService.findAllByOwnership(principal.getEmail(), pageable);
 
         return shortcutMapper.mapToDetailsDto(page);
     }

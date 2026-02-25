@@ -3,6 +3,8 @@ package de.mueller_constantin.attoly.api.domain.impl;
 import de.mueller_constantin.attoly.api.domain.ShortcutService;
 import de.mueller_constantin.attoly.api.domain.SubscriptionEntitlementService;
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
+import de.mueller_constantin.attoly.api.domain.result.ShortcutResult;
+import de.mueller_constantin.attoly.api.domain.result.mapper.ShortcutResultMapper;
 import de.mueller_constantin.attoly.api.repository.model.Shortcut;
 import de.mueller_constantin.attoly.api.domain.payload.ShortcutCreationPayload;
 import de.mueller_constantin.attoly.api.repository.ShortcutRepository;
@@ -24,60 +26,72 @@ import java.util.UUID;
 public class ShortcutServiceImpl implements ShortcutService {
     private final ShortcutRepository shortcutRepository;
     private final SubscriptionEntitlementService subscriptionEntitlementService;
+    private final ShortcutResultMapper shortcutResultMapper;
 
     @Autowired
-    public ShortcutServiceImpl(ShortcutRepository shortcutRepository, SubscriptionEntitlementService subscriptionEntitlementService) {
+    public ShortcutServiceImpl(ShortcutRepository shortcutRepository,
+                               SubscriptionEntitlementService subscriptionEntitlementService,
+                               ShortcutResultMapper shortcutResultMapper) {
         this.shortcutRepository = shortcutRepository;
         this.subscriptionEntitlementService = subscriptionEntitlementService;
+        this.shortcutResultMapper = shortcutResultMapper;
     }
 
     @Override
-    public List<Shortcut> findAll() {
-        return shortcutRepository.findAll();
+    public List<ShortcutResult> findAll() {
+        var shortcuts = shortcutRepository.findAll();
+        return shortcutResultMapper.mapToResult(shortcuts);
     }
 
     @Override
-    public Page<Shortcut> findAll(Pageable pageable) {
-        return shortcutRepository.findAll(pageable);
+    public Page<ShortcutResult> findAll(Pageable pageable) {
+        var shortcuts = shortcutRepository.findAll(pageable);
+        return shortcuts.map(shortcutResultMapper::mapToResult);
     }
 
     @Override
-    public Page<Shortcut> findAll(Specification<Shortcut> specification, Pageable pageable) {
+    public Page<ShortcutResult> findAll(Specification<Shortcut> specification, Pageable pageable) {
         specification = specification.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleted"), false))
                 .and((root, query, criteriaBuilder) -> criteriaBuilder.or(
                         criteriaBuilder.isNull(root.get("expiresAt")),
                         criteriaBuilder.greaterThan(root.get("expiresAt"), Instant.now())
                 ));
-        return shortcutRepository.findAll(specification, pageable);
+        var shortcuts = shortcutRepository.findAll(specification, pageable);
+        return shortcuts.map(shortcutResultMapper::mapToResult);
     }
 
     @Override
-    public Page<Shortcut> findAllByOwnership(UUID ownerId, Pageable pageable) {
-        return shortcutRepository.findByOwnership(ownerId, pageable);
+    public Page<ShortcutResult> findAllByOwnership(UUID ownerId, Pageable pageable) {
+        var shortcuts = shortcutRepository.findByOwnership(ownerId, pageable);
+        return shortcuts.map(shortcutResultMapper::mapToResult);
     }
 
     @Override
-    public Page<Shortcut> findAllByOwnership(String email, Pageable pageable) {
-        return shortcutRepository.findByOwnership(email, pageable);
+    public Page<ShortcutResult> findAllByOwnership(String email, Pageable pageable) {
+        var shortcuts = shortcutRepository.findByOwnership(email, pageable);
+        return shortcuts.map(shortcutResultMapper::mapToResult);
     }
 
     @Override
-    public Shortcut findById(UUID id) throws EntityNotFoundException {
-        return shortcutRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    public ShortcutResult findById(UUID id) throws EntityNotFoundException {
+        var shortcut = shortcutRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return shortcutResultMapper.mapToResult(shortcut);
     }
 
     @Override
-    public Shortcut findByTag(String tag) throws EntityNotFoundException {
-        return shortcutRepository.findByTag(tag).orElseThrow(EntityNotFoundException::new);
+    public ShortcutResult findByTag(String tag) throws EntityNotFoundException {
+        var shortcut = shortcutRepository.findByTag(tag).orElseThrow(EntityNotFoundException::new);
+        return shortcutResultMapper.mapToResult(shortcut);
     }
 
     @Override
-    public Shortcut findValidByTag(String tag) throws EntityNotFoundException {
-        return shortcutRepository.findValidByTag(tag).orElseThrow(EntityNotFoundException::new);
+    public ShortcutResult findValidByTag(String tag) throws EntityNotFoundException {
+        var shortcut = shortcutRepository.findValidByTag(tag).orElseThrow(EntityNotFoundException::new);
+        return shortcutResultMapper.mapToResult(shortcut);
     }
 
     @Override
-    public Shortcut create(ShortcutCreationPayload payload, UUID ownerId) {
+    public ShortcutResult create(ShortcutCreationPayload payload, UUID ownerId) {
         if(payload.isPermanent()) {
             subscriptionEntitlementService.checkCanCreatePermanentShortcut(ownerId);
         }
@@ -102,19 +116,22 @@ public class ShortcutServiceImpl implements ShortcutService {
                 .expiresAt(expiresAt)
                 .build();
 
-        return shortcutRepository.save(shortcut);
+        var newShortcut = shortcutRepository.save(shortcut);
+        return shortcutResultMapper.mapToResult(newShortcut);
     }
 
     @Override
     @Transactional
     public void deleteById(UUID id) throws EntityNotFoundException {
-        delete(findById(id));
+        var shortcut = shortcutRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        delete(shortcut);
     }
 
     @Override
     @Transactional
     public void deleteByTag(String tag) throws EntityNotFoundException {
-        delete(findByTag(tag));
+        var shortcut = shortcutRepository.findByTag(tag).orElseThrow(EntityNotFoundException::new);
+        delete(shortcut);
     }
 
     protected void delete(Shortcut shortcut) throws EntityNotFoundException {

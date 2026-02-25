@@ -8,10 +8,9 @@ import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLOperator;
 import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLVisitor;
 import de.mueller_constantin.attoly.api.web.v1.dto.PageDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutDetailsDto;
-import de.mueller_constantin.attoly.api.web.v1.dto.mapper.ShortcutMapper;
+import de.mueller_constantin.attoly.api.web.v1.dto.mapper.ShortcutDtoMapper;
 import de.mueller_constantin.attoly.api.web.v1.dto.rsql.ShortcutJpaRSQLFieldMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
@@ -23,10 +22,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/amc")
 public class ShortcutAMCController {
     private final ShortcutService shortcutService;
-    private final ShortcutMapper shortcutMapper;
+    private final ShortcutDtoMapper shortcutMapper;
 
     @Autowired
-    public ShortcutAMCController(ShortcutService shortcutService, ShortcutMapper shortcutMapper) {
+    public ShortcutAMCController(ShortcutService shortcutService, ShortcutDtoMapper shortcutMapper) {
         this.shortcutService = shortcutService;
         this.shortcutMapper = shortcutMapper;
     }
@@ -38,10 +37,10 @@ public class ShortcutAMCController {
         if (filter != null && !filter.isEmpty()) {
             Node rootNode = new RSQLParser(JpaRSQLOperator.getOperators()).parse(filter);
             Specification<Shortcut> specification = rootNode.accept(new JpaRSQLVisitor<>(new ShortcutJpaRSQLFieldMapper()));
-            Page<Shortcut> shortcuts = shortcutService.findAll(specification, pageable);
+            var shortcuts = shortcutService.findAll(specification, pageable);
             return shortcutMapper.mapToDetailsDto(shortcuts);
         } else {
-            Page<Shortcut> shortcuts = shortcutService.findAll(pageable);
+            var shortcuts = shortcutService.findAll(pageable);
             return shortcutMapper.mapToDetailsDto(shortcuts);
         }
     }

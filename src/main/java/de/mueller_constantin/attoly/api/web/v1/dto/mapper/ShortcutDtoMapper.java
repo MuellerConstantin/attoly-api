@@ -1,7 +1,6 @@
 package de.mueller_constantin.attoly.api.web.v1.dto.mapper;
 
-import de.mueller_constantin.attoly.api.repository.model.Shortcut;
-import de.mueller_constantin.attoly.api.repository.model.User;
+import de.mueller_constantin.attoly.api.domain.result.ShortcutResult;
 import de.mueller_constantin.attoly.api.domain.payload.ShortcutCreationPayload;
 import de.mueller_constantin.attoly.api.web.v1.dto.PageDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutCreationDto;
@@ -16,20 +15,20 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
+import java.util.UUID;
 
 @Mapper(componentModel = "spring")
-public interface ShortcutMapper {
-
+public interface ShortcutDtoMapper {
     ShortcutCreationPayload mapToPayload(ShortcutCreationDto dto);
 
     @Mapping(target = "anonymous", source = "createdBy", qualifiedByName = "mapToAnonymousFlag")
-    ShortcutDto mapToDto(Shortcut shortcut);
+    ShortcutDto mapToDto(ShortcutResult shortcut);
 
-    ShortcutDetailsDto mapToDetailsDto(Shortcut shortcut);
+    ShortcutDetailsDto mapToDetailsDto(ShortcutResult shortcut);
 
     @Mapping(target = "page", source = "number")
     @Mapping(target = "perPage", source = "size")
-    PageDto<ShortcutDetailsDto> mapToDetailsDto(Page<Shortcut> shortcuts);
+    PageDto<ShortcutDetailsDto> mapToDetailsDto(Page<ShortcutResult> shortcuts);
 
     default OffsetDateTime mapInstantToOffsetDateTime(Instant instant) {
         if (instant == null) {
@@ -40,7 +39,7 @@ public interface ShortcutMapper {
     }
 
     @Named("mapToAnonymousFlag")
-    default boolean mapToAnonymousFlag(User createdBy) {
+    default boolean mapToAnonymousFlag(UUID createdBy) {
         return createdBy == null;
     }
 

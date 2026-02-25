@@ -4,14 +4,14 @@ import de.mueller_constantin.attoly.api.domain.PasswordResetService;
 import de.mueller_constantin.attoly.api.domain.UserService;
 import de.mueller_constantin.attoly.api.domain.UserVerificationService;
 import de.mueller_constantin.attoly.api.domain.SubscriptionEntitlementService;
-import de.mueller_constantin.attoly.api.repository.model.UsageInfo;
+import de.mueller_constantin.attoly.api.domain.result.UsageInfoResult;
 import de.mueller_constantin.attoly.api.repository.model.User;
 import de.mueller_constantin.attoly.api.domain.payload.UserCreationPayload;
 import de.mueller_constantin.attoly.api.security.CurrentPrincipal;
 import de.mueller_constantin.attoly.api.security.Principal;
 import de.mueller_constantin.attoly.api.web.v1.dto.*;
-import de.mueller_constantin.attoly.api.web.v1.dto.mapper.UserMapper;
-import de.mueller_constantin.attoly.api.web.v1.dto.mapper.UsageInfoMapper;
+import de.mueller_constantin.attoly.api.web.v1.dto.mapper.UserDtoMapper;
+import de.mueller_constantin.attoly.api.web.v1.dto.mapper.UsageInfoDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -26,17 +26,17 @@ public class UserController {
     private final UserService userService;
     private final UserVerificationService userVerificationService;
     private final PasswordResetService passwordResetService;
-    private final UserMapper userMapper;
+    private final UserDtoMapper userMapper;
     private final SubscriptionEntitlementService subscriptionEntitlementService;
-    private final UsageInfoMapper usageInfoMapper;
+    private final UsageInfoDtoMapper usageInfoMapper;
 
     @Autowired
     public UserController(UserService userService,
                           UserVerificationService userVerificationService,
                           PasswordResetService passwordResetService,
-                          UserMapper userMapper,
+                          UserDtoMapper userMapper,
                           SubscriptionEntitlementService subscriptionEntitlementService,
-                          UsageInfoMapper usageInfoMapper) {
+                          UsageInfoDtoMapper usageInfoMapper) {
         this.userService = userService;
         this.userVerificationService = userVerificationService;
         this.passwordResetService = passwordResetService;
@@ -49,14 +49,14 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     MeDto create(@RequestBody @Valid RegistrationDto dto) {
         UserCreationPayload payload = userMapper.mapToPayload(dto);
-        User user = userService.create(payload);
+        var user = userService.create(payload);
 
         return userMapper.mapToMeDto(user);
     }
 
     @GetMapping("/user/me")
     MeDto findCurrentUser(@CurrentPrincipal Principal principal) {
-        User user = userService.findByEmail(principal.getEmail());
+        var user = userService.findByEmail(principal.getEmail());
 
         return userMapper.mapToMeDto(user);
     }
@@ -99,8 +99,8 @@ public class UserController {
 
     @GetMapping("/user/me/usage")
     public UsageInfoDto getCurrentUsage(@CurrentPrincipal Principal principal) {
-        User user = userService.findByEmail(principal.getEmail());
-        UsageInfo usage = subscriptionEntitlementService.getUsageInfoForUser(user.getId());
+        var user = userService.findByEmail(principal.getEmail());
+        UsageInfoResult usage = subscriptionEntitlementService.getUsageInfoForUser(user.getId());
 
         return usageInfoMapper.mapToDto(usage);
     }

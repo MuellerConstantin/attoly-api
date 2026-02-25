@@ -1,6 +1,7 @@
 package de.mueller_constantin.attoly.api.domain;
 
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
+import de.mueller_constantin.attoly.api.domain.result.ShortcutResult;
 import de.mueller_constantin.attoly.api.repository.model.Shortcut;
 import de.mueller_constantin.attoly.api.domain.payload.ShortcutCreationPayload;
 import org.springframework.data.domain.Page;
@@ -21,7 +22,7 @@ public interface ShortcutService {
      *
      * @return The list of all shortcuts.
      */
-    List<Shortcut> findAll();
+    List<ShortcutResult> findAll();
 
     /**
      * Loads all available shortcuts in individual pages.
@@ -29,7 +30,7 @@ public interface ShortcutService {
      * @param pageable The pagination settings.
      * @return The requested page of shortcuts.
      */
-    Page<Shortcut> findAll(Pageable pageable);
+    Page<ShortcutResult> findAll(Pageable pageable);
 
     /**
      * Loads all available shortcuts in individual pages.
@@ -38,7 +39,7 @@ public interface ShortcutService {
      * @param pageable      The pagination settings.
      * @return The requested page of shortcuts.
      */
-    Page<Shortcut> findAll(Specification<Shortcut> specification, Pageable pageable);
+    Page<ShortcutResult> findAll(Specification<Shortcut> specification, Pageable pageable);
 
     /**
      * Find all shortcuts created of a specific user.
@@ -47,7 +48,7 @@ public interface ShortcutService {
      * @param pageable The pagination settings.
      * @return The requested page of shortcuts.
      */
-    Page<Shortcut> findAllByOwnership(UUID ownerId, Pageable pageable);
+    Page<ShortcutResult> findAllByOwnership(UUID ownerId, Pageable pageable);
 
     /**
      * Find all shortcuts created of a specific user.
@@ -56,7 +57,7 @@ public interface ShortcutService {
      * @param pageable The pagination settings.
      * @return The requested page of shortcuts.
      */
-    Page<Shortcut> findAllByOwnership(String email, Pageable pageable);
+    Page<ShortcutResult> findAllByOwnership(String email, Pageable pageable);
 
     /**
      * Loads a shortcut by its identifier.
@@ -65,7 +66,7 @@ public interface ShortcutService {
      * @return The loaded shortcut.
      * @throws EntityNotFoundException Thrown if the shortcut cannot be found.
      */
-    Shortcut findById(UUID id) throws EntityNotFoundException;
+    ShortcutResult findById(UUID id) throws EntityNotFoundException;
 
     /**
      * Loads a shortcut by its tag. Only shortcuts that are still valid, i.e. not deleted and not expired, are returned.
@@ -74,7 +75,7 @@ public interface ShortcutService {
      * @return The loaded shortcut.
      * @throws EntityNotFoundException Thrown if the shortcut cannot be found.
      */
-    Shortcut findValidByTag(String tag) throws EntityNotFoundException;
+    ShortcutResult findValidByTag(String tag) throws EntityNotFoundException;
 
     /**
      * Loads a shortcut by its tag.
@@ -83,7 +84,7 @@ public interface ShortcutService {
      * @return The loaded shortcut.
      * @throws EntityNotFoundException Thrown if the shortcut cannot be found.
      */
-    Shortcut findByTag(String tag) throws EntityNotFoundException;
+    ShortcutResult findByTag(String tag) throws EntityNotFoundException;
 
     /**
      * Creates a new shortcut.
@@ -91,7 +92,7 @@ public interface ShortcutService {
      * @param payload The payload data from which the shortcut is created.
      * @return The newly created shortcut.
      */
-    Shortcut create(ShortcutCreationPayload payload, UUID ownerId);
+    ShortcutResult create(ShortcutCreationPayload payload, UUID ownerId);
 
     /**
      * Deletes a shortcut using the identifier.

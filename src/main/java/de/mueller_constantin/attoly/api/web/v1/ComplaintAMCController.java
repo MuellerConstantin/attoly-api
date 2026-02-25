@@ -8,10 +8,9 @@ import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLOperator;
 import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLVisitor;
 import de.mueller_constantin.attoly.api.web.v1.dto.ComplaintDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.PageDto;
-import de.mueller_constantin.attoly.api.web.v1.dto.mapper.ComplaintMapper;
+import de.mueller_constantin.attoly.api.web.v1.dto.mapper.ComplaintDtoMapper;
 import de.mueller_constantin.attoly.api.web.v1.dto.rsql.ComplaintJpaRSQLFieldMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
@@ -25,10 +24,10 @@ import java.util.UUID;
 @RequestMapping("/api/v1/amc")
 public class ComplaintAMCController {
     private final ComplaintService complaintService;
-    private final ComplaintMapper complaintMapper;
+    private final ComplaintDtoMapper complaintMapper;
 
     @Autowired
-    public ComplaintAMCController(ComplaintService complaintService, ComplaintMapper complaintMapper) {
+    public ComplaintAMCController(ComplaintService complaintService, ComplaintDtoMapper complaintMapper) {
         this.complaintService = complaintService;
         this.complaintMapper = complaintMapper;
     }
@@ -40,10 +39,10 @@ public class ComplaintAMCController {
         if (filter != null && !filter.isEmpty()) {
             Node rootNode = new RSQLParser(JpaRSQLOperator.getOperators()).parse(filter);
             Specification<Complaint> specification = rootNode.accept(new JpaRSQLVisitor<>(new ComplaintJpaRSQLFieldMapper()));
-            Page<Complaint> reports = complaintService.findAll(specification, pageable);
+            var reports = complaintService.findAll(specification, pageable);
             return complaintMapper.mapToDto(reports);
         } else {
-            Page<Complaint> reports = complaintService.findAll(pageable);
+            var reports = complaintService.findAll(pageable);
             return complaintMapper.mapToDto(reports);
         }
     }
@@ -51,7 +50,7 @@ public class ComplaintAMCController {
     @GetMapping("/complaints/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     ComplaintDto findById(@PathVariable("id") UUID id) {
-        Complaint complaint = complaintService.findById(id);
+        var complaint = complaintService.findById(id);
         return complaintMapper.mapToDto(complaint);
     }
 

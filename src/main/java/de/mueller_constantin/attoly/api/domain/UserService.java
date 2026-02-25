@@ -2,9 +2,10 @@ package de.mueller_constantin.attoly.api.domain;
 
 import de.mueller_constantin.attoly.api.domain.exception.EmailAlreadyInUseException;
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
-import de.mueller_constantin.attoly.api.repository.model.User;
+import de.mueller_constantin.attoly.api.domain.result.UserResult;
 import de.mueller_constantin.attoly.api.domain.payload.UserCreationPayload;
 import de.mueller_constantin.attoly.api.domain.payload.UserUpdatePayload;
+import de.mueller_constantin.attoly.api.repository.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,7 +23,7 @@ public interface UserService {
      *
      * @return The list of all users.
      */
-    List<User> findAll();
+    List<UserResult> findAll();
 
     /**
      * Loads all available users in individual pages.
@@ -30,7 +31,7 @@ public interface UserService {
      * @param pageable The pagination settings.
      * @return The requested page of users.
      */
-    Page<User> findAll(Pageable pageable);
+    Page<UserResult> findAll(Pageable pageable);
 
     /**
      * Loads all available users in individual pages.
@@ -39,7 +40,7 @@ public interface UserService {
      * @param pageable      The pagination settings.
      * @return The requested page of users.
      */
-    Page<User> findAll(Specification<User> specification, Pageable pageable);
+    Page<UserResult> findAll(Specification<User> specification, Pageable pageable);
 
     /**
      * Loads a user by its identifier.
@@ -48,7 +49,7 @@ public interface UserService {
      * @return The loaded user.
      * @throws EntityNotFoundException Thrown if the user cannot be found.
      */
-    User findById(UUID id) throws EntityNotFoundException;
+    UserResult findById(UUID id) throws EntityNotFoundException;
 
     /**
      * Loads a user by its email.
@@ -57,7 +58,7 @@ public interface UserService {
      * @return The loaded user.
      * @throws EntityNotFoundException Thrown if the user cannot be found.
      */
-    User findByEmail(String email) throws EntityNotFoundException;
+    UserResult findByEmail(String email) throws EntityNotFoundException;
 
     /**
      * Checks whether a user exists using the identifier.
@@ -89,7 +90,7 @@ public interface UserService {
      * @return The newly created user.
      * @throws EmailAlreadyInUseException Thrown if an account is already using the specified email.
      */
-    User create(UserCreationPayload payload) throws EmailAlreadyInUseException;
+    UserResult create(UserCreationPayload payload) throws EmailAlreadyInUseException;
 
     /**
      * Partially updates an existing user based on the identifier.
@@ -99,7 +100,7 @@ public interface UserService {
      * @return The updated user.
      * @throws EntityNotFoundException Thrown if the user cannot be found.
      */
-    User updateById(UUID id, UserUpdatePayload payload) throws EntityNotFoundException;
+    UserResult updateById(UUID id, UserUpdatePayload payload) throws EntityNotFoundException;
 
     /**
      * Partially updates an existing user based on the email.
@@ -109,7 +110,7 @@ public interface UserService {
      * @return The updated user.
      * @throws EntityNotFoundException Thrown if the user cannot be found.
      */
-    User updateByEmail(String email, UserUpdatePayload payload) throws EntityNotFoundException;
+    UserResult updateByEmail(String email, UserUpdatePayload payload) throws EntityNotFoundException;
 
     void changePasswordById(UUID id, String currentPassword, String newPassword) throws EntityNotFoundException;
 

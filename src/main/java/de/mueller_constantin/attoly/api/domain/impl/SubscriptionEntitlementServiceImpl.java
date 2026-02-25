@@ -5,9 +5,9 @@ import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException
 import de.mueller_constantin.attoly.api.domain.exception.ExpirableShortcutLimitExceededException;
 import de.mueller_constantin.attoly.api.domain.exception.FeatureNotAvailableException;
 import de.mueller_constantin.attoly.api.domain.exception.PermanentShortcutLimitExceededException;
+import de.mueller_constantin.attoly.api.domain.result.UsageInfoResult;
 import de.mueller_constantin.attoly.api.repository.model.SubscriptionPlan;
 import de.mueller_constantin.attoly.api.repository.model.User;
-import de.mueller_constantin.attoly.api.repository.model.UsageInfo;
 import de.mueller_constantin.attoly.api.domain.payment.SubscriptionPlanProperties;
 import de.mueller_constantin.attoly.api.repository.ShortcutRepository;
 import de.mueller_constantin.attoly.api.repository.UserRepository;
@@ -86,7 +86,7 @@ public class SubscriptionEntitlementServiceImpl implements SubscriptionEntitleme
 
     @Override
     @Transactional
-    public UsageInfo getUsageInfoForUser(UUID ownerId) {
+    public UsageInfoResult getUsageInfoForUser(UUID ownerId) {
         if (ownerId == null) {
             throw new EntityNotFoundException();
         }
@@ -104,10 +104,10 @@ public class SubscriptionEntitlementServiceImpl implements SubscriptionEntitleme
         Long maxPermanent = config.getMaxPermanentShortcuts();
         Long maxExpirable = config.getMaxExpirableShortcuts();
 
-        return UsageInfo.builder()
+        return UsageInfoResult.builder()
                 .plan(plan.name())
-                .usageLimits(new UsageInfo.UsageLimits(maxPermanent, maxExpirable))
-                .currentUsage(new UsageInfo.CurrentUsage(currentPermanent, currentExpirable))
+                .usageLimits(new UsageInfoResult.UsageLimits(maxPermanent, maxExpirable))
+                .currentUsage(new UsageInfoResult.CurrentUsage(currentPermanent, currentExpirable))
                 .build();
     }
 }

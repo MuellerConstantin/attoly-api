@@ -2,6 +2,8 @@ package de.mueller_constantin.attoly.api.domain.impl;
 
 import de.mueller_constantin.attoly.api.domain.RoleService;
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
+import de.mueller_constantin.attoly.api.domain.result.RoleResult;
+import de.mueller_constantin.attoly.api.domain.result.mapper.RoleResultMapper;
 import de.mueller_constantin.attoly.api.repository.model.Role;
 import de.mueller_constantin.attoly.api.repository.model.RoleName;
 import de.mueller_constantin.attoly.api.repository.RoleRepository;
@@ -15,32 +17,37 @@ import java.util.UUID;
 
 @Service
 public class RoleServiceImpl implements RoleService {
-
     private final RoleRepository roleRepository;
+    private final RoleResultMapper roleResultMapper;
 
     @Autowired
-    public RoleServiceImpl(RoleRepository roleRepository) {
+    public RoleServiceImpl(RoleRepository roleRepository, RoleResultMapper roleResultMapper) {
         this.roleRepository = roleRepository;
+        this.roleResultMapper = roleResultMapper;
     }
 
     @Override
-    public List<Role> findAll() {
-        return roleRepository.findAll();
+    public List<RoleResult> findAll() {
+        var roles = roleRepository.findAll();
+        return roleResultMapper.mapToResult(roles);
     }
 
     @Override
-    public Page<Role> findAll(Pageable pageable) {
-        return roleRepository.findAll(pageable);
+    public Page<RoleResult> findAll(Pageable pageable) {
+        var roles = roleRepository.findAll(pageable);
+        return roleResultMapper.mapToResult(roles);
     }
 
     @Override
-    public Role findById(UUID id) throws EntityNotFoundException {
-        return roleRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    public RoleResult findById(UUID id) throws EntityNotFoundException {
+        var role = roleRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return roleResultMapper.mapToResult(role);
     }
 
     @Override
-    public Role findByName(RoleName name) throws EntityNotFoundException {
-        return roleRepository.findByName(name).orElseThrow(EntityNotFoundException::new);
+    public RoleResult findByName(RoleName name) throws EntityNotFoundException {
+        var role = roleRepository.findByName(name).orElseThrow(EntityNotFoundException::new);
+        return roleResultMapper.mapToResult(role);
     }
 
     @Override

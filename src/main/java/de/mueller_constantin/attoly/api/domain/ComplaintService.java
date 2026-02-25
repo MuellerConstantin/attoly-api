@@ -1,6 +1,7 @@
 package de.mueller_constantin.attoly.api.domain;
 
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
+import de.mueller_constantin.attoly.api.domain.result.ComplaintResult;
 import de.mueller_constantin.attoly.api.repository.model.Complaint;
 import de.mueller_constantin.attoly.api.domain.payload.ComplaintCreationPayload;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,7 @@ public interface ComplaintService {
      *
      * @return The list of all reports.
      */
-    List<Complaint> findAll();
+    List<ComplaintResult> findAll();
 
     /**
      * Loads all available reports in individual pages.
@@ -25,7 +26,7 @@ public interface ComplaintService {
      * @param pageable The pagination settings.
      * @return The requested page of reports.
      */
-    Page<Complaint> findAll(Pageable pageable);
+    Page<ComplaintResult> findAll(Pageable pageable);
 
     /**
      * Loads all available reports in individual pages.
@@ -34,7 +35,7 @@ public interface ComplaintService {
      * @param pageable      The pagination settings.
      * @return The requested page of reports.
      */
-    Page<Complaint> findAll(Specification<Complaint> specification, Pageable pageable);
+    Page<ComplaintResult> findAll(Specification<Complaint> specification, Pageable pageable);
 
     /**
      * Find all reports created for a specific shortcut.
@@ -43,7 +44,7 @@ public interface ComplaintService {
      * @param pageable The pagination settings.
      * @return The requested page of reports.
      */
-    Page<Complaint> findAllByShortcut(String tag, Pageable pageable);
+    Page<ComplaintResult> findAllByShortcut(String tag, Pageable pageable);
 
     /**
      * Find all reports created for a specific shortcut.
@@ -52,7 +53,7 @@ public interface ComplaintService {
      * @param pageable The pagination settings.
      * @return The requested page of reports.
      */
-    Page<Complaint> findAllByShortcut(UUID id, Pageable pageable);
+    Page<ComplaintResult> findAllByShortcut(UUID id, Pageable pageable);
 
     /**
      * Loads a report by its identifier.
@@ -61,11 +62,11 @@ public interface ComplaintService {
      * @return The loaded report.
      * @throws EntityNotFoundException Thrown if the report cannot be found.
      */
-    Complaint findById(UUID id) throws EntityNotFoundException;
+    ComplaintResult findById(UUID id) throws EntityNotFoundException;
 
-    void create(String tag, ComplaintCreationPayload payload) throws EntityNotFoundException;
+    ComplaintResult create(String tag, ComplaintCreationPayload payload) throws EntityNotFoundException;
 
-    void create(UUID id, ComplaintCreationPayload payload) throws EntityNotFoundException;
+    ComplaintResult create(UUID id, ComplaintCreationPayload payload) throws EntityNotFoundException;
 
     /**
      * Deletes a report using the identifier.

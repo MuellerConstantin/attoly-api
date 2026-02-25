@@ -39,7 +39,7 @@ public class PaymentController {
 
     @PostMapping("/payment/session")
     public PaymentCheckoutSessionDto createPaymentSession(@CurrentPrincipal Principal principal, @RequestParam String priceId) throws StripeException {
-        User user = userService.findByEmail(principal.getEmail());
+        var user = userService.findByEmail(principal.getEmail());
         String customerId = user.getBilling().getCustomerId();
 
         if (user.getBilling().getStatus() == SubscriptionStatus.ACTIVE) {
