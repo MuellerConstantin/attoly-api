@@ -5,9 +5,9 @@ import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException
 import de.mueller_constantin.attoly.api.domain.exception.ExpirableShortcutLimitExceededException;
 import de.mueller_constantin.attoly.api.domain.exception.FeatureNotAvailableException;
 import de.mueller_constantin.attoly.api.domain.exception.PermanentShortcutLimitExceededException;
-import de.mueller_constantin.attoly.api.domain.model.SubscriptionPlan;
-import de.mueller_constantin.attoly.api.domain.model.User;
-import de.mueller_constantin.attoly.api.domain.model.UsageInfo;
+import de.mueller_constantin.attoly.api.repository.model.SubscriptionPlan;
+import de.mueller_constantin.attoly.api.repository.model.User;
+import de.mueller_constantin.attoly.api.repository.model.UsageInfo;
 import de.mueller_constantin.attoly.api.domain.payment.SubscriptionPlanProperties;
 import de.mueller_constantin.attoly.api.repository.ShortcutRepository;
 import de.mueller_constantin.attoly.api.repository.UserRepository;
@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Service

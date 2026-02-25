@@ -1,4 +1,4 @@
-package de.mueller_constantin.attoly.api.web.v1.rsql;
+package de.mueller_constantin.attoly.api.repository.rsql;
 
 import lombok.Getter;
 

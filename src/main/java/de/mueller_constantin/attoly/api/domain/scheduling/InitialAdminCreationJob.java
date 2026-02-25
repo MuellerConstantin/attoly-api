@@ -1,7 +1,7 @@
 package de.mueller_constantin.attoly.api.domain.scheduling;
 
-import de.mueller_constantin.attoly.api.domain.model.RoleName;
-import de.mueller_constantin.attoly.api.domain.model.User;
+import de.mueller_constantin.attoly.api.repository.model.RoleName;
+import de.mueller_constantin.attoly.api.repository.model.User;
 import de.mueller_constantin.attoly.api.repository.RoleRepository;
 import de.mueller_constantin.attoly.api.repository.UserRepository;
 import org.slf4j.Logger;

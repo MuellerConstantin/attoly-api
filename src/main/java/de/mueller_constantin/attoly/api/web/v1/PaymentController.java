@@ -11,8 +11,8 @@ import de.mueller_constantin.attoly.api.domain.PaymentService;
 import de.mueller_constantin.attoly.api.domain.UserService;
 import de.mueller_constantin.attoly.api.domain.exception.AlreadySubscribedException;
 import de.mueller_constantin.attoly.api.domain.exception.NoCustomerYetException;
-import de.mueller_constantin.attoly.api.domain.model.SubscriptionStatus;
-import de.mueller_constantin.attoly.api.domain.model.User;
+import de.mueller_constantin.attoly.api.repository.model.SubscriptionStatus;
+import de.mueller_constantin.attoly.api.repository.model.User;
 import de.mueller_constantin.attoly.api.domain.payment.StripeProperties;
 import de.mueller_constantin.attoly.api.security.CurrentPrincipal;
 import de.mueller_constantin.attoly.api.security.Principal;
@@ -21,7 +21,6 @@ import de.mueller_constantin.attoly.api.web.v1.dto.PaymentPortalSessionDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @RestController

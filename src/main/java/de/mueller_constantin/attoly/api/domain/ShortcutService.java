@@ -1,7 +1,7 @@
 package de.mueller_constantin.attoly.api.domain;
 
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
-import de.mueller_constantin.attoly.api.domain.model.Shortcut;
+import de.mueller_constantin.attoly.api.repository.model.Shortcut;
 import de.mueller_constantin.attoly.api.domain.payload.ShortcutCreationPayload;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

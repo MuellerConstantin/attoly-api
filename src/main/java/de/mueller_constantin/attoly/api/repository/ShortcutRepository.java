@@ -1,6 +1,6 @@
 package de.mueller_constantin.attoly.api.repository;
 
-import de.mueller_constantin.attoly.api.domain.model.Shortcut;
+import de.mueller_constantin.attoly.api.repository.model.Shortcut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;

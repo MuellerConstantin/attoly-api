@@ -1,7 +1,7 @@
 package de.mueller_constantin.attoly.api.repository;
 
-import de.mueller_constantin.attoly.api.domain.model.Role;
-import de.mueller_constantin.attoly.api.domain.model.RoleName;
+import de.mueller_constantin.attoly.api.repository.model.Role;
+import de.mueller_constantin.attoly.api.repository.model.RoleName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

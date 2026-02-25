@@ -2,8 +2,8 @@ package de.mueller_constantin.attoly.api.web.v1;
 
 import de.mueller_constantin.attoly.api.domain.RoleService;
 import de.mueller_constantin.attoly.api.domain.UserService;
-import de.mueller_constantin.attoly.api.domain.model.Role;
-import de.mueller_constantin.attoly.api.domain.model.User;
+import de.mueller_constantin.attoly.api.repository.model.Role;
+import de.mueller_constantin.attoly.api.repository.model.User;
 import de.mueller_constantin.attoly.api.web.v1.dto.RoleDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.mapper.RoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;

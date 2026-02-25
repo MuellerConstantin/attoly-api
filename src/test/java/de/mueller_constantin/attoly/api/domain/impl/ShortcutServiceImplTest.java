@@ -1,6 +1,6 @@
 package de.mueller_constantin.attoly.api.domain.impl;
 
-import de.mueller_constantin.attoly.api.domain.model.Shortcut;
+import de.mueller_constantin.attoly.api.repository.model.Shortcut;
 import de.mueller_constantin.attoly.api.repository.ShortcutRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

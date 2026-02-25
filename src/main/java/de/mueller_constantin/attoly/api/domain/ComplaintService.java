@@ -1,7 +1,7 @@
 package de.mueller_constantin.attoly.api.domain;
 
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
-import de.mueller_constantin.attoly.api.domain.model.Complaint;
+import de.mueller_constantin.attoly.api.repository.model.Complaint;
 import de.mueller_constantin.attoly.api.domain.payload.ComplaintCreationPayload;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

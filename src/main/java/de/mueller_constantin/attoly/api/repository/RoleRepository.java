@@ -1,7 +1,7 @@
 package de.mueller_constantin.attoly.api.repository;
 
-import de.mueller_constantin.attoly.api.domain.model.Role;
-import de.mueller_constantin.attoly.api.domain.model.RoleName;
+import de.mueller_constantin.attoly.api.repository.model.Role;
+import de.mueller_constantin.attoly.api.repository.model.RoleName;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

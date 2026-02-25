@@ -2,7 +2,7 @@ package de.mueller_constantin.attoly.api.domain;
 
 import de.mueller_constantin.attoly.api.domain.exception.EmailAlreadyInUseException;
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
-import de.mueller_constantin.attoly.api.domain.model.User;
+import de.mueller_constantin.attoly.api.repository.model.User;
 import de.mueller_constantin.attoly.api.domain.payload.UserCreationPayload;
 import de.mueller_constantin.attoly.api.domain.payload.UserUpdatePayload;
 import org.springframework.data.domain.Page;

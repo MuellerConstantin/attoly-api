@@ -1,4 +1,4 @@
-package de.mueller_constantin.attoly.api.domain.model;
+package de.mueller_constantin.attoly.api.repository.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

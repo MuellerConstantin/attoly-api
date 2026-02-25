@@ -1,6 +1,6 @@
 package de.mueller_constantin.attoly.api.security.access;
 
-import de.mueller_constantin.attoly.api.domain.model.Shortcut;
+import de.mueller_constantin.attoly.api.repository.model.Shortcut;
 import de.mueller_constantin.attoly.api.repository.ShortcutRepository;
 import de.mueller_constantin.attoly.api.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;

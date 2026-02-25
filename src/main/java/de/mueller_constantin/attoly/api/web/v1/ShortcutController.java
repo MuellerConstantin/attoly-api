@@ -1,7 +1,7 @@
 package de.mueller_constantin.attoly.api.web.v1;
 
 import de.mueller_constantin.attoly.api.domain.ShortcutService;
-import de.mueller_constantin.attoly.api.domain.model.Shortcut;
+import de.mueller_constantin.attoly.api.repository.model.Shortcut;
 import de.mueller_constantin.attoly.api.domain.payload.ShortcutCreationPayload;
 import de.mueller_constantin.attoly.api.security.CurrentPrincipal;
 import de.mueller_constantin.attoly.api.security.Principal;

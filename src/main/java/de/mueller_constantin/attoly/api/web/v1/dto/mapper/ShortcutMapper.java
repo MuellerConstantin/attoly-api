@@ -1,7 +1,7 @@
 package de.mueller_constantin.attoly.api.web.v1.dto.mapper;
 
-import de.mueller_constantin.attoly.api.domain.model.Shortcut;
-import de.mueller_constantin.attoly.api.domain.model.User;
+import de.mueller_constantin.attoly.api.repository.model.Shortcut;
+import de.mueller_constantin.attoly.api.repository.model.User;
 import de.mueller_constantin.attoly.api.domain.payload.ShortcutCreationPayload;
 import de.mueller_constantin.attoly.api.web.v1.dto.PageDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutCreationDto;

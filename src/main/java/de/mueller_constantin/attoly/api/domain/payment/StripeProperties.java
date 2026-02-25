@@ -1,6 +1,6 @@
 package de.mueller_constantin.attoly.api.domain.payment;
 
-import de.mueller_constantin.attoly.api.domain.model.SubscriptionPlan;
+import de.mueller_constantin.attoly.api.repository.model.SubscriptionPlan;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

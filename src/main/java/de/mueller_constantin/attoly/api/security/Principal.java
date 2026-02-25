@@ -1,6 +1,6 @@
 package de.mueller_constantin.attoly.api.security;
 
-import de.mueller_constantin.attoly.api.domain.model.User;
+import de.mueller_constantin.attoly.api.repository.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

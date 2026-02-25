@@ -1,8 +1,8 @@
 package de.mueller_constantin.attoly.api.domain;
 
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
-import de.mueller_constantin.attoly.api.domain.model.Role;
-import de.mueller_constantin.attoly.api.domain.model.RoleName;
+import de.mueller_constantin.attoly.api.repository.model.Role;
+import de.mueller_constantin.attoly.api.repository.model.RoleName;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

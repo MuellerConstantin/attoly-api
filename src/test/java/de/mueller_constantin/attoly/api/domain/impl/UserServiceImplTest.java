@@ -1,6 +1,6 @@
 package de.mueller_constantin.attoly.api.domain.impl;
 
-import de.mueller_constantin.attoly.api.domain.model.User;
+import de.mueller_constantin.attoly.api.repository.model.User;
 import de.mueller_constantin.attoly.api.repository.RoleRepository;
 import de.mueller_constantin.attoly.api.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;

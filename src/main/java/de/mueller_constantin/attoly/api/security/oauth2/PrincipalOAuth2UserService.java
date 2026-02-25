@@ -1,8 +1,8 @@
 package de.mueller_constantin.attoly.api.security.oauth2;
 
-import de.mueller_constantin.attoly.api.domain.model.IdentityProvider;
-import de.mueller_constantin.attoly.api.domain.model.RoleName;
-import de.mueller_constantin.attoly.api.domain.model.User;
+import de.mueller_constantin.attoly.api.repository.model.IdentityProvider;
+import de.mueller_constantin.attoly.api.repository.model.RoleName;
+import de.mueller_constantin.attoly.api.repository.model.User;
 import de.mueller_constantin.attoly.api.repository.RoleRepository;
 import de.mueller_constantin.attoly.api.repository.UserRepository;
 import de.mueller_constantin.attoly.api.security.EmailNotFoundException;

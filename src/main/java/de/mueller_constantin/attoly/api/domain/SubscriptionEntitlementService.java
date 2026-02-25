@@ -1,6 +1,6 @@
 package de.mueller_constantin.attoly.api.domain;
 
-import de.mueller_constantin.attoly.api.domain.model.UsageInfo;
+import de.mueller_constantin.attoly.api.repository.model.UsageInfo;
 
 import java.util.UUID;
 

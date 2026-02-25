@@ -1,6 +1,6 @@
 package de.mueller_constantin.attoly.api.web.v1.dto.mapper;
 
-import de.mueller_constantin.attoly.api.domain.model.Complaint;
+import de.mueller_constantin.attoly.api.repository.model.Complaint;
 import de.mueller_constantin.attoly.api.domain.payload.ComplaintCreationPayload;
 import de.mueller_constantin.attoly.api.web.v1.dto.ComplaintCreationDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.ComplaintDto;

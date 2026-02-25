@@ -1,6 +1,6 @@
 package de.mueller_constantin.attoly.api.repository.auditing;
 
-import de.mueller_constantin.attoly.api.domain.model.User;
+import de.mueller_constantin.attoly.api.repository.model.User;
 import de.mueller_constantin.attoly.api.security.Principal;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.AuditorAware;

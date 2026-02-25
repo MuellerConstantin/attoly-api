@@ -1,6 +1,6 @@
 package de.mueller_constantin.attoly.api.security.oauth2.user;
 
-import de.mueller_constantin.attoly.api.domain.model.IdentityProvider;
+import de.mueller_constantin.attoly.api.repository.model.IdentityProvider;
 import de.mueller_constantin.attoly.api.security.oauth2.OAuth2AuthenticationProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;

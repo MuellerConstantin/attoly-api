@@ -1,7 +1,7 @@
 package de.mueller_constantin.attoly.api.web.v1;
 
 import de.mueller_constantin.attoly.api.domain.UserService;
-import de.mueller_constantin.attoly.api.domain.model.User;
+import de.mueller_constantin.attoly.api.repository.model.User;
 import de.mueller_constantin.attoly.api.security.CurrentPrincipal;
 import de.mueller_constantin.attoly.api.security.Principal;
 import de.mueller_constantin.attoly.api.web.v1.dto.RoleDto;

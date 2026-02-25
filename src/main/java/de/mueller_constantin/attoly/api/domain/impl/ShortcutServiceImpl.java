@@ -3,7 +3,7 @@ package de.mueller_constantin.attoly.api.domain.impl;
 import de.mueller_constantin.attoly.api.domain.ShortcutService;
 import de.mueller_constantin.attoly.api.domain.SubscriptionEntitlementService;
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
-import de.mueller_constantin.attoly.api.domain.model.Shortcut;
+import de.mueller_constantin.attoly.api.repository.model.Shortcut;
 import de.mueller_constantin.attoly.api.domain.payload.ShortcutCreationPayload;
 import de.mueller_constantin.attoly.api.repository.ShortcutRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package de.mueller_constantin.attoly.api.web.v1.dto.mapper;
 
-import de.mueller_constantin.attoly.api.domain.model.Role;
+import de.mueller_constantin.attoly.api.repository.model.Role;
 import de.mueller_constantin.attoly.api.web.v1.dto.PageDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.RoleDto;
 import org.mapstruct.Mapper;
