@@ -20,7 +20,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 public class Shortcut extends BaseEntity {
-
     @Column(name = "tag", unique = true, nullable = false)
     private String tag;
 
@@ -35,13 +34,13 @@ public class Shortcut extends BaseEntity {
     private Instant expiresAt;
 
     @CreatedBy
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "created_by")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private User createdBy;
 
-    @OneToMany(mappedBy = "shortcut", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "shortcut", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @Builder.Default

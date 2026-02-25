@@ -1,10 +1,9 @@
 package de.mueller_constantin.attoly.api.web.v1.error;
 
 import de.mueller_constantin.attoly.api.domain.exception.*;
-import de.mueller_constantin.attoly.api.domain.exception.*;
 import de.mueller_constantin.attoly.api.web.v1.dto.ErrorDto;
-import de.mueller_constantin.attoly.api.web.v1.dto.rsql.UnsupportedFilterQueryFieldException;
-import de.mueller_constantin.attoly.api.web.v1.dto.rsql.UnsupportedFilterQueryOperatorException;
+import de.mueller_constantin.attoly.api.web.v1.rsql.UnsupportedFilterQueryFieldException;
+import de.mueller_constantin.attoly.api.web.v1.rsql.UnsupportedFilterQueryOperatorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;

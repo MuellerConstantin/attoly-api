@@ -13,7 +13,6 @@ import org.springframework.data.redis.core.RedisHash;
 @Data
 @Builder
 public class ResetToken {
-
     @Id
     private String token;
     private String principal;

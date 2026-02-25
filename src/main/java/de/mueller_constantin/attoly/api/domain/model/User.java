@@ -19,7 +19,6 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 public class User extends BaseEntity {
-
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
@@ -60,7 +59,7 @@ public class User extends BaseEntity {
     @Builder.Default
     private Set<Role> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.REMOVE, fetch =  FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @Builder.Default

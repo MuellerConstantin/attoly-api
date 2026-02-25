@@ -1,4 +1,4 @@
-package de.mueller_constantin.attoly.api.web.v1.dto.rsql;
+package de.mueller_constantin.attoly.api.web.v1.rsql;
 
 import cz.jirutka.rsql.parser.ast.ComparisonOperator;
 import de.mueller_constantin.attoly.api.domain.model.Shortcut;

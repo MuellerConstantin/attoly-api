@@ -9,7 +9,7 @@ import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLVisitor;
 import de.mueller_constantin.attoly.api.web.v1.dto.PageDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutDetailsDto;
 import de.mueller_constantin.attoly.api.web.v1.dto.mapper.ShortcutMapper;
-import de.mueller_constantin.attoly.api.web.v1.dto.rsql.ShortcutJpaRSQLFieldMapper;
+import de.mueller_constantin.attoly.api.web.v1.rsql.ShortcutJpaRSQLFieldMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

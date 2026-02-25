@@ -17,12 +17,11 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 public class Role extends BaseEntity {
-
     @Column(name = "name", unique = true)
     @Enumerated(EnumType.STRING)
     private RoleName name;
 
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @Builder.Default
