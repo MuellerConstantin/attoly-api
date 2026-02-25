@@ -8,7 +8,7 @@ import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLOperator;
 import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLVisitor;
 import de.mueller_constantin.attoly.api.web.v1.dto.*;
 import de.mueller_constantin.attoly.api.web.v1.dto.mapper.UserMapper;
-import de.mueller_constantin.attoly.api.repository.model.rsql.UserJpaRSQLFieldMapper;
+import de.mueller_constantin.attoly.api.web.v1.dto.rsql.UserJpaRSQLFieldMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

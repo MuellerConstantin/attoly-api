@@ -1,7 +1,7 @@
-package de.mueller_constantin.attoly.api.repository.model.rsql;
+package de.mueller_constantin.attoly.api.web.v1.dto.rsql;
 
 import cz.jirutka.rsql.parser.ast.ComparisonOperator;
-import de.mueller_constantin.attoly.api.repository.model.Shortcut;
+import de.mueller_constantin.attoly.api.repository.model.Complaint;
 import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLFieldMapper;
 import de.mueller_constantin.attoly.api.repository.rsql.JpaRSQLSpecification;
 import de.mueller_constantin.attoly.api.repository.rsql.UnsupportedFilterQueryFieldException;
@@ -10,9 +10,9 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
-public class ShortcutJpaRSQLFieldMapper implements JpaRSQLFieldMapper<Shortcut> {
+public class ComplaintJpaRSQLFieldMapper implements JpaRSQLFieldMapper<Complaint> {
     @Override
-    public Specification<Shortcut> map(String fieldName, ComparisonOperator operator, List<String> args) {
+    public Specification<Complaint> map(String fieldName, ComparisonOperator operator, List<String> args) {
         return switch (fieldName) {
             case "id" -> {
                 if(!List.of("==", "!=").contains(operator.getSymbol())) {
