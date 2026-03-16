@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +28,17 @@ public class ShortcutServiceImpl implements ShortcutService {
     private final ShortcutRepository shortcutRepository;
     private final SubscriptionEntitlementService subscriptionEntitlementService;
     private final ShortcutResultMapper shortcutResultMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public ShortcutServiceImpl(ShortcutRepository shortcutRepository,
                                SubscriptionEntitlementService subscriptionEntitlementService,
-                               ShortcutResultMapper shortcutResultMapper) {
+                               ShortcutResultMapper shortcutResultMapper,
+                               PasswordEncoder passwordEncoder) {
         this.shortcutRepository = shortcutRepository;
         this.subscriptionEntitlementService = subscriptionEntitlementService;
         this.shortcutResultMapper = shortcutResultMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -100,6 +104,10 @@ public class ShortcutServiceImpl implements ShortcutService {
             subscriptionEntitlementService.checkCanCreateExpirableShortcut(ownerId);
         }
 
+        if(payload.getPassword().isPresent()) {
+            subscriptionEntitlementService.checkCanCreatePasswordProtectedShortcut(ownerId);
+        }
+
         SecureRandom secureRandom = new SecureRandom();
         byte[] secret = new byte[6];
 
@@ -109,11 +117,15 @@ public class ShortcutServiceImpl implements ShortcutService {
         Instant expiresAt = payload.isPermanent() ?
                 null : payload.getExpiresAt().map(OffsetDateTime::toInstant).orElse(null);
 
+        String password = payload.getPassword().isPresent() ?
+                passwordEncoder.encode(payload.getPassword().get()) : null;
+
         Shortcut shortcut = Shortcut.builder()
                 .tag(tag)
                 .url(payload.getUrl())
                 .permanent(payload.isPermanent())
                 .expiresAt(expiresAt)
+                .password(password)
                 .build();
 
         var newShortcut = shortcutRepository.save(shortcut);

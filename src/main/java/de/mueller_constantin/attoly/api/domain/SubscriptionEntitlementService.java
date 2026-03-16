@@ -5,6 +5,8 @@ import de.mueller_constantin.attoly.api.domain.result.UsageInfoResult;
 import java.util.UUID;
 
 public interface SubscriptionEntitlementService {
+    void checkCanCreatePasswordProtectedShortcut(UUID ownerId);
+
     void checkCanCreatePermanentShortcut(UUID ownerId);
 
     void checkCanCreateExpirableShortcut(UUID ownerId);

@@ -7,6 +7,7 @@ CREATE TABLE public.roles
     deleted_at       timestamptz(6),
     version          bigint  NOT NULL,
     name             varchar(255),
+    password         varchar(255),
 
     CONSTRAINT pk_roles PRIMARY KEY (id),
     CONSTRAINT uq_roles_name UNIQUE (name),

@@ -47,7 +47,7 @@ public class SubscriptionEntitlementServiceImpl implements SubscriptionEntitleme
                 subscriptionPlanProperties.getConfigForPlan(plan);
 
         if (config == null || config.getMaxPermanentShortcuts() == null) {
-            return;
+            throw new FeatureNotAvailableException();
         }
 
         Long currentPermanentShortcutCount = shortcutRepository.countPermanentShortcutsByCreatorId(ownerId);
@@ -55,6 +55,22 @@ public class SubscriptionEntitlementServiceImpl implements SubscriptionEntitleme
 
         if (currentPermanentShortcutCount >= maxAllowedPermanentShortcutCount) {
             throw new PermanentShortcutLimitExceededException();
+        }
+    }
+
+    @Override
+    public void checkCanCreatePasswordProtectedShortcut(UUID ownerId) {
+        if(ownerId == null) {
+            throw new FeatureNotAvailableException();
+        }
+
+        User user = userRepository.findById(ownerId)
+                .orElseThrow();
+
+        SubscriptionPlan plan = user.getPlan();
+
+        if(plan != SubscriptionPlan.PRO) {
+            throw new FeatureNotAvailableException();
         }
     }
 
@@ -73,7 +89,7 @@ public class SubscriptionEntitlementServiceImpl implements SubscriptionEntitleme
                 subscriptionPlanProperties.getConfigForPlan(plan);
 
         if (config == null || config.getMaxPermanentShortcuts() == null) {
-            return;
+            throw new FeatureNotAvailableException();
         }
 
         Long currentExpirableShortcutCount = shortcutRepository.countExpirableShortcutsByCreatorId(ownerId);

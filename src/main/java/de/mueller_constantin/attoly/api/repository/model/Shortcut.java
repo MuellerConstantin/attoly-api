@@ -33,6 +33,9 @@ public class Shortcut extends BaseEntity {
     @Column(name = "expires_at")
     private Instant expiresAt;
 
+    @Column(name = "password")
+    private String password;
+
     @CreatedBy
     @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "created_by")
@@ -45,4 +48,8 @@ public class Shortcut extends BaseEntity {
     @ToString.Exclude
     @Builder.Default
     private List<Complaint> complaints = new ArrayList<>();
+
+    public boolean isPasswordProtected() {
+        return password != null;
+    }
 }

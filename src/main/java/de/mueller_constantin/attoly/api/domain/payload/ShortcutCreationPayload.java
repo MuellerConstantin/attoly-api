@@ -16,8 +16,13 @@ public class ShortcutCreationPayload {
     private String url;
     private boolean permanent;
     private OffsetDateTime expiresAt;
+    private String password;
 
     public Optional<OffsetDateTime> getExpiresAt() {
         return Optional.ofNullable(expiresAt);
+    }
+
+    public Optional<String> getPassword() {
+        return Optional.ofNullable(password);
     }
 }
