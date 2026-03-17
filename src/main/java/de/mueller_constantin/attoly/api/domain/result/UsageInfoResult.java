@@ -17,6 +17,7 @@ public class UsageInfoResult {
     public static class UsageLimits {
         private long maxPermanentShortcuts;
         private long maxExpirableShortcuts;
+        private boolean canCreatePasswordProtectedShortcuts;
     }
 
     @Data

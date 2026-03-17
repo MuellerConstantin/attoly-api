@@ -68,8 +68,10 @@ public class SubscriptionEntitlementServiceImpl implements SubscriptionEntitleme
                 .orElseThrow();
 
         SubscriptionPlan plan = user.getPlan();
+        SubscriptionPlanProperties.SubscriptionPlanConfig config =
+                subscriptionPlanProperties.getConfigForPlan(plan);
 
-        if(plan != SubscriptionPlan.PRO) {
+        if (config == null || !config.isCanCreatePasswordProtectedShortcuts()) {
             throw new FeatureNotAvailableException();
         }
     }
@@ -119,10 +121,11 @@ public class SubscriptionEntitlementServiceImpl implements SubscriptionEntitleme
 
         Long maxPermanent = config.getMaxPermanentShortcuts();
         Long maxExpirable = config.getMaxExpirableShortcuts();
+        boolean canCreatePasswordProtectedShortcuts = config.isCanCreatePasswordProtectedShortcuts();
 
         return UsageInfoResult.builder()
                 .plan(plan.name())
-                .usageLimits(new UsageInfoResult.UsageLimits(maxPermanent, maxExpirable))
+                .usageLimits(new UsageInfoResult.UsageLimits(maxPermanent, maxExpirable, canCreatePasswordProtectedShortcuts))
                 .currentUsage(new UsageInfoResult.CurrentUsage(currentPermanent, currentExpirable))
                 .build();
     }

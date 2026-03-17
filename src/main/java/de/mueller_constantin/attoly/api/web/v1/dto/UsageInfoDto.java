@@ -17,6 +17,7 @@ public class UsageInfoDto {
     public static class UsageLimitsDto {
         private long maxPermanentShortcuts;
         private long maxExpirableShortcuts;
+        private boolean canCreatePasswordProtectedShortcuts;
     }
 
     @Data

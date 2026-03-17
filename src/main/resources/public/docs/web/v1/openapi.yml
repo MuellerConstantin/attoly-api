@@ -822,9 +822,13 @@ components:
             maxExpirableShortcuts:
               type: integer
               description: The maximum number of expirable shortcuts allowed.
+            canCreatePasswordProtectedShortcuts:
+              type: boolean
+              description: Indicates if the user can create password protected shortcuts.
           required:
             - maxPermanentShortcuts
             - maxExpirableShortcuts
+            - canCreatePasswordProtectedShortcuts
         currentUsage:
           type: object
           properties:

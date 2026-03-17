@@ -20,6 +20,7 @@ public class SubscriptionPlanProperties {
     public static class SubscriptionPlanConfig {
         private Long maxPermanentShortcuts;
         private Long maxExpirableShortcuts;
+        private boolean canCreatePasswordProtectedShortcuts;
     }
 
     private Long maxAgeTemporaryShortcuts;

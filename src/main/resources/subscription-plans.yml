@@ -4,6 +4,8 @@ attoly:
     FREE:
       maxPermanentShortcuts: 10
       maxExpirableShortcuts: 0
+      canCreatePasswordProtectedShortcuts: false
     PRO:
       maxPermanentShortcuts: 100
       maxExpirableShortcuts: 50
+      canCreatePasswordProtectedShortcuts: true
