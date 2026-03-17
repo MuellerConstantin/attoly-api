@@ -584,6 +584,20 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
     }
 
+    @ExceptionHandler(UserDeletionBlockedByActiveSubscriptionException.class)
+    public ResponseEntity<Object> handleActiveSubscriptionExists(UserDeletionBlockedByActiveSubscriptionException exc,
+                                                                 WebRequest request) {
+        ErrorDto dto = ErrorDto.builder()
+                .error("UserDeletionBlockedByActiveSubscriptionError")
+                .message(getMessage("UserDeletionBlockedByActiveSubscriptionError.message", null))
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.CONFLICT.value())
+                .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .build();
+
+        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleDefault(Exception exc, WebRequest request) {
 

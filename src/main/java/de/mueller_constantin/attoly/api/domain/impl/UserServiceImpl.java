@@ -8,6 +8,7 @@ import de.mueller_constantin.attoly.api.domain.result.UserResult;
 import de.mueller_constantin.attoly.api.domain.result.mapper.UserResultMapper;
 import de.mueller_constantin.attoly.api.repository.model.Role;
 import de.mueller_constantin.attoly.api.repository.model.RoleName;
+import de.mueller_constantin.attoly.api.repository.model.SubscriptionStatus;
 import de.mueller_constantin.attoly.api.repository.model.User;
 import de.mueller_constantin.attoly.api.domain.payload.UserCreationPayload;
 import de.mueller_constantin.attoly.api.domain.payload.UserUpdatePayload;
@@ -247,6 +248,23 @@ public class UserServiceImpl implements UserService {
             throw new MustBeAdministrableException();
         }
 
+        if(hasActiveSubscription(user)) {
+            throw new UserDeletionBlockedByActiveSubscriptionException();
+        }
+
         userRepository.deleteSoft(user);
+    }
+
+    protected boolean hasActiveSubscription(User user) {
+        var billing = user.getBilling();
+
+        if (billing == null) return false;
+
+        if (billing.getSubscriptionId() == null) return false;
+
+        SubscriptionStatus status = billing.getStatus();
+
+        return status == SubscriptionStatus.ACTIVE
+                || status == SubscriptionStatus.PAST_DUE;
     }
 }
