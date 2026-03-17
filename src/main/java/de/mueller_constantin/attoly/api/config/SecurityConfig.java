@@ -201,6 +201,8 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/shortcuts/*")
                 .permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/shortcuts/*/resolve")
+                .permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/shortcuts/*/complaints")
                 .permitAll()
                 .requestMatchers( "/api/v1/payment/webhook")

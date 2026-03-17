@@ -20,4 +20,5 @@ public class ShortcutDetailsDto {
     private OffsetDateTime updatedAt;
     private boolean permanent;
     private OffsetDateTime expiresAt;
+    private boolean passwordProtected;
 }

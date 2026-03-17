@@ -422,6 +422,40 @@ paths:
           description: The successfully retrieved shortcut.
         '404':
           $ref: "#/components/responses/404"
+        '403':
+          $ref: "#/components/responses/403"
+  /shortcuts/{tag}/resolve:
+    post:
+      tags: [ Shortcut ]
+      security: [ ]
+      summary: Resolves a password protected shortcut by its tag.
+      description: >
+        Resolves a password protected shortcut by its tag. If a shortcut is password protected,
+        it can not be retrieved via the public endpoint `GET /shortcuts/{tag}`. Instead, this
+        endpoint must be used to resolve the shortcut.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShortcutPasswordDto"
+      parameters:
+        - name: tag
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShortcutDto"
+          description: The successfully retrieved shortcut.
+        '404':
+          $ref: "#/components/responses/404"
+        '403':
+          $ref: "#/components/responses/403"
   /user/me/shortcuts/{tag}:
     delete:
       tags: [ Shortcut ]
@@ -690,6 +724,12 @@ components:
         anonymous:
           type: boolean
           description: Indicates if the shortcut was created anonymously.
+    ShortcutPasswordDto:
+      type: object
+      required: [ password ]
+      properties:
+        password:
+          type: string
     ShortcutDetailsDto:
       type: object
       properties:

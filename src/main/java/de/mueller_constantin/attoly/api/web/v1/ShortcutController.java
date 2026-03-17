@@ -4,10 +4,7 @@ import de.mueller_constantin.attoly.api.domain.ShortcutService;
 import de.mueller_constantin.attoly.api.domain.payload.ShortcutCreationPayload;
 import de.mueller_constantin.attoly.api.security.CurrentPrincipal;
 import de.mueller_constantin.attoly.api.security.Principal;
-import de.mueller_constantin.attoly.api.web.v1.dto.PageDto;
-import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutCreationDto;
-import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutDetailsDto;
-import de.mueller_constantin.attoly.api.web.v1.dto.ShortcutDto;
+import de.mueller_constantin.attoly.api.web.v1.dto.*;
 import de.mueller_constantin.attoly.api.web.v1.dto.mapper.ShortcutDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -59,6 +56,13 @@ public class ShortcutController {
     @GetMapping("/shortcuts/{tag}")
     ShortcutDto findValidByTag(@PathVariable("tag") String tag) {
         var shortcut = shortcutService.findValidByTag(tag);
+        return shortcutMapper.mapToDto(shortcut);
+    }
+
+    @PostMapping("/shortcuts/{tag}/resolve")
+    ShortcutDto resolveValidByTag(@PathVariable("tag") String tag,
+                                  @RequestBody @Valid ShortcutPasswordDto dto) {
+        var shortcut = shortcutService.resolveValidByTag(tag, dto.getPassword());
         return shortcutMapper.mapToDto(shortcut);
     }
 

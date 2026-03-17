@@ -69,13 +69,28 @@ public interface ShortcutService {
     ShortcutResult findById(UUID id) throws EntityNotFoundException;
 
     /**
-     * Loads a shortcut by its tag. Only shortcuts that are still valid, i.e. not deleted and not expired, are returned.
+     * Loads a shortcut by its tag. Only shortcuts that are still valid, i.e.
+     * not deleted and not expired, are returned. This method also considers password protected shortcuts,
+     * but does not require a password. If the shortcut is password protected,
+     * an exception is thrown.
      *
      * @param tag The shortcut's unique tag.
      * @return The loaded shortcut.
      * @throws EntityNotFoundException Thrown if the shortcut cannot be found.
      */
     ShortcutResult findValidByTag(String tag) throws EntityNotFoundException;
+
+    /**
+     * Loads a shortcut by its tag. Only shortcuts that are still valid, i.e. not deleted and not
+     * expired, are returned. If the shortcut is password protected, the provided password must
+     * be correct.
+     *
+     * @param tag The shortcut's unique tag.
+     * @param password The password to access the shortcut, if it is password protected.
+     * @return The loaded shortcut.
+     * @throws EntityNotFoundException Thrown if the shortcut cannot be found or if the password is incorrect.
+     */
+    ShortcutResult resolveValidByTag(String tag, String password) throws EntityNotFoundException;
 
     /**
      * Loads a shortcut by its tag.

@@ -19,4 +19,5 @@ public class ShortcutDto {
     private OffsetDateTime createdAt;
     private boolean anonymous;
     private boolean permanent;
+    private boolean passwordProtected;
 }

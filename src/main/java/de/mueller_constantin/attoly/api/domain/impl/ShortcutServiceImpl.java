@@ -3,6 +3,8 @@ package de.mueller_constantin.attoly.api.domain.impl;
 import de.mueller_constantin.attoly.api.domain.ShortcutService;
 import de.mueller_constantin.attoly.api.domain.SubscriptionEntitlementService;
 import de.mueller_constantin.attoly.api.domain.exception.EntityNotFoundException;
+import de.mueller_constantin.attoly.api.domain.exception.InvalidShortcutPasswordException;
+import de.mueller_constantin.attoly.api.domain.exception.ShortcutPasswordRequiredException;
 import de.mueller_constantin.attoly.api.domain.result.ShortcutResult;
 import de.mueller_constantin.attoly.api.domain.result.mapper.ShortcutResultMapper;
 import de.mueller_constantin.attoly.api.repository.model.Shortcut;
@@ -91,6 +93,28 @@ public class ShortcutServiceImpl implements ShortcutService {
     @Override
     public ShortcutResult findValidByTag(String tag) throws EntityNotFoundException {
         var shortcut = shortcutRepository.findValidByTag(tag).orElseThrow(EntityNotFoundException::new);
+
+        if(shortcut.isPasswordProtected()) {
+            throw new ShortcutPasswordRequiredException();
+        }
+
+        return shortcutResultMapper.mapToResult(shortcut);
+    }
+
+    @Override
+    public ShortcutResult resolveValidByTag(String tag, String password) throws EntityNotFoundException {
+        var shortcut = shortcutRepository.findValidByTag(tag).orElseThrow(EntityNotFoundException::new);
+
+        if(shortcut.isPasswordProtected()) {
+            if (password == null) {
+                throw new ShortcutPasswordRequiredException();
+            }
+
+            if (!passwordEncoder.matches(password, shortcut.getPassword())) {
+                throw new InvalidShortcutPasswordException();
+            }
+        }
+
         return shortcutResultMapper.mapToResult(shortcut);
     }
 

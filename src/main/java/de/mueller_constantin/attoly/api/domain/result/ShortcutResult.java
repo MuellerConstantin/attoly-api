@@ -19,4 +19,5 @@ public class ShortcutResult {
     private boolean permanent;
     private Instant expiresAt;
     private UUID createdBy;
+    private boolean passwordProtected;
 }

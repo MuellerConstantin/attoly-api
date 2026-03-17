@@ -556,6 +556,34 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
     }
 
+    @ExceptionHandler(ShortcutPasswordRequiredException.class)
+    public ResponseEntity<Object> handleShortcutPasswordRequired(ShortcutPasswordRequiredException exc,
+                                                                WebRequest request) {
+        ErrorDto dto = ErrorDto.builder()
+                .error("ShortcutPasswordRequiredError")
+                .message(getMessage("ShortcutPasswordRequiredError.message", null))
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.FORBIDDEN.value())
+                .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .build();
+
+        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
+    }
+
+    @ExceptionHandler(InvalidShortcutPasswordException.class)
+    public ResponseEntity<Object> handleInvalidShortcutPassword(InvalidShortcutPasswordException exc,
+                                                                WebRequest request) {
+        ErrorDto dto = ErrorDto.builder()
+                .error("InvalidShortcutPasswordError")
+                .message(getMessage("InvalidShortcutPasswordError.message", null))
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.FORBIDDEN.value())
+                .path(((ServletWebRequest) request).getRequest().getServletPath())
+                .build();
+
+        return new ResponseEntity<>(dto, new HttpHeaders(), HttpStatus.valueOf(dto.getStatus()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleDefault(Exception exc, WebRequest request) {
 
