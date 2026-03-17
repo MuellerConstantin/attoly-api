@@ -108,16 +108,28 @@ public class PaymentController {
                         .getObject()
                         .orElseThrow();
 
-                UUID userId = UUID.fromString(session.getClientReferenceId());
-                String eventId = event.getId();
-                String subscriptionId = session.getSubscription();
+                String clientReferenceId = session.getClientReferenceId();
                 String customerId = session.getCustomer();
-                Subscription subscription = Subscription.retrieve(subscriptionId);
+                String subscriptionId = session.getSubscription();
+                String eventId = event.getId();
 
-                paymentService.activateSubscription(userId, customerId, subscription, eventId);
+                if (clientReferenceId == null) {
+                    throw new IllegalStateException("checkout.session.completed contains no client_reference_id");
+                }
+                if (customerId == null) {
+                    throw new IllegalStateException("checkout.session.completed contains no customer id");
+                }
+                if (subscriptionId == null) {
+                    throw new IllegalStateException("checkout.session.completed contains no subscription id");
+                }
 
+                UUID userId = UUID.fromString(clientReferenceId);
+
+                paymentService.linkCheckoutCustomer(userId, customerId, subscriptionId, eventId);
             }
-            case "customer.subscription.deleted" -> {
+            case "customer.subscription.created",
+                 "customer.subscription.updated" -> {
+
                 Subscription subscription = (Subscription) event
                         .getDataObjectDeserializer()
                         .getObject()
@@ -125,27 +137,15 @@ public class PaymentController {
 
                 String eventId = event.getId();
 
-                paymentService.deactivateSubscription(subscription, eventId);
+                paymentService.syncSubscription(subscription, eventId);
             }
-            case "invoice.payment_succeeded" -> {
-                Invoice invoice = (Invoice) event
+            case "customer.subscription.deleted" -> {
+                Subscription subscription = (Subscription) event
                         .getDataObjectDeserializer()
                         .getObject()
                         .orElseThrow();
 
-                String eventId = event.getId();
-
-                paymentService.markPaymentSucceeded(invoice, eventId);
-            }
-            case "invoice.payment_failed" -> {
-                Invoice invoice = (Invoice) event
-                        .getDataObjectDeserializer()
-                        .getObject()
-                        .orElseThrow();
-
-                String eventId = event.getId();
-
-                paymentService.markPaymentFailed(invoice, eventId);
+                paymentService.deactivateSubscription(subscription, event.getId());
             }
         }
     }

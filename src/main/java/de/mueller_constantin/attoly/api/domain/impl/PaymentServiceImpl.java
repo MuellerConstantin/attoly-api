@@ -29,28 +29,46 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public void activateSubscription(UUID id, String customerId, Subscription subscription, String eventId) {
-        User user = userRepository.findById(id).orElseThrow();
+    public void linkCheckoutCustomer(UUID userId, String customerId, String subscriptionId, String eventId) {
+        User user = userRepository.findById(userId).orElseThrow();
 
-        if(eventId != null && eventId.equals(user.getBilling().getLastEventId())) {
+        if (eventId != null && eventId.equals(user.getBilling().getLastEventId())) {
             return;
         }
 
-        String subscriptionId = subscription.getId();
-        SubscriptionItem item = subscription
-                .getItems()
-                .getData()
-                .get(0);
-
-        Instant currentPeriodStart = Instant.ofEpochSecond(item.getCurrentPeriodStart());
-        Instant currentPeriodEnd = Instant.ofEpochSecond(item.getCurrentPeriodEnd());
-
-        String priceId = item.getPrice().getId();
-        SubscriptionPlan plan = stripeProperties.resolvePlan(priceId);
-
         user.getBilling().setCustomerId(customerId);
         user.getBilling().setSubscriptionId(subscriptionId);
-        user.getBilling().setStatus(SubscriptionStatus.ACTIVE);
+        user.getBilling().setLastEventId(eventId);
+
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void syncSubscription(Subscription subscription, String eventId) {
+        User user = userRepository
+                .findByBillingCustomerId(subscription.getCustomer())
+                .orElseThrow();
+
+        if (eventId != null && eventId.equals(user.getBilling().getLastEventId())) {
+            return;
+        }
+
+        SubscriptionItem item = extractSingleSubscriptionItem(subscription);
+
+        Instant currentPeriodStart = item.getCurrentPeriodStart() != null
+                ? Instant.ofEpochSecond(item.getCurrentPeriodStart())
+                : null;
+
+        Instant currentPeriodEnd = item.getCurrentPeriodEnd() != null
+                ? Instant.ofEpochSecond(item.getCurrentPeriodEnd())
+                : null;
+
+        String priceId = item.getPrice() != null ? item.getPrice().getId() : null;
+        SubscriptionPlan plan = resolvePlanSafely(priceId, subscription.getStatus());
+
+        user.getBilling().setSubscriptionId(subscription.getId());
+        user.getBilling().setStatus(mapStripeStatus(subscription.getStatus()));
         user.getBilling().setCurrentPeriodStart(currentPeriodStart);
         user.getBilling().setCurrentPeriodEnd(currentPeriodEnd);
         user.getBilling().setLastEventId(eventId);
@@ -61,63 +79,61 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Transactional
     public void deactivateSubscription(Subscription subscription, String eventId) {
-        User user = userRepository.findByBillingSubscriptionId(subscription.getId()).orElseThrow();
+        User user = userRepository
+                .findByBillingCustomerId(subscription.getCustomer())
+                .orElseThrow();
 
-        if(eventId != null && eventId.equals(user.getBilling().getLastEventId())) {
+        if (eventId != null && eventId.equals(user.getBilling().getLastEventId())) {
             return;
         }
-
-        SubscriptionItem item = subscription
-                .getItems()
-                .getData()
-                .get(0);
 
         user.getBilling().setStatus(SubscriptionStatus.CANCELED);
         user.getBilling().setSubscriptionId(null);
         user.getBilling().setCurrentPeriodStart(null);
         user.getBilling().setCurrentPeriodEnd(null);
+        user.getBilling().setLastEventId(eventId);
+
         user.setPlan(SubscriptionPlan.FREE);
 
         userRepository.save(user);
     }
 
-    @Override
-    public void markPaymentSucceeded(Invoice invoice, String eventId) {
-        String customerId = invoice.getCustomer();
-        User user = userRepository
-                .findByBillingCustomerId(customerId)
-                .orElseThrow();
-
-        if (eventId != null && eventId.equals(user.getBilling().getLastEventId())) {
-            return;
+    private SubscriptionItem extractSingleSubscriptionItem(Subscription subscription) {
+        if (subscription.getItems() == null
+                || subscription.getItems().getData() == null
+                || subscription.getItems().getData().isEmpty()) {
+            throw new IllegalStateException("Stripe subscription contains no subscription items");
         }
 
-        Instant periodStart = Instant.ofEpochSecond(invoice.getPeriodStart());
-        Instant periodEnd = Instant.ofEpochSecond(invoice.getPeriodEnd());
-
-        user.getBilling().setStatus(SubscriptionStatus.ACTIVE);
-        user.getBilling().setCurrentPeriodStart(periodStart);
-        user.getBilling().setCurrentPeriodEnd(periodEnd);
-        user.getBilling().setLastEventId(eventId);
-
-        userRepository.save(user);
+        return subscription.getItems().getData().get(0);
     }
 
-    @Override
-    public void markPaymentFailed(Invoice invoice, String eventId) {
-        String customerId = invoice.getCustomer();
-        User user = userRepository
-                .findByBillingCustomerId(customerId)
-                .orElseThrow();
+    private SubscriptionPlan resolvePlanSafely(String priceId, String stripeStatus) {
+        if (priceId == null) {
+            if (isTerminalOrFreeLikeStatus(stripeStatus)) {
+                return SubscriptionPlan.FREE;
+            }
 
-        if (eventId != null && eventId.equals(user.getBilling().getLastEventId())) {
-            return;
+            throw new IllegalStateException("Stripe subscription item has no price id");
         }
 
-        user.getBilling().setStatus(SubscriptionStatus.PAST_DUE);
-        user.getBilling().setLastEventId(eventId);
+        return stripeProperties.resolvePlan(priceId);
+    }
 
-        userRepository.save(user);
+    private boolean isTerminalOrFreeLikeStatus(String stripeStatus) {
+        return "canceled".equals(stripeStatus)
+                || "incomplete_expired".equals(stripeStatus)
+                || "unpaid".equals(stripeStatus);
+    }
+
+    private SubscriptionStatus mapStripeStatus(String stripeStatus) {
+        return switch (stripeStatus) {
+            case "trialing", "active" -> SubscriptionStatus.ACTIVE;
+            case "incomplete", "past_due", "paused" -> SubscriptionStatus.PAST_DUE;
+            case "canceled", "incomplete_expired", "unpaid" -> SubscriptionStatus.CANCELED;
+            default -> throw new IllegalArgumentException("Unsupported Stripe subscription status: " + stripeStatus);
+        };
     }
 }
