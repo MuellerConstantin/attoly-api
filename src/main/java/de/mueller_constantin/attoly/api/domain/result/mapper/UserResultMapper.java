@@ -17,11 +17,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserResultMapper {
-    @Mapping(
-            target = "identityProvider",
-            source = "identityProvider",
-            qualifiedByName = "mapIdentityProvider"
-    )
     UserResult mapToResult(User entity);
 
     List<UserResult> mapToResult(Collection<User> users);
@@ -32,11 +27,6 @@ public interface UserResultMapper {
         }
 
         return instant.atZone(ZoneId.systemDefault()).toOffsetDateTime();
-    }
-
-    @Named("mapIdentityProvider")
-    default String mapIdentityProvider(IdentityProvider provider) {
-        return provider == null ? "LOCAL" : provider.name();
     }
 
     default Page<UserResult> mapToResult(Page<User> page) {

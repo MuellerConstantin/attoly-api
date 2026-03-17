@@ -3,9 +3,11 @@ package de.mueller_constantin.attoly.api.web.v1.dto.mapper;
 import de.mueller_constantin.attoly.api.domain.result.UserResult;
 import de.mueller_constantin.attoly.api.domain.payload.UserCreationPayload;
 import de.mueller_constantin.attoly.api.domain.payload.UserUpdatePayload;
+import de.mueller_constantin.attoly.api.repository.model.IdentityProvider;
 import de.mueller_constantin.attoly.api.web.v1.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
 
 import java.time.Instant;
@@ -23,9 +25,19 @@ public interface UserDtoMapper {
 
     UserDto mapToDto(UserResult entity);
 
+    @Mapping(
+            target = "identityProvider",
+            source = "identityProvider",
+            qualifiedByName = "mapIdentityProvider"
+    )
     PrincipalDto mapToPrincipalDto(UserResult entity);
 
     @Mapping(target = "customerId", source = "billing.customerId")
+    @Mapping(
+            target = "identityProvider",
+            source = "identityProvider",
+            qualifiedByName = "mapIdentityProvider"
+    )
     MeDto mapToMeDto(UserResult entity);
 
     @Mapping(target = "page", source = "number")
@@ -42,6 +54,11 @@ public interface UserDtoMapper {
         }
 
         return instant.atZone(ZoneId.systemDefault()).toOffsetDateTime();
+    }
+
+    @Named("mapIdentityProvider")
+    default String mapIdentityProvider(IdentityProvider provider) {
+        return provider == null ? "LOCAL" : provider.name();
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
